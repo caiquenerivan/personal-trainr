@@ -1,0 +1,17 @@
+{
+  "name": "personaltrainr",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "npm@11.6.2",
+  "description": "Monorepo for Personal Trainr",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.12"
+  }
+}

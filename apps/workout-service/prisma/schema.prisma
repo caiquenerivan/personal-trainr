@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RoutineType {
+  AB
+  ABC
+  ABCD
+  ABCDE
+}
+
+enum Day {
+  A
+  B
+  C
+  D
+  E
+}
+
+model Routine {
+  id        String            @id @default(uuid())
+  trainerId String
+  name      String
+  type      RoutineType
+  createdAt DateTime          @default(now())
+  exercises      RoutineExercise[]
+  assignments    RoutineAssignment[]
+}
+
+model RoutineAssignment {
+  id         String   @id @default(uuid())
+  routineId  String
+  alunoId    String
+  assignedAt DateTime @default(now())
+  expiresAt  DateTime
+  isActive   Boolean  @default(true)
+  routine    Routine  @relation(fields: [routineId], references: [id], onDelete: Cascade)
+}
+
+model Exercise {
+  id               String            @id @default(uuid())
+  name             String
+  videoUrl         String?
+  gifUrl           String?
+  muscle           String?
+  weightTrack      String?
+  observations     String?
+  routineExercises RoutineExercise[]
+}
+
+model RoutineExercise {
+  id          String       @id @default(uuid())
+  routineId   String
+  routine     Routine      @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  exerciseId  String
+  exercise    Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  day         Day
+  series      Int
+  reps        Int
+  restTime    Int
+  workoutLogs WorkoutLog[]
+}
+
+model WorkoutLog {
+  id                String          @id @default(uuid())
+  alunoId           String
+  routineExerciseId String
+  routineExercise   RoutineExercise @relation(fields: [routineExerciseId], references: [id], onDelete: Cascade)
+  weightUsed        Float?
+  completedAt       DateTime        @default(now())
+}
