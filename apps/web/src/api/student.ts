@@ -40,3 +40,12 @@ export async function updateProfile(data: UpdateProfilePayload) {
   const response = await api.put('/api/users/profile', formData);
   return response.data;
 }
+
+export async function changePassword(currentPassword: string, newPassword: string) {
+  const response = await api.put('/api/users/change-password', {
+    currentPassword,
+    newPassword,
+  });
+  return response.data;
+}
+

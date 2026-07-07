@@ -21,6 +21,7 @@ const StudentDashboardPage = lazy(() => import('./pages/StudentDashboardPage').t
 const StudentTreinosPage = lazy(() => import('./pages/StudentTreinosPage').then((m) => ({ default: m.StudentTreinosPage })));
 const StudentTreinoHojePage = lazy(() => import('./pages/StudentTreinoHojePage').then((m) => ({ default: m.StudentTreinoHojePage })));
 const StudentPerfilPage = lazy(() => import('./pages/StudentPerfilPage').then((m) => ({ default: m.StudentPerfilPage })));
+const StudentPersonalPage = lazy(() => import('./pages/StudentPersonalPage').then((m) => ({ default: m.StudentPersonalPage })));
 
 function PageLoader() {
   return (
@@ -65,6 +66,7 @@ export function AppRouter() {
             <Route path="/aluno/treinos" element={<StudentTreinosPage />} />
             <Route path="/aluno/treino-hoje" element={<StudentTreinoHojePage />} />
             <Route path="/aluno/perfil" element={<StudentPerfilPage />} />
+            <Route path="/aluno/personal" element={<StudentPersonalPage />} />
           </Route>
         </Route>
 

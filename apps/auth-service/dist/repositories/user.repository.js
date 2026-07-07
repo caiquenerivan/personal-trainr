@@ -22,4 +22,14 @@ exports.userRepository = {
         const user = await prisma_1.prisma.user.update({ where: { id }, data });
         return toPublic(user);
     },
+    async findByIdWithHash(id) {
+        return prisma_1.prisma.user.findUnique({ where: { id } });
+    },
+    async updatePasswordHash(id, passwordHash) {
+        const user = await prisma_1.prisma.user.update({
+            where: { id },
+            data: { passwordHash },
+        });
+        return toPublic(user);
+    },
 };

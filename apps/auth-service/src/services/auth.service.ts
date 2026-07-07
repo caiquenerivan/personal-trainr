@@ -97,4 +97,25 @@ export const authService = {
     }
     return { user };
   },
+
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ) {
+    const user = await userRepository.findByIdWithHash(userId);
+    if (!user) {
+      throw { status: 404, message: "User not found" };
+    }
+
+    const passwordMatch = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!passwordMatch) {
+      throw { status: 401, message: "Current password is incorrect" };
+    }
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+    await userRepository.updatePasswordHash(userId, newHash);
+
+    return { message: "Password updated successfully" };
+  },
 };

@@ -37,4 +37,16 @@ export const userRepository = {
     const user = await prisma.user.update({ where: { id }, data });
     return toPublic(user);
   },
+
+  async findByIdWithHash(id: string): Promise<User | null> {
+    return prisma.user.findUnique({ where: { id } });
+  },
+
+  async updatePasswordHash(id: string, passwordHash: string): Promise<PublicUser | null> {
+    const user = await prisma.user.update({
+      where: { id },
+      data: { passwordHash },
+    });
+    return toPublic(user);
+  },
 };

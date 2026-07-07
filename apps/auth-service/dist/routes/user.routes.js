@@ -2,7 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const auth_controller_1 = require("../controllers/auth.controller");
+const upload_middleware_1 = require("../middlewares/upload.middleware");
 const router = (0, express_1.Router)();
 router.get("/profile", auth_controller_1.profile);
-router.put("/profile", auth_controller_1.updateProfile);
+router.put("/profile", upload_middleware_1.upload.single("avatar"), auth_controller_1.updateProfile);
+router.put("/change-password", auth_controller_1.changePassword);
 exports.default = router;

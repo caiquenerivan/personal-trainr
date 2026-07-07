@@ -126,3 +126,38 @@ export async function profile(req: Request, res: Response): Promise<any> {
     return res.status(500).json({ message: "Internal server error" });
   }
 }
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z.string().min(6, "New password must be at least 6 characters long"),
+});
+
+export async function changePassword(req: Request, res: Response): Promise<any> {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const validation = changePasswordSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await authService.changePassword(
+      userId,
+      validation.data.currentPassword,
+      validation.data.newPassword,
+    );
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    console.error("Change password error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}

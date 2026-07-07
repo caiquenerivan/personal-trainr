@@ -70,4 +70,17 @@ exports.authService = {
         }
         return { user };
     },
+    async changePassword(userId, currentPassword, newPassword) {
+        const user = await user_repository_1.userRepository.findByIdWithHash(userId);
+        if (!user) {
+            throw { status: 404, message: "User not found" };
+        }
+        const passwordMatch = await bcrypt_1.default.compare(currentPassword, user.passwordHash);
+        if (!passwordMatch) {
+            throw { status: 401, message: "Current password is incorrect" };
+        }
+        const newHash = await bcrypt_1.default.hash(newPassword, 10);
+        await user_repository_1.userRepository.updatePasswordHash(userId, newHash);
+        return { message: "Password updated successfully" };
+    },
 };
