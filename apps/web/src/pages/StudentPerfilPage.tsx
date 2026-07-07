@@ -236,7 +236,7 @@ export function StudentPerfilPage() {
       </div>
 
       {/* ─── Summary Card ────────────────────────────────────── */}
-      <div className="rounded-2xl border border-border/60 bg-[#262626] p-6 md:p-8 shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300">
+      <div className="rounded-2xl border border-border/60 bg-card p-6 md:p-8 shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300">
         <div className="flex flex-col md:flex-row gap-6 md:gap-10">
           {/* Avatar */}
           <div className="flex flex-col items-center gap-3">
@@ -245,6 +245,7 @@ export function StudentPerfilPage() {
                 <img
                   src={displayUrl}
                   alt={`Foto de ${profile.name}`}
+                  loading="lazy"
                   className="h-28 w-28 rounded-full object-cover border-2 border-accent/40 shadow-lg"
                 />
               ) : (
@@ -377,7 +378,7 @@ export function StudentPerfilPage() {
       {activeTab === 'perfil' && (
         <form
           onSubmit={handleProfileSubmit}
-          className="rounded-2xl border border-border/60 bg-[#262626] p-6 md:p-8 max-w-2xl animate-fade-in shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300"
+          className="rounded-2xl border border-border/60 bg-card p-6 md:p-8 max-w-2xl animate-fade-in shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300"
         >
           <h3 className="font-title text-lg uppercase tracking-wide text-text-primary mb-1">
             INFORMAÇÕES PESSOAIS
@@ -395,7 +396,7 @@ export function StudentPerfilPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Seu nome"
-                className="w-full rounded-lg border border-border bg-[#333333] p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
+                className="w-full rounded-lg border border-border bg-base p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
               />
             </label>
 
@@ -408,7 +409,7 @@ export function StudentPerfilPage() {
                 onChange={(e) => setPhone(formatPhone(e.target.value))}
                 placeholder="(11) 99999-9999"
                 maxLength={16}
-                className="w-full rounded-lg border border-border bg-[#333333] p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
+                className="w-full rounded-lg border border-border bg-base p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
               />
             </label>
 
@@ -423,7 +424,7 @@ export function StudentPerfilPage() {
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
                   placeholder="Ex: 75.5"
-                  className="w-full rounded-lg border border-border bg-[#333333] p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
+                  className="w-full rounded-lg border border-border bg-base p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
                 />
               </label>
 
@@ -436,7 +437,7 @@ export function StudentPerfilPage() {
                   value={height}
                   onChange={(e) => setHeight(e.target.value)}
                   placeholder="Ex: 175"
-                  className="w-full rounded-lg border border-border bg-[#333333] p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
+                  className="w-full rounded-lg border border-border bg-base p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
                 />
               </label>
             </div>
@@ -448,7 +449,7 @@ export function StudentPerfilPage() {
                 type="date"
                 value={birthDate}
                 onChange={(e) => setBirthDate(e.target.value)}
-                className="w-full rounded-lg border border-border bg-[#333333] p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
+                className="w-full rounded-lg border border-border bg-base p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
               />
             </label>
           </div>
@@ -487,7 +488,7 @@ export function StudentPerfilPage() {
       {activeTab === 'conta' && (
         <form
           onSubmit={handleAccountSubmit}
-          className="rounded-2xl border border-border/60 bg-[#262626] p-6 md:p-8 max-w-2xl animate-fade-in shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300"
+          className="rounded-2xl border border-border/60 bg-card p-6 md:p-8 max-w-2xl animate-fade-in shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300"
         >
           <h3 className="font-title text-lg uppercase tracking-wide text-text-primary mb-1">
             SEGURANÇA DA CONTA
@@ -507,7 +508,7 @@ export function StudentPerfilPage() {
                   value={profile.email}
                   disabled
                   readOnly
-                  className="w-full rounded-lg border border-border bg-[#333333] p-3 pl-10 text-text-secondary font-body text-sm outline-none cursor-not-allowed opacity-60"
+                  className="w-full rounded-lg border border-border bg-base p-3 pl-10 text-text-secondary font-body text-sm outline-none cursor-not-allowed opacity-60"
                 />
               </div>
             </label>
@@ -523,7 +524,7 @@ export function StudentPerfilPage() {
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full rounded-lg border border-border bg-[#333333] p-3 pl-10 pr-12 text-text-primary font-body text-sm outline-none focus:border-accent transition"
+                  className="w-full rounded-lg border border-border bg-base p-3 pl-10 pr-12 text-text-primary font-body text-sm outline-none focus:border-accent transition"
                 />
                 <button
                   type="button"
@@ -547,7 +548,7 @@ export function StudentPerfilPage() {
                   placeholder="Mínimo 6 caracteres"
                   required
                   minLength={6}
-                  className="w-full rounded-lg border border-border bg-[#333333] p-3 pl-10 pr-12 text-text-primary font-body text-sm outline-none focus:border-accent transition"
+                  className="w-full rounded-lg border border-border bg-base p-3 pl-10 pr-12 text-text-primary font-body text-sm outline-none focus:border-accent transition"
                 />
                 <button
                   type="button"
@@ -571,7 +572,7 @@ export function StudentPerfilPage() {
                   placeholder="Confirme a nova senha"
                   required
                   minLength={6}
-                  className={`w-full rounded-lg border bg-[#333333] p-3 pl-10 pr-12 text-text-primary font-body text-sm outline-none transition ${
+                  className={`w-full rounded-lg border bg-base p-3 pl-10 pr-12 text-text-primary font-body text-sm outline-none transition ${
                     passwordMismatch
                       ? 'border-red-500/60 focus:border-red-500'
                       : 'border-border focus:border-accent'

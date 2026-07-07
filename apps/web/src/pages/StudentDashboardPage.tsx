@@ -333,7 +333,7 @@ export function StudentDashboardPage() {
       {/* Grid of 4 Small Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Streak */}
-        <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/30 shadow-lg shadow-black/30 hover:shadow-[0_0_18px_rgba(175,145,80,0.35)]">
+        <div className="rounded-xl bg-card border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/30 shadow-lg shadow-black/30 hover:shadow-[0_0_18px_rgba(175,145,80,0.35)]">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-orange-600/10 text-orange-400">
             <Flame size={24} className="fill-orange-400/20" />
           </div>
@@ -345,20 +345,20 @@ export function StudentDashboardPage() {
         </div>
 
         {/* Objetivo */}
-        <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/30 shadow-lg shadow-black/30 hover:shadow-[0_0_18px_rgba(175,145,80,0.35)]">
+        <div className="rounded-xl bg-card border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/30 shadow-lg shadow-black/30 hover:shadow-[0_0_18px_rgba(175,145,80,0.35)]">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
             <Target size={24} />
           </div>
           <div>
             <span className="block text-[10px] uppercase font-bold text-text-secondary">Objetivo</span>
-            <span className="font-body text-sm font-bold text-text-primary uppercase tracking-wide truncate max-w-[100px] block">
+            <span className="font-body text-sm font-bold text-text-primary uppercase tracking-wide truncate block">
               {objective}
             </span>
           </div>
         </div>
 
         {/* Peso */}
-        <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/30 shadow-lg shadow-black/30 hover:shadow-[0_0_18px_rgba(175,145,80,0.35)]">
+        <div className="rounded-xl bg-card border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/30 shadow-lg shadow-black/30 hover:shadow-[0_0_18px_rgba(175,145,80,0.35)]">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-600/10 text-blue-400">
             <Scale size={24} />
           </div>
@@ -369,7 +369,7 @@ export function StudentDashboardPage() {
         </div>
 
         {/* Altura */}
-        <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/30 shadow-lg shadow-black/30 hover:shadow-[0_0_18px_rgba(175,145,80,0.35)]">
+        <div className="rounded-xl bg-card border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/30 shadow-lg shadow-black/30 hover:shadow-[0_0_18px_rgba(175,145,80,0.35)]">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-green-600/10 text-green-400">
             <Ruler size={24} />
           </div>
@@ -413,7 +413,7 @@ export function StudentDashboardPage() {
       {/* Main Grid: Treino do Dia and Histórico */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 min-w-0">
         {/* Card: Treino do Dia (2 cols width on large screens) */}
-        <div className="lg:col-span-2 rounded-2xl bg-[#262626] border border-border/60 p-4 sm:p-6 flex flex-col justify-between hover:border-accent/20 transition-all duration-300 min-w-0 shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)]">
+        <div className="lg:col-span-2 rounded-2xl bg-card border border-border/60 p-4 sm:p-6 flex flex-col justify-between hover:border-accent/20 transition-all duration-300 min-w-0 shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)]">
           <div>
             {/* Top Subtitle and Title */}
             <div className="border-b border-border/30 pb-4 mb-6">
@@ -529,7 +529,7 @@ export function StudentDashboardPage() {
         </div>
 
         {/* Card: Histórico (1 col width on large screens) */}
-        <div className="rounded-2xl bg-[#262626] border border-border/60 p-4 sm:p-6 flex flex-col justify-between hover:border-accent/20 transition-all duration-300 min-w-0 shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)]">
+        <div className="rounded-2xl bg-card border border-border/60 p-4 sm:p-6 flex flex-col justify-between hover:border-accent/20 transition-all duration-300 min-w-0 shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)]">
           <div>
             {/* Header Title & Completed Count */}
             <div className="flex items-center justify-between border-b border-border/30 pb-4 mb-6">
@@ -552,10 +552,10 @@ export function StudentDashboardPage() {
                   >
                     {/* Calendar Mini-card */}
                     <div className="flex flex-col items-center justify-center w-12 h-14 bg-base rounded border border-border/80 overflow-hidden shrink-0">
-                      <div className="bg-[#333333] w-full text-center text-[9px] font-bold text-accent py-0.5 border-b border-border/60">
+                      <div className="bg-base w-full text-center text-[9px] font-bold text-accent py-0.5 border-b border-border/60">
                         {month}
                       </div>
-                      <div className="w-full bg-[#262626] text-center text-sm font-number font-bold text-text-primary py-1">
+                      <div className="w-full bg-card text-center text-sm font-number font-bold text-text-primary py-1">
                         {day}
                       </div>
                     </div>
@@ -605,9 +605,10 @@ export function StudentDashboardPage() {
 
             {detailTarget.exercise.gifUrl && (
               <div className="overflow-hidden rounded-xl bg-base border border-border/60 aspect-video flex items-center justify-center">
-                <img
+                  <img
                   src={detailTarget.exercise.gifUrl}
                   alt={detailTarget.exercise.name}
+                  loading="lazy"
                   className="max-h-full object-contain"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = 'none';

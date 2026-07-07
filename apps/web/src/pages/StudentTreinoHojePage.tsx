@@ -271,6 +271,7 @@ export function StudentTreinoHojePage() {
                 <img
                   src={detailTarget.gifUrl}
                   alt={detailTarget.name}
+                  loading="lazy"
                   className="w-full object-cover"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = 'none';
