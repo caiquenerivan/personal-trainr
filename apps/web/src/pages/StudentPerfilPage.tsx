@@ -236,7 +236,7 @@ export function StudentPerfilPage() {
       </div>
 
       {/* ─── Summary Card ────────────────────────────────────── */}
-      <div className="rounded-2xl border border-border/60 bg-[#262626] p-6 md:p-8">
+      <div className="rounded-2xl border border-border/60 bg-[#262626] p-6 md:p-8 shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300">
         <div className="flex flex-col md:flex-row gap-6 md:gap-10">
           {/* Avatar */}
           <div className="flex flex-col items-center gap-3">
@@ -377,7 +377,7 @@ export function StudentPerfilPage() {
       {activeTab === 'perfil' && (
         <form
           onSubmit={handleProfileSubmit}
-          className="rounded-2xl border border-border/60 bg-[#262626] p-6 md:p-8 max-w-2xl animate-fade-in"
+          className="rounded-2xl border border-border/60 bg-[#262626] p-6 md:p-8 max-w-2xl animate-fade-in shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300"
         >
           <h3 className="font-title text-lg uppercase tracking-wide text-text-primary mb-1">
             INFORMAÇÕES PESSOAIS
@@ -487,7 +487,7 @@ export function StudentPerfilPage() {
       {activeTab === 'conta' && (
         <form
           onSubmit={handleAccountSubmit}
-          className="rounded-2xl border border-border/60 bg-[#262626] p-6 md:p-8 max-w-2xl animate-fade-in"
+          className="rounded-2xl border border-border/60 bg-[#262626] p-6 md:p-8 max-w-2xl animate-fade-in shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300"
         >
           <h3 className="font-title text-lg uppercase tracking-wide text-text-primary mb-1">
             SEGURANÇA DA CONTA

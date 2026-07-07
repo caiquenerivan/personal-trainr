@@ -90,7 +90,7 @@ export function StudentPersonalPage() {
       </h1>
 
       {hasLinkedTrainer ? (
-        <div className="mt-8 rounded-2xl border border-border bg-card p-6 md:p-8 max-w-3xl">
+        <div className="mt-8 rounded-2xl border border-border bg-card p-6 md:p-8 max-w-3xl shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300">
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-2 border-accent bg-base text-4xl font-bold uppercase text-accent">
               {linkedTrainerName.charAt(0)}
@@ -130,7 +130,7 @@ export function StudentPersonalPage() {
         </div>
       ) : (
         <div className="mt-8">
-          <div className="rounded-2xl border border-border/80 bg-card p-6 md:p-8 mb-8 text-center max-w-4xl">
+          <div className="rounded-2xl border border-border/80 bg-card p-6 md:p-8 mb-8 text-center max-w-4xl shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent mb-4">
               <User size={28} />
             </div>
@@ -151,7 +151,7 @@ export function StudentPersonalPage() {
             {placeholderTrainers.map((trainer) => (
               <div
                 key={trainer.id}
-                className="flex flex-col justify-between rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-accent/40 hover:shadow-lg"
+                className="flex flex-col justify-between rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-accent/40 shadow-lg shadow-black/30 hover:shadow-[0_0_20px_rgba(175,145,80,0.35)]"
               >
                 <div>
                   <div className="flex items-start justify-between">

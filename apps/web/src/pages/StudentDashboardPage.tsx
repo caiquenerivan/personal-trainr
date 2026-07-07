@@ -333,7 +333,7 @@ export function StudentDashboardPage() {
       {/* Grid of 4 Small Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Streak */}
-        <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition duration-300 hover:border-accent/30">
+        <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/30 shadow-lg shadow-black/30 hover:shadow-[0_0_18px_rgba(175,145,80,0.35)]">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-orange-600/10 text-orange-400">
             <Flame size={24} className="fill-orange-400/20" />
           </div>
@@ -345,7 +345,7 @@ export function StudentDashboardPage() {
         </div>
 
         {/* Objetivo */}
-        <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition duration-300 hover:border-accent/30">
+        <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/30 shadow-lg shadow-black/30 hover:shadow-[0_0_18px_rgba(175,145,80,0.35)]">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
             <Target size={24} />
           </div>
@@ -358,7 +358,7 @@ export function StudentDashboardPage() {
         </div>
 
         {/* Peso */}
-        <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition duration-300 hover:border-accent/30">
+        <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/30 shadow-lg shadow-black/30 hover:shadow-[0_0_18px_rgba(175,145,80,0.35)]">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-600/10 text-blue-400">
             <Scale size={24} />
           </div>
@@ -369,7 +369,7 @@ export function StudentDashboardPage() {
         </div>
 
         {/* Altura */}
-        <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition duration-300 hover:border-accent/30">
+        <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/30 shadow-lg shadow-black/30 hover:shadow-[0_0_18px_rgba(175,145,80,0.35)]">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-green-600/10 text-green-400">
             <Ruler size={24} />
           </div>
@@ -413,7 +413,7 @@ export function StudentDashboardPage() {
       {/* Main Grid: Treino do Dia and Histórico */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 min-w-0">
         {/* Card: Treino do Dia (2 cols width on large screens) */}
-        <div className="lg:col-span-2 rounded-2xl bg-[#262626] border border-border/60 p-4 sm:p-6 flex flex-col justify-between hover:border-accent/20 transition-all duration-300 min-w-0">
+        <div className="lg:col-span-2 rounded-2xl bg-[#262626] border border-border/60 p-4 sm:p-6 flex flex-col justify-between hover:border-accent/20 transition-all duration-300 min-w-0 shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)]">
           <div>
             {/* Top Subtitle and Title */}
             <div className="border-b border-border/30 pb-4 mb-6">
@@ -529,7 +529,7 @@ export function StudentDashboardPage() {
         </div>
 
         {/* Card: Histórico (1 col width on large screens) */}
-        <div className="rounded-2xl bg-[#262626] border border-border/60 p-4 sm:p-6 flex flex-col justify-between hover:border-accent/20 transition-all duration-300 min-w-0">
+        <div className="rounded-2xl bg-[#262626] border border-border/60 p-4 sm:p-6 flex flex-col justify-between hover:border-accent/20 transition-all duration-300 min-w-0 shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)]">
           <div>
             {/* Header Title & Completed Count */}
             <div className="flex items-center justify-between border-b border-border/30 pb-4 mb-6">
