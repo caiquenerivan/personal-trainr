@@ -80,6 +80,7 @@ export const authService = {
   async updateProfile(
     userId: string,
     data: {
+      name?: string;
       avatarUrl?: string | null;
       phone?: string | null;
       weight?: number | null;

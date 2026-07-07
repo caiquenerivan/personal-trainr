@@ -131,6 +131,7 @@ export function StudentPerfilPage() {
 
     try {
       const result = await updateProfile({
+        name: name || undefined,
         avatarFile: selectedFile,
         phone: phone ? unformatPhone(phone) : null,
         weight: weight ? Number(weight) : null,

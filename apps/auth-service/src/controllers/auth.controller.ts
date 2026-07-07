@@ -19,6 +19,7 @@ const loginSchema = z.object({
 });
 
 const updateProfileSchema = z.object({
+  name: z.string().min(1, "Name is required").optional(),
   avatarUrl: z.string().url("Invalid URL").optional().nullable(),
   phone: z.string().optional().nullable(),
   weight: z.number().positive("Weight must be positive").optional().nullable(),

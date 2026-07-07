@@ -33,7 +33,7 @@ export const userRepository = {
     return user ? toPublic(user) : null;
   },
 
-  async update(id: string, data: Partial<Pick<User, "avatarUrl" | "phone" | "weight" | "height" | "birthDate">>): Promise<PublicUser | null> {
+  async update(id: string, data: Partial<Pick<User, "name" | "avatarUrl" | "phone" | "weight" | "height" | "birthDate">>): Promise<PublicUser | null> {
     const user = await prisma.user.update({ where: { id }, data });
     return toPublic(user);
   },

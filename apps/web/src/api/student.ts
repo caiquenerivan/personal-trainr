@@ -19,6 +19,7 @@ export async function getWorkoutHistory() {
 }
 
 export type UpdateProfilePayload = {
+  name?: string;
   avatarFile?: File | null;
   phone?: string | null;
   weight?: number | null;
@@ -29,6 +30,7 @@ export type UpdateProfilePayload = {
 export async function updateProfile(data: UpdateProfilePayload) {
   const formData = new FormData();
 
+  if (data.name !== undefined) formData.append('name', data.name);
   if (data.avatarFile) {
     formData.append('avatar', data.avatarFile);
   }

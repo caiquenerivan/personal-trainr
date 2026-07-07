@@ -318,7 +318,7 @@ export function StudentDashboardPage() {
       <div className="flex items-center justify-between border-b border-border/20 pb-4">
         <div>
           <h1 className="font-title text-3xl sm:text-4xl uppercase tracking-wider text-text-primary">
-            OLÁ, {userName.split(' ')[0]}!
+            OLÁ {userName.split(' ')[0]}!
           </h1>
           <p className="font-body text-xs text-text-secondary mt-1 uppercase tracking-wide">
             BOM TRABALHO HOJE. VAMOS AOS TREINOS!
@@ -331,7 +331,7 @@ export function StudentDashboardPage() {
       </div>
 
       {/* Grid of 4 Small Cards */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Streak */}
         <div className="rounded-xl bg-[#262626] border border-border/40 p-4 flex items-center gap-4 transition duration-300 hover:border-accent/30">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-orange-600/10 text-orange-400">
@@ -411,9 +411,9 @@ export function StudentDashboardPage() {
       </div>
 
       {/* Main Grid: Treino do Dia and Histórico */}
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 min-w-0">
         {/* Card: Treino do Dia (2 cols width on large screens) */}
-        <div className="lg:col-span-2 rounded-2xl bg-[#262626] border border-border/60 p-6 flex flex-col justify-between hover:border-accent/20 transition-all duration-300">
+        <div className="lg:col-span-2 rounded-2xl bg-[#262626] border border-border/60 p-4 sm:p-6 flex flex-col justify-between hover:border-accent/20 transition-all duration-300 min-w-0">
           <div>
             {/* Top Subtitle and Title */}
             <div className="border-b border-border/30 pb-4 mb-6">
@@ -488,13 +488,13 @@ export function StudentDashboardPage() {
                       </div>
 
                       {/* Weight input on row */}
-                      <div className="shrink-0" onClick={e => e.stopPropagation()}>
+                      <div className="hidden sm:block shrink-0" onClick={e => e.stopPropagation()}>
                         <input
                           type="text"
                           value={weightsUsed[item.id] ?? ''}
                           onChange={(e) => handleWeightChange(item.id, e.target.value, e)}
-                          placeholder="Carga (kg)"
-                          className="w-20 rounded-lg border border-border bg-base px-2.5 py-2 text-xs text-text-primary text-center font-number outline-none focus:border-accent"
+                          placeholder="Carga"
+                          className="w-16 sm:w-20 rounded-lg border border-border bg-base px-2 py-2 text-xs text-text-primary text-center font-number outline-none focus:border-accent"
                         />
                       </div>
                     </div>
@@ -529,7 +529,7 @@ export function StudentDashboardPage() {
         </div>
 
         {/* Card: Histórico (1 col width on large screens) */}
-        <div className="rounded-2xl bg-[#262626] border border-border/60 p-6 flex flex-col justify-between hover:border-accent/20 transition-all duration-300">
+        <div className="rounded-2xl bg-[#262626] border border-border/60 p-4 sm:p-6 flex flex-col justify-between hover:border-accent/20 transition-all duration-300 min-w-0">
           <div>
             {/* Header Title & Completed Count */}
             <div className="flex items-center justify-between border-b border-border/30 pb-4 mb-6">
