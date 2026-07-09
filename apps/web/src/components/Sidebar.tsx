@@ -9,6 +9,7 @@ import {
   LogOut,
   X,
 } from 'lucide-react';
+import logoFitnessGoldRunner from '../assets/logo-fitness-gold-runner.png';
 
 const menuItems = [
   { label: 'Painel', to: '/painel', icon: LayoutDashboard },
@@ -41,9 +42,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const sidebarContent = (
     <>
       <div className="flex items-center justify-between mb-10 border-b border-border pb-6">
-        <p className="font-title text-2xl uppercase text-accent">
-          Personal Trainr
-        </p>
+        <img src={logoFitnessGoldRunner} alt="Personal Trainr" className="w-full h-auto object-contain" />
         <button onClick={onClose} className="flex items-center justify-center text-text-secondary hover:text-accent md:hidden min-h-[44px] min-w-[44px]">
           <X size={20} />
         </button>
