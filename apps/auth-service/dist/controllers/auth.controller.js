@@ -22,6 +22,7 @@ const loginSchema = zod_1.z.object({
     password: zod_1.z.string().min(1, "Password is required"),
 });
 const updateProfileSchema = zod_1.z.object({
+    name: zod_1.z.string().min(1, "Name is required").optional(),
     avatarUrl: zod_1.z.string().url("Invalid URL").optional().nullable(),
     phone: zod_1.z.string().optional().nullable(),
     weight: zod_1.z.number().positive("Weight must be positive").optional().nullable(),

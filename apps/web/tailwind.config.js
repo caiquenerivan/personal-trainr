@@ -14,6 +14,7 @@ export default {
         base: '#333333',
         card: '#262626',
         accent: '#AF9150',
+        'accent-light': '#D4B060',
         'text-primary': '#D9D9D9',
         'text-secondary': '#A3A3A3',
         border: '#4A4A4A',
