@@ -27,7 +27,7 @@ function proxyTo(target: string, pathPrefix: string): RequestHandler {
   return createProxyMiddleware({
     target,
     changeOrigin: true,
-    pathRewrite: (path) => `${pathPrefix}${path}`,
+    pathRewrite: (path) => (path === '/' || path === '' ? pathPrefix : `${pathPrefix}${path}`),
     on: {
       error: (err, _req, res: any) => {
         console.error("[proxy error]", err.message);
@@ -39,6 +39,7 @@ function proxyTo(target: string, pathPrefix: string): RequestHandler {
 
 // ─── Public Routes (no auth required) ───────────────────────────────────────
 app.use("/api/auth", proxyTo(AUTH_SERVICE_URL, "/api/auth"));
+app.use("/api/trainers/invite", proxyTo(WORKOUT_SERVICE_URL, "/api/trainers/invite"));
 
 // ─── Protected: Profile (auth required) ─────────────────────────────────────
 app.use("/api/users", authenticate, proxyTo(AUTH_SERVICE_URL, "/api/users"));
@@ -49,6 +50,7 @@ const workoutRoutes: [string, string][] = [
   ["/api/exercises", "/api/exercises"],
   ["/api/workout", "/api/workout"],
   ["/api/trainers", "/api/trainers"],
+  ["/api/connections", "/api/connections"],
   ["/api/students", "/api/students"],
   ["/api/my-routine", "/api/my-routine"],
 ];

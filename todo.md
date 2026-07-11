@@ -36,6 +36,25 @@
 - [x] **Seção CTA ("Começar"):** Card centralizado com glow dourado forte, borda sutil (`hover:border-accent`), Headline "SEU PRÓXIMO RECORDE COMEÇA HOJE", botão "Criar Conta Grátis" (mesmo estilo do Hero).
 - [x] **Footer:** 3 colunas (Brand, Conta, Plataforma), slogan "TREINE FORTE, EVOLUA SEMPRE.", bordas sutis entre seções.
 - [x] Pontuação corrigida (vírgulas e pontos finais com `font-body` onde a `font-title` não renderiza).
+## [x] Phase 8: Feature de Conexão Aluno-Professor (Branch: `feat/aluno-professor-conexao`)
+- [x] **Backend Schema:** Atualizar Prisma com `TrainerProfile`, `TrainerStudentConnection`, enums `UF` e `Role.ADMIN`, e novos campos no `User` (username, instagram, bio).
+- [x] **Backend Controllers/Services:** - [x] Rota para atualizar o `TrainerProfile` (apenas para role TRAINER).
+  - [x] Rota `POST /connections` para criar o vínculo entre aluno e professor.
+  - [x] Rota `GET /connections/my-students` e `GET /connections/my-trainers`.
+- [x] **Frontend Aluno (`/aluno/personal`):** - [x] Listar o(s) personal(is) atrelado(s) a ele.
+  - [x] Criar interface (busca ou botão) para o aluno solicitar ou aceitar conexão com um personal.
+- [x] **Frontend Personal:**
+  - [x] Aba nas configurações para preencher CREF, Estado, Especialidades.
+  - [x] Ajustar a tela `/alunos` para listar apenas alunos vindos da tabela `TrainerStudentConnection`.
 
-## [ ] Phase 8: Mobile App (React Native / Expo) - Aluno (Adiado)
+## [x] Phase 8.5: Trainer Dashboard Redesign (CONCLUÍDO)
+- [x] **Visão Geral (`/painel`):** Refatorar a página principal do personal baseada no novo UI de "Command Center".
+  - [x] **Header:** Título dinâmico de boas vindas com botão de ação rápida.
+  - [x] **Cards de Resumo (Stats):** Grid com 4 métricas (Alunos Ativos, Treinos Concluídos, Rotinas em Uso, Adesão Média) utilizando `font-number`.
+  - [x] **Lista de Alunos Ativos:** Card com listagem resumida dos alunos, mostrando rotina atual e avatar.
+  - [x] **Feed de Atividade Recente:** Lista estilo timeline com badges sobrepostos nos avatares (ícones de check, balança, atualizações) e textos ricos descrevendo as ações.
+  - [x] **Rotinas Mais Usadas:** Grid de 2 colunas exibindo o ranking das rotinas ativas com mini-barra indicadora de volume de alunos.
+- [x] **Mock de Dados (Temporário):** Enquanto o backend não possui os logs de atividade complexos, criar dados mockados robustos no frontend para garantir que o visual do Dashboard funcione perfeitamente.
+
+## [ ] Phase 9: Mobile App (React Native / Expo) - Aluno (Adiado)
 - [ ] Inicializar projeto Expo e migrar funcionalidades do dashboard do aluno.

@@ -7,6 +7,48 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  ADMIN
+  TRAINER
+  ALUNO
+}
+
+enum UF {
+  AC
+  AL
+  AP
+  AM
+  BA
+  CE
+  DF
+  ES
+  GO
+  MA
+  MT
+  MS
+  MG
+  PA
+  PB
+  PR
+  PE
+  PI
+  RJ
+  RN
+  RS
+  RO
+  RR
+  SC
+  SP
+  SE
+  TO
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+}
+
 enum RoutineType {
   AB
   ABC
@@ -20,6 +62,51 @@ enum Day {
   C
   D
   E
+}
+
+model User {
+  id             String                     @id @default(uuid())
+  name           String
+  username       String?                    @unique
+  email          String                     @unique
+  passwordHash   String
+  role           Role                       @default(ALUNO)
+  avatarUrl      String?
+  phone          String?
+  instagram      String?
+  bio            String?
+  weight         Float?
+  height         Float?
+  birthDate      DateTime?
+  createdAt      DateTime                   @default(now())
+  trainerProfile TrainerProfile?
+  students       TrainerStudentConnection[] @relation("TrainerToConnection")
+  trainers       TrainerStudentConnection[] @relation("StudentToConnection")
+}
+
+model TrainerProfile {
+  id              String  @id @default(uuid())
+  userId          String  @unique
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cref            String  @unique
+  crefState       UF
+  crefCity        String
+  experienceYears Int?
+  specialties     String?
+  website         String?
+}
+
+model TrainerStudentConnection {
+  id        String           @id @default(uuid())
+  trainerId String
+  studentId String
+  status    ConnectionStatus @default(ACTIVE)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  trainer   User             @relation("TrainerToConnection", fields: [trainerId], references: [id], onDelete: Cascade)
+  student   User             @relation("StudentToConnection", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([trainerId, studentId])
 }
 
 model Routine {
@@ -36,6 +123,7 @@ model RoutineAssignment {
   id         String   @id @default(uuid())
   routineId  String
   alunoId    String
+  weeklyGoal Int      @default(3)
   assignedAt DateTime @default(now())
   expiresAt  DateTime
   isActive   Boolean  @default(true)

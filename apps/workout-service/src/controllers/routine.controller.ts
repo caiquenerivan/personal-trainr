@@ -16,10 +16,26 @@ const createRoutineSchema = z.object({
   exercises: z.array(routineExerciseInputSchema).min(1, "At least one exercise is required"),
 });
 
+const assignExerciseSchema = z.object({
+  name: z.string().min(1, "Exercise name is required"),
+  series: z.number().int().positive(),
+  reps: z.number().int().positive(),
+  rest: z.number().int().positive(),
+});
+
+const assignWorkoutSchema = z.object({
+  day: z.string(),
+  description: z.string().optional(),
+  exercises: z.array(assignExerciseSchema).min(1),
+});
+
 const assignRoutineSchema = z.object({
   routineId: z.string().uuid("Invalid routine ID"),
   alunoId: z.string().min(1, "Aluno ID is required"),
   days: z.number().int().positive("Days must be a positive integer"),
+  weeklyGoal: z.number().int().min(1, "Weekly goal must be at least 1").max(7, "Weekly goal must be at most 7"),
+  routineName: z.string().optional(),
+  workouts: z.array(assignWorkoutSchema).optional(),
 });
 
 export async function create(req: Request, res: Response): Promise<any> {
@@ -57,13 +73,26 @@ export async function assign(req: Request, res: Response): Promise<any> {
       });
     }
 
-    const result = await routineService.assign(validation.data);
+    const result = await routineService.assign({
+      ...validation.data,
+      trainerId: req.user!.id,
+    });
     return res.status(201).json(result);
   } catch (error: any) {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
     console.error("Assign routine error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function listMyRoutines(req: Request, res: Response): Promise<any> {
+  try {
+    const result = await routineService.listByTrainer(req.user!.id);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    console.error("List my routines error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }

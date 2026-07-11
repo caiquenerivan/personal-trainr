@@ -1,39 +1,85 @@
-import { useState, useMemo } from 'react';
-import { Eye, Search, Mail } from 'lucide-react';
-import { students as rawStudents } from '../data/mockData';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { AxiosError } from 'axios';
+import { Eye, Search, Mail, X } from 'lucide-react';
+import { getMyStudents, listMyRoutines } from '../api/connections';
+import { api } from '../api/client';
 import { calculateAge } from '../utils/age';
-import type { Routine } from '../types/routine';
-import type { Student } from '../data/mockData';
 import { Modal } from '../components/Modal';
+
+type StudentDTO = {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string | null;
+  weight: number | null;
+  height: number | null;
+  birthDate: string | null;
+  bio: string | null;
+  hasActiveRoutine: boolean;
+  routineName: string | null;
+};
+
+type RoutineItem = {
+  id: string;
+  name: string;
+  type: string;
+  createdAt: string;
+};
 
 type FilterStatus = 'TODOS' | 'ATIVOS' | 'INATIVOS';
 
 const filters: FilterStatus[] = ['TODOS', 'ATIVOS', 'INATIVOS'];
 
 export function StudentsPage() {
-  const [students] = useState(() => rawStudents);
+  const [students, setStudents] = useState<StudentDTO[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('TODOS');
-  const [assignments, setAssignments] = useState<any[]>(() => {
-    try {
-      return JSON.parse(window.localStorage.getItem('personaltrainr.assignments') ?? '[]');
-    } catch {
-      return [];
-    }
-  });
   const [linkTarget, setLinkTarget] = useState<string | null>(null);
-  const [detailTarget, setDetailTarget] = useState<Student | null>(null);
-
-  const routines: Routine[] = (() => {
-    try {
-      return JSON.parse(window.localStorage.getItem('personaltrainr.routines') ?? '[]');
-    } catch {
-      return [];
-    }
-  })();
-
+  const [detailTarget, setDetailTarget] = useState<StudentDTO | null>(null);
+  const [routines, setRoutines] = useState<RoutineItem[]>([]);
   const [selectedRoutine, setSelectedRoutine] = useState('');
   const [validityDays, setValidityDays] = useState(30);
+  const [weeklyGoal, setWeeklyGoal] = useState(3);
+  const [linking, setLinking] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>(null);
+
+  function showToast(msg: string) {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast(msg);
+    toastTimer.current = setTimeout(() => setToast(null), 4000);
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([
+      getMyStudents(),
+      listMyRoutines().catch(() => ({ routines: [] })),
+    ])
+      .then(([studentsData, routinesData]) => {
+        setStudents(studentsData.students ?? []);
+        let apiRoutines = routinesData.routines ?? [];
+        if (apiRoutines.length === 0) {
+          const stored = (() => {
+            try {
+              return JSON.parse(window.localStorage.getItem('personaltrainr.routines') ?? '[]');
+            } catch {
+              return [];
+            }
+          })();
+          apiRoutines = stored.map((r: any) => ({
+            id: r.id,
+            name: r.name,
+            type: r.type || r.goal || '',
+            createdAt: r.createdAt || '',
+          }));
+        }
+        setRoutines(apiRoutines);
+      })
+      .catch(() => setStudents([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   const filteredStudents = useMemo(() => {
     return students.filter((s) => {
@@ -50,29 +96,75 @@ export function StudentsPage() {
   const totalStudents = students.length;
   const activeStudents = students.filter((s) => s.hasActiveRoutine).length;
 
-  function getActiveRoutines(studentId: string) {
-    return assignments.filter((a: any) => a.studentId === studentId).length;
+  async function handleLinkRoutine() {
+    if (!linkTarget || !selectedRoutine) return;
+    const selected = routines.find((r) => r.id === selectedRoutine);
+
+    let workouts: Array<{ day: string; exercises: Array<{ name: string; series: number; reps: number; rest: number }> }> | undefined;
+    try {
+      const stored = JSON.parse(window.localStorage.getItem('personaltrainr.routines') ?? '[]');
+      const full = stored.find((r: any) => r.id === selectedRoutine);
+      if (full?.workouts) {
+        workouts = full.workouts.map((w: any) => ({
+          day: w.day,
+          description: w.description,
+          exercises: (w.exercises ?? []).map((e: any) => ({
+            name: e.name,
+            series: e.series,
+            reps: e.reps,
+            rest: e.rest,
+          })),
+        }));
+      }
+    } catch {}
+
+    setLinking(true);
+    try {
+      await api.post('/api/routines/assign', {
+        alunoId: linkTarget,
+        routineId: selectedRoutine,
+        days: validityDays,
+        weeklyGoal,
+        routineName: selected?.name,
+        workouts,
+      });
+      const data = await getMyStudents();
+      setStudents(data.students ?? []);
+      setLinkTarget(null);
+      setSelectedRoutine('');
+      setValidityDays(30);
+      setWeeklyGoal(3);
+      showToast('Rotina vinculada com sucesso!');
+    } catch (err: unknown) {
+      const msg =
+        err instanceof AxiosError
+          ? err.response?.data?.message || 'Erro ao vincular rotina'
+          : 'Erro ao vincular rotina';
+      showToast(msg);
+    } finally {
+      setLinking(false);
+    }
   }
 
-  function handleLinkRoutine() {
-    if (!linkTarget || !selectedRoutine) return;
-    const newAssignment = {
-      id: crypto.randomUUID(),
-      studentId: linkTarget,
-      routineId: selectedRoutine,
-      days: validityDays,
-      createdAt: new Date().toISOString(),
-    };
-    const updated = [...assignments, newAssignment];
-    setAssignments(updated);
-    window.localStorage.setItem('personaltrainr.assignments', JSON.stringify(updated));
-    setLinkTarget(null);
-    setSelectedRoutine('');
-    setValidityDays(30);
+  if (loading) {
+    return (
+      <section className="mx-auto max-w-7xl">
+        <p className="font-body text-text-secondary">Carregando alunos...</p>
+      </section>
+    );
   }
 
   return (
     <section className="mx-auto max-w-7xl">
+      {toast && (
+        <div className="fixed right-4 top-4 z-50 flex items-center gap-3 rounded-xl border border-accent/40 bg-card px-5 py-3 shadow-lg shadow-black/40 animate-slide-up">
+          <span className="font-body text-sm text-text-primary">{toast}</span>
+          <button onClick={() => setToast(null)} className="text-text-secondary hover:text-text-primary">
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       <div className="mb-2 flex items-baseline gap-3">
         <h1 className="font-title text-3xl uppercase text-text-primary">ALUNOS</h1>
         <span className="text-sm text-text-secondary">
@@ -109,6 +201,12 @@ export function StudentsPage() {
         </div>
       </div>
 
+      {students.length === 0 && !loading && (
+        <p className="mt-10 text-center font-body text-sm text-text-secondary">
+          Nenhum aluno conectado a você ainda.
+        </p>
+      )}
+
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {filteredStudents.map((student, i) => (
           <div
@@ -130,7 +228,9 @@ export function StudentsPage() {
                   <h2 className="font-title text-lg uppercase tracking-wide text-text-primary">
                     {student.name}
                   </h2>
-                  <p className="text-sm text-text-secondary">{student.objective}</p>
+                  {student.bio && (
+                    <p className="text-sm text-text-secondary line-clamp-1">{student.bio}</p>
+                  )}
                 </div>
               </div>
 
@@ -151,22 +251,30 @@ export function StudentsPage() {
               {student.email}
             </div>
 
-            <div className="mt-4 rounded-lg bg-base p-3">
-              <div className="grid grid-cols-3 text-center">
-                <div>
-                  <p className="text-xs uppercase text-text-secondary">PESO</p>
-                  <p className="font-number text-accent">{student.weight} kg</p>
-                </div>
-                <div>
-                  <p className="text-xs uppercase text-text-secondary">ALTURA</p>
-                  <p className="font-number text-accent">{(student.height * 100).toFixed(0)} cm</p>
-                </div>
-                <div>
-                  <p className="text-xs uppercase text-text-secondary">IDADE</p>
-                  <p className="font-number text-accent">{calculateAge(student.birthDate)} a</p>
+            {(student.weight || student.height || student.birthDate) && (
+              <div className="mt-4 rounded-lg bg-base p-3">
+                <div className="grid grid-cols-3 text-center">
+                  <div>
+                    <p className="text-xs uppercase text-text-secondary">PESO</p>
+                    <p className="font-number text-accent">
+                      {student.weight ? `${student.weight} kg` : '—'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase text-text-secondary">ALTURA</p>
+                    <p className="font-number text-accent">
+                      {student.height ? `${(student.height * 100).toFixed(0)} cm` : '—'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase text-text-secondary">IDADE</p>
+                    <p className="font-number text-accent">
+                      {student.birthDate ? `${calculateAge(student.birthDate)} a` : '—'}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             <div className="mt-4 flex items-center gap-1.5 text-xs text-accent uppercase">
               ROTINA
@@ -214,7 +322,9 @@ export function StudentsPage() {
               </div>
               <div>
                 <h3 className="font-title text-xl uppercase text-text-primary">{detailTarget.name}</h3>
-                <p className="text-sm text-text-secondary">{detailTarget.objective}</p>
+                {detailTarget.bio && (
+                  <p className="text-sm text-text-secondary">{detailTarget.bio}</p>
+                )}
               </div>
             </div>
 
@@ -232,19 +342,29 @@ export function StudentsPage() {
                 </div>
                 <div>
                   <p className="text-xs uppercase text-text-secondary">Peso</p>
-                  <p className="font-number text-accent">{detailTarget.weight} kg</p>
+                  <p className="font-number text-accent">
+                    {detailTarget.weight ? `${detailTarget.weight} kg` : '—'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs uppercase text-text-secondary">Altura</p>
-                  <p className="font-number text-accent">{(detailTarget.height * 100).toFixed(0)} cm</p>
+                  <p className="font-number text-accent">
+                    {detailTarget.height ? `${(detailTarget.height * 100).toFixed(0)} cm` : '—'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs uppercase text-text-secondary">Idade</p>
-                  <p className="font-number text-accent">{calculateAge(detailTarget.birthDate)} anos</p>
+                  <p className="font-number text-accent">
+                    {detailTarget.birthDate ? `${calculateAge(detailTarget.birthDate)} anos` : '—'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs uppercase text-text-secondary">Data de Nasc.</p>
-                  <p className="text-text-primary">{new Date(detailTarget.birthDate).toLocaleDateString('pt-BR')}</p>
+                  <p className="text-text-primary">
+                    {detailTarget.birthDate
+                      ? new Date(detailTarget.birthDate).toLocaleDateString('pt-BR')
+                      : '—'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -264,7 +384,7 @@ export function StudentsPage() {
 
       <Modal
         open={!!linkTarget}
-        onClose={() => { setLinkTarget(null); setSelectedRoutine(''); }}
+        onClose={() => { setLinkTarget(null); setSelectedRoutine(''); setWeeklyGoal(3); }}
         title="Vincular Rotina"
       >
         <div className="space-y-5">
@@ -276,6 +396,9 @@ export function StudentsPage() {
               className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
             >
               <option value="">Selecione uma rotina</option>
+              {routines.length === 0 && (
+                <option value="" disabled>Nenhuma rotina encontrada. Crie uma primeiro.</option>
+              )}
               {routines.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.name}
@@ -295,10 +418,25 @@ export function StudentsPage() {
             />
           </label>
 
+          <label className="block space-y-2">
+            <span className="text-xs uppercase text-text-secondary">Meta de Treinos por Semana</span>
+            <input
+              type="number"
+              min={1}
+              max={7}
+              value={weeklyGoal}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                if (val >= 1 && val <= 7) setWeeklyGoal(val);
+              }}
+              className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
+            />
+          </label>
+
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
-              onClick={() => { setLinkTarget(null); setSelectedRoutine(''); }}
+              onClick={() => { setLinkTarget(null); setSelectedRoutine(''); setWeeklyGoal(3); }}
               className="rounded-lg border border-border px-5 py-2 text-sm uppercase text-text-secondary transition hover:bg-base"
             >
               Cancelar
@@ -306,10 +444,10 @@ export function StudentsPage() {
             <button
               type="button"
               onClick={handleLinkRoutine}
-              disabled={!selectedRoutine}
+              disabled={!selectedRoutine || linking}
               className="rounded-lg bg-accent px-5 py-2 text-sm font-bold uppercase text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Vincular
+              {linking ? 'Vinculando...' : 'Vincular'}
             </button>
           </div>
         </div>

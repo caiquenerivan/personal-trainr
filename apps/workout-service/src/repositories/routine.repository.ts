@@ -72,6 +72,18 @@ export const routineRepository = {
     }) as Promise<RoutineWithExercises | null>;
   },
 
+  async findByTrainerId(trainerId: string): Promise<RoutineWithExercises[]> {
+    return prisma.routine.findMany({
+      where: { trainerId },
+      include: {
+        exercises: {
+          include: { exercise: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    }) as Promise<RoutineWithExercises[]>;
+  },
+
   async delete(id: string): Promise<void> {
     await prisma.routine.delete({ where: { id } });
   },

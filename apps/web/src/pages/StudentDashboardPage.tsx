@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getMyRoutine, completeExercise, getWorkoutHistory } from '../api/student';
+import { getMyRoutine, completeExercise, getWorkoutHistory, getDashboard } from '../api/student';
 import { Modal } from '../components/Modal';
 import {
   Flame,
@@ -64,11 +64,11 @@ const defaultMockHistory: WorkoutSession[] = [
 export function StudentDashboardPage() {
   const [routine, setRoutine] = useState<RoutineData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
   
   // Dashboard states
   const [selectedLetter, setSelectedLetter] = useState('A');
-  const [streak, setStreak] = useState(5);
+  const [weeklyStreak, setWeeklyStreak] = useState(0);
   const [objective, setObjective] = useState('Hipertrofia');
   const [weight, setWeight] = useState('—');
   const [height, setHeight] = useState('—');
@@ -97,15 +97,7 @@ export function StudentDashboardPage() {
         setHeight(user.height ? `${user.height} cm` : '—');
       }
 
-      // 2. Load Streak & Objective from local storage
-      const storedStreak = window.localStorage.getItem('personaltrainr.streak');
-      if (storedStreak) {
-        setStreak(Number(storedStreak));
-      } else {
-        window.localStorage.setItem('personaltrainr.streak', '5');
-        setStreak(5);
-      }
-
+      // 2. Load Objective from local storage
       const storedObjective = window.localStorage.getItem('personaltrainr.objective');
       if (storedObjective) {
         setObjective(storedObjective);
@@ -118,7 +110,15 @@ export function StudentDashboardPage() {
       const activeRoutine = await getMyRoutine();
       setRoutine(activeRoutine);
 
-      // 4. Fetch Backend history
+      // 4. Fetch Weekly Streak from dashboard
+      try {
+        const dashboard = await getDashboard();
+        setWeeklyStreak(dashboard.weeklyStreak ?? 0);
+      } catch {
+        setWeeklyStreak(0);
+      }
+
+      // 5. Fetch Backend history
       let backendLogs: any[] = [];
       try {
         const res = await getWorkoutHistory();
@@ -127,7 +127,7 @@ export function StudentDashboardPage() {
         console.warn('Failed to load backend workout history logs', err);
       }
 
-      // 5. Build premium history view
+      // 6. Build premium history view
       const enrichedHistory = enrichHistoryList(backendLogs, activeRoutine);
       setHistoryList(enrichedHistory);
       
@@ -261,12 +261,7 @@ export function StudentDashboardPage() {
 
       await Promise.all(apiCalls);
 
-      // 2. Increment Streak
-      const newStreak = streak + 1;
-      setStreak(newStreak);
-      window.localStorage.setItem('personaltrainr.streak', String(newStreak));
-
-      // 3. Save session to local history
+      // 2. Save session to local history
       const formattedTitle = `TREINO ${selectedLetter} - ${activeWorkoutName}`;
       const newSession: WorkoutSession = {
         id: `local-session-${Date.now()}`,
@@ -280,7 +275,7 @@ export function StudentDashboardPage() {
       const updatedLocalHistory = [newSession, ...localHistory];
       window.localStorage.setItem('personaltrainr.localHistory', JSON.stringify(updatedLocalHistory));
 
-      // 4. Update UI state
+      // 3. Update UI state
       setCompletedWorkoutTitle(formattedTitle);
       setShowCelebration(true);
       setCheckedExercises({});
@@ -338,9 +333,9 @@ export function StudentDashboardPage() {
             <Flame size={24} className="fill-orange-400/20" />
           </div>
           <div>
-            <span className="block text-[10px] uppercase font-bold text-text-secondary">Streak</span>
-            <span className="font-number text-2xl text-accent font-bold">{streak}</span>
-            <span className="text-[10px] text-text-secondary ml-1 font-body">dias</span>
+            <span className="block text-[10px] uppercase font-bold text-text-secondary">Sequência Semanal</span>
+            <span className="font-number text-2xl text-[#AF9150] font-bold">{weeklyStreak}</span>
+            <span className="text-[10px] text-text-secondary ml-1 font-body">{weeklyStreak === 1 ? 'Semana' : 'Semanas'}</span>
           </div>
         </div>
 
@@ -379,6 +374,12 @@ export function StudentDashboardPage() {
           </div>
         </div>
       </div>
+
+      {error && (
+        <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-5 py-4 text-sm text-yellow-400">
+          {error}
+        </div>
+      )}
 
       {/* Workout Selectors (A, B, C, D, E) */}
       <div className="space-y-3">
@@ -542,7 +543,7 @@ export function StudentDashboardPage() {
             </div>
 
             {/* History List */}
-            <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1">
+            <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
               {historyList.map(session => {
                 const { day, month } = getCalendarDate(session.completedAt);
                 return (

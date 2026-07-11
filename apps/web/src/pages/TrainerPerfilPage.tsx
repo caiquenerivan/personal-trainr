@@ -5,19 +5,13 @@ import {
   Lock,
   Mail,
   Phone,
-  Scale,
-  Ruler,
-  Calendar,
-  Target,
-  Trophy,
-  Eye,
-  EyeOff,
   AtSign,
   Quote,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { updateProfile, changePassword } from '../api/student';
 import { formatPhone, unformatPhone } from '../utils/phone';
-
 
 type ProfileData = {
   id: string;
@@ -26,9 +20,6 @@ type ProfileData = {
   role: string;
   avatarUrl?: string | null;
   phone?: string | null;
-  weight?: number | null;
-  height?: number | null;
-  birthDate?: string | null;
   username?: string | null;
   bio?: string | null;
   instagram?: string | null;
@@ -36,28 +27,12 @@ type ProfileData = {
 
 type ActiveTab = 'perfil' | 'conta';
 
-function calculateAge(birthDateStr: string | null | undefined): string {
-  if (!birthDateStr) return '—';
-  const birth = new Date(birthDateStr);
-  const today = new Date();
-  let age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-    age--;
-  }
-  return age > 0 ? `${age} anos` : '—';
-}
-
-export function StudentPerfilPage() {
-  // ─── Profile State ─────────────────────────────────────────
+export function TrainerPerfilPage() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [weight, setWeight] = useState('');
-  const [height, setHeight] = useState('');
-  const [birthDate, setBirthDate] = useState('');
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [instagram, setInstagram] = useState('');
@@ -65,7 +40,6 @@ export function StudentPerfilPage() {
   const [profileSuccess, setProfileSuccess] = useState(false);
   const [profileError, setProfileError] = useState('');
 
-  // ─── Account State ─────────────────────────────────────────
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -76,29 +50,9 @@ export function StudentPerfilPage() {
   const [accountSuccess, setAccountSuccess] = useState(false);
   const [accountError, setAccountError] = useState('');
 
-  // ─── UI State ─────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState<ActiveTab>('perfil');
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // ─── Computed stats ────────────────────────────────────────
-  const completedWorkouts = (() => {
-    try {
-      const raw = window.localStorage.getItem('personaltrainr.localHistory');
-      return raw ? JSON.parse(raw).length : 0;
-    } catch {
-      return 0;
-    }
-  })();
-
-  const objective = (() => {
-    try {
-      return window.localStorage.getItem('personaltrainr.objective') ?? 'Hipertrofia';
-    } catch {
-      return 'Hipertrofia';
-    }
-  })();
-
-  // ─── Init ─────────────────────────────────────────────────
   useEffect(() => {
     const raw = window.localStorage.getItem('personaltrainr.user');
     if (!raw) return;
@@ -112,9 +66,6 @@ export function StudentPerfilPage() {
     setName(user.name ?? '');
     setUsername(user.username ?? '');
     setPhone(formatPhone(user.phone ?? ''));
-    setWeight(user.weight?.toString() ?? '');
-    setHeight(user.height?.toString() ?? '');
-    setBirthDate(user.birthDate ? user.birthDate.slice(0, 10) : '');
     setBio(user.bio ?? '');
     setInstagram(user.instagram ?? '');
   }, []);
@@ -134,7 +85,6 @@ export function StudentPerfilPage() {
     if (file) setSelectedFile(file);
   }
 
-  // ─── Profile Submit ───────────────────────────────────────
   async function handleProfileSubmit(e: FormEvent) {
     e.preventDefault();
     setSavingProfile(true);
@@ -146,9 +96,6 @@ export function StudentPerfilPage() {
         name: name || undefined,
         avatarFile: selectedFile,
         phone: phone ? unformatPhone(phone) : null,
-        weight: weight ? Number(weight) : null,
-        height: height ? Number(height) : null,
-        birthDate: birthDate || null,
         username: username || null,
         bio: bio || null,
         instagram: instagram || null,
@@ -172,9 +119,6 @@ export function StudentPerfilPage() {
     setName(profile.name ?? '');
     setUsername(profile.username ?? '');
     setPhone(formatPhone(profile.phone ?? ''));
-    setWeight(profile.weight?.toString() ?? '');
-    setHeight(profile.height?.toString() ?? '');
-    setBirthDate(profile.birthDate ? profile.birthDate.slice(0, 10) : '');
     setBio(profile.bio ?? '');
     setInstagram(profile.instagram ?? '');
     setSelectedFile(null);
@@ -182,7 +126,6 @@ export function StudentPerfilPage() {
     setProfileError('');
   }
 
-  // ─── Account Submit ───────────────────────────────────────
   async function handleAccountSubmit(e: FormEvent) {
     e.preventDefault();
     setAccountSuccess(false);
@@ -226,7 +169,6 @@ export function StudentPerfilPage() {
     setAccountError('');
   }
 
-  // ─── Loading ──────────────────────────────────────────────
   if (!profile) {
     return (
       <section className="mx-auto max-w-7xl px-4 py-8">
@@ -240,7 +182,6 @@ export function StudentPerfilPage() {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8 space-y-8">
-      {/* ─── Page Header ─────────────────────────────────────── */}
       <div>
         <span className="block text-[10px] uppercase tracking-[0.2em] font-bold text-accent mb-1">
           CONTAS
@@ -253,10 +194,8 @@ export function StudentPerfilPage() {
         </p>
       </div>
 
-      {/* ─── Summary Card ────────────────────────────────────── */}
       <div className="rounded-2xl border border-border/60 bg-card p-6 md:p-8 shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300">
         <div className="flex flex-col md:flex-row gap-6 md:gap-10">
-          {/* Avatar */}
           <div className="flex flex-col items-center gap-3">
             <div className="relative">
               {displayUrl ? (
@@ -293,29 +232,19 @@ export function StudentPerfilPage() {
             )}
           </div>
 
-          {/* Info Grid */}
           <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4">
-            {/* Name */}
             <div className="col-span-2 sm:col-span-3 lg:col-span-4 mb-1">
               <h2 className="font-title text-xl uppercase tracking-wide text-text-primary">
                 {profile.name}
               </h2>
               <span className="text-[10px] uppercase font-bold text-accent tracking-widest">
-                {profile.role === 'ALUNO' ? 'Aluno' : 'Trainer'}
+                Personal Trainer
               </span>
               {profile.bio && (
                 <p className="mt-2 font-body text-sm leading-relaxed text-text-secondary line-clamp-2">
                   {profile.bio}
                 </p>
               )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Target size={14} className="text-accent shrink-0" />
-              <div>
-                <span className="block text-[9px] uppercase font-bold text-text-secondary tracking-wider">Objetivo</span>
-                <span className="font-body text-sm text-text-primary">{objective}</span>
-              </div>
             </div>
 
             <div className="flex items-center gap-2">
@@ -349,43 +278,10 @@ export function StudentPerfilPage() {
                 <span className="font-body text-sm text-text-primary truncate block">{profile.instagram ? `@${profile.instagram.replace('@', '')}` : '—'}</span>
               </div>
             </div>
-
-            <div className="flex items-center gap-2">
-              <Scale size={14} className="text-[#AF9150] shrink-0" />
-              <div>
-                <span className="block text-[10px] uppercase font-bold text-[#A7A7A7] tracking-wider">Peso</span>
-                <span className="font-number text-base font-bold text-[#AF9150]">{profile.weight ? `${profile.weight} kg` : '—'}</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Ruler size={14} className="text-[#AF9150] shrink-0" />
-              <div>
-                <span className="block text-[10px] uppercase font-bold text-[#A7A7A7] tracking-wider">Altura</span>
-                <span className="font-number text-base font-bold text-[#AF9150]">{profile.height ? `${profile.height} cm` : '—'}</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Calendar size={14} className="text-[#AF9150] shrink-0" />
-              <div>
-                <span className="block text-[10px] uppercase font-bold text-[#A7A7A7] tracking-wider">Idade</span>
-                <span className="font-number text-base font-bold text-[#AF9150]">{calculateAge(profile.birthDate)}</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Trophy size={14} className="text-[#AF9150] shrink-0" />
-              <div>
-                <span className="block text-[10px] uppercase font-bold text-[#A7A7A7] tracking-wider">Treinos</span>
-                <span className="font-number text-base font-bold text-[#AF9150]">{completedWorkouts}</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* ─── Tab Selectors ───────────────────────────────────── */}
       <div className="flex gap-1 rounded-xl bg-black/20 border border-border/20 p-1 max-w-xs">
         <button
           type="button"
@@ -413,7 +309,6 @@ export function StudentPerfilPage() {
         </button>
       </div>
 
-      {/* ─── Tab Content ─────────────────────────────────────── */}
       {activeTab === 'perfil' && (
         <form
           onSubmit={handleProfileSubmit}
@@ -423,11 +318,10 @@ export function StudentPerfilPage() {
             INFORMAÇÕES PESSOAIS
           </h3>
           <p className="text-xs text-text-secondary mb-6">
-            Atualize suas informações de perfil e dados de medida.
+            Atualize suas informações de perfil.
           </p>
 
           <div className="space-y-5">
-            {/* Name */}
             <label className="block space-y-1.5">
               <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Nome Completo</span>
               <input
@@ -439,7 +333,6 @@ export function StudentPerfilPage() {
               />
             </label>
 
-            {/* Username */}
             <label className="block space-y-1.5">
               <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Nome de Usuário</span>
               <div className="relative">
@@ -454,7 +347,6 @@ export function StudentPerfilPage() {
               </div>
             </label>
 
-            {/* Bio */}
             <label className="block space-y-1.5">
               <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Bio</span>
               <div className="relative">
@@ -469,7 +361,6 @@ export function StudentPerfilPage() {
               </div>
             </label>
 
-            {/* Phone */}
             <label className="block space-y-1.5">
               <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Telefone (WhatsApp)</span>
               <input
@@ -482,7 +373,6 @@ export function StudentPerfilPage() {
               />
             </label>
 
-            {/* Instagram */}
             <label className="block space-y-1.5">
               <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Instagram</span>
               <div className="relative">
@@ -493,49 +383,6 @@ export function StudentPerfilPage() {
                   onChange={(e) => setInstagram(e.target.value.replace(/\s/g, ''))}
                   placeholder="@instagram"
                   className="w-full rounded-lg border border-border bg-base p-3 pl-10 text-text-primary font-body text-sm outline-none focus:border-accent transition"
-                />
-              </div>
-            </label>
-
-            {/* Weight + Height (side by side) */}
-            <div className="grid grid-cols-2 gap-4">
-              <label className="block space-y-1.5">
-                <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Peso (kg)</span>
-                <input
-                  type="number"
-                  step="0.1"
-                  min={0}
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  placeholder="Ex: 75.5"
-                  className="w-full rounded-lg border border-border bg-base p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
-                />
-              </label>
-
-              <label className="block space-y-1.5">
-                <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Altura (cm)</span>
-                <input
-                  type="number"
-                  step="0.1"
-                  min={0}
-                  value={height}
-                  onChange={(e) => setHeight(e.target.value)}
-                  placeholder="Ex: 175"
-                  className="w-full rounded-lg border border-border bg-base p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
-                />
-              </label>
-            </div>
-
-            {/* Birth Date */}
-            <label className="block space-y-1.5">
-              <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Data de Nascimento</span>
-              <div className="relative">
-                <Calendar size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-accent z-10" />
-                <input
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-base p-3 pl-10 text-text-primary font-body text-sm outline-none focus:border-accent transition [color-scheme:dark]"
                 />
               </div>
             </label>
@@ -585,7 +432,6 @@ export function StudentPerfilPage() {
           </p>
 
           <div className="space-y-5">
-            {/* Email (readonly) */}
             <label className="block space-y-1.5">
               <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Email</span>
               <div className="relative">
@@ -600,7 +446,6 @@ export function StudentPerfilPage() {
               </div>
             </label>
 
-            {/* Current Password */}
             <label className="block space-y-1.5">
               <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Senha Atual</span>
               <div className="relative">
@@ -623,7 +468,6 @@ export function StudentPerfilPage() {
               </div>
             </label>
 
-            {/* New Password */}
             <label className="block space-y-1.5">
               <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Nova Senha</span>
               <div className="relative">
@@ -647,7 +491,6 @@ export function StudentPerfilPage() {
               </div>
             </label>
 
-            {/* Confirm New Password */}
             <label className="block space-y-1.5">
               <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Repetir Nova Senha</span>
               <div className="relative">

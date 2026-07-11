@@ -7,21 +7,103 @@ datasource db {
   provider = "postgresql"
 }
 
+// 1. Adição do ADMIN (Você)
 enum Role {
+  ADMIN
   TRAINER
   ALUNO
 }
 
+// 2. Enumeração de Estados para o CREF
+enum UF {
+  AC
+  AL
+  AP
+  AM
+  BA
+  CE
+  DF
+  ES
+  GO
+  MA
+  MT
+  MS
+  MG
+  PA
+  PB
+  PR
+  PE
+  PI
+  RJ
+  RN
+  RS
+  RO
+  RR
+  SC
+  SP
+  SE
+  TO
+}
+
+// Status da conexão Aluno <-> Personal
+enum ConnectionStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+}
+
 model User {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   name         String
-  email        String   @unique
+  username     String?   @unique // Novo: Único geral
+  email        String    @unique
   passwordHash String
-  role         Role
+  role         Role      @default(ALUNO)
+  
+  // Dados Gerais Novos e Antigos
   avatarUrl    String?
   phone        String?
+  instagram    String?   // Novo
+  bio          String?   // Novo
   weight       Float?
   height       Float?
   birthDate    DateTime?
-  createdAt    DateTime @default(now())
+  createdAt    DateTime  @default(now())
+
+  // Relação 1-para-1 com o perfil de treinador
+  trainerProfile TrainerProfile?
+
+  // Relações de Conexão (Quem ele treina vs Quem o treina)
+  students TrainerStudentConnection[] @relation("TrainerToConnection")
+  trainers TrainerStudentConnection[] @relation("StudentToConnection")
+}
+
+// 3. Tabela exclusiva para dados profissionais do Personal
+model TrainerProfile {
+  id              String  @id @default(uuid())
+  userId          String  @unique
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  cref            String  @unique
+  crefState       UF
+  crefCity        String
+  experienceYears Int?
+  specialties     String? // Ex: "Hipertrofia, Emagrecimento"
+  website         String?
+}
+
+// 4. A Tabela Pivô de Conexão (A "Contratação")
+model TrainerStudentConnection {
+  id          String           @id @default(uuid())
+  trainerId   String
+  studentId   String
+  status      ConnectionStatus @default(ACTIVE)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  trainer     User @relation("TrainerToConnection", fields: [trainerId], references: [id], onDelete: Cascade)
+  student     User @relation("StudentToConnection", fields: [studentId], references: [id], onDelete: Cascade)
+
+  // Garante que o mesmo aluno não se conecte ao mesmo professor duas vezes simultaneamente
+  @@unique([trainerId, studentId])
 }

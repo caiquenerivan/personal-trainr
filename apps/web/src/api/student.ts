@@ -18,6 +18,11 @@ export async function getWorkoutHistory() {
   return response.data;
 }
 
+export async function getDashboard() {
+  const response = await api.get('/api/students/dashboard');
+  return response.data;
+}
+
 export type UpdateProfilePayload = {
   name?: string;
   avatarFile?: File | null;
@@ -25,6 +30,9 @@ export type UpdateProfilePayload = {
   weight?: number | null;
   height?: number | null;
   birthDate?: string | null;
+  username?: string | null;
+  bio?: string | null;
+  instagram?: string | null;
 };
 
 export async function updateProfile(data: UpdateProfilePayload) {
@@ -38,6 +46,9 @@ export async function updateProfile(data: UpdateProfilePayload) {
   if (data.weight !== undefined) formData.append('weight', String(data.weight ?? ''));
   if (data.height !== undefined) formData.append('height', String(data.height ?? ''));
   if (data.birthDate !== undefined) formData.append('birthDate', data.birthDate ?? '');
+  if (data.username !== undefined) formData.append('username', data.username ?? '');
+  if (data.bio !== undefined) formData.append('bio', data.bio ?? '');
+  if (data.instagram !== undefined) formData.append('instagram', data.instagram ?? '');
 
   const response = await api.put('/api/users/profile', formData);
   return response.data;

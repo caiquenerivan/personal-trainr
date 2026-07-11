@@ -8,6 +8,7 @@ const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
   role: z.enum(["TRAINER", "ALUNO"]),
+  username: z.string().min(3, "Username must be at least 3 characters").optional(),
   avatarUrl: z.string().url("Invalid URL").optional().nullable(),
   phone: z.string().optional().nullable(),
   birthDate: z.string().optional().nullable(),
@@ -25,6 +26,9 @@ const updateProfileSchema = z.object({
   weight: z.number().positive("Weight must be positive").optional().nullable(),
   height: z.number().positive("Height must be positive").optional().nullable(),
   birthDate: z.string().optional().nullable(),
+  username: z.string().min(3, "Username must be at least 3 characters").optional().nullable(),
+  bio: z.string().optional().nullable(),
+  instagram: z.string().optional().nullable(),
 });
 
 export async function register(req: Request, res: Response): Promise<any> {
@@ -85,6 +89,9 @@ export async function updateProfile(req: Request, res: Response): Promise<any> {
     if (body.height === "") body.height = null;
     else if (body.height !== undefined && body.height !== null) body.height = Number(body.height);
     if (body.birthDate === "") body.birthDate = null;
+    if (body.username === "") body.username = null;
+    if (body.bio === "") body.bio = null;
+    if (body.instagram === "") body.instagram = null;
 
     if (req.file) {
       const avatarUrl = await uploadToCloudinary(req.file.buffer);

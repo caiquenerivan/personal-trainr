@@ -39,6 +39,7 @@ function proxyTo(target, pathPrefix) {
 }
 // ─── Public Routes (no auth required) ───────────────────────────────────────
 app.use("/api/auth", proxyTo(AUTH_SERVICE_URL, "/api/auth"));
+app.use("/api/trainers/invite", proxyTo(WORKOUT_SERVICE_URL, "/api/trainers/invite"));
 // ─── Protected: Profile (auth required) ─────────────────────────────────────
 app.use("/api/users", authenticate_middleware_1.authenticate, proxyTo(AUTH_SERVICE_URL, "/api/users"));
 // ─── Protected: Workout routes (auth required) ──────────────────────────────
@@ -47,6 +48,7 @@ const workoutRoutes = [
     ["/api/exercises", "/api/exercises"],
     ["/api/workout", "/api/workout"],
     ["/api/trainers", "/api/trainers"],
+    ["/api/connections", "/api/connections"],
     ["/api/students", "/api/students"],
     ["/api/my-routine", "/api/my-routine"],
 ];

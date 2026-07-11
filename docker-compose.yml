@@ -1,32 +1,17 @@
 services:
-  auth-db:
+  postgres:
     image: postgres:15-alpine
-    container_name: personaltrainr_auth_db
+    container_name: personaltrainr_db
     restart: always
     environment:
-      POSTGRES_USER: auth_user
-      POSTGRES_PASSWORD: auth_password
-      POSTGRES_DB: auth_db
+      POSTGRES_USER: personaltrainr
+      POSTGRES_PASSWORD: personaltrainr
+      POSTGRES_DB: personaltrainr
     ports:
-      - '5434:5432'
+      - '5435:5432'
     volumes:
-      - auth_db_data:/var/lib/postgresql/data
-
-  workout-db:
-    image: postgres:15-alpine
-    container_name: personaltrainr_workout_db
-    restart: always
-    environment:
-      POSTGRES_USER: workout_user
-      POSTGRES_PASSWORD: workout_password
-      POSTGRES_DB: workout_db
-    ports:
-      - '5433:5432'
-    volumes:
-      - workout_db_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  auth_db_data:
-    driver: local
-  workout_db_data:
+  pgdata:
     driver: local

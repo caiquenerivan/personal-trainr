@@ -6,6 +6,7 @@ import {
   Library,
   BarChart3,
   Dumbbell,
+  User,
   LogOut,
   X,
 } from 'lucide-react';
@@ -18,6 +19,7 @@ const menuItems = [
   { label: 'Exercícios', to: '/exercicios', icon: Library },
   { label: 'Meu Treino', to: '/meu-treino', icon: Dumbbell },
   { label: 'Progresso', to: '/progresso', icon: BarChart3 },
+  { label: 'Perfil', to: '/perfil', icon: User },
 ];
 
 type SidebarProps = {
@@ -80,7 +82,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   return (
     <>
-      <aside className="hidden min-h-screen w-64 shrink-0 flex-col bg-menu px-5 py-6 md:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-menu px-5 py-6 md:flex">
         {sidebarContent}
       </aside>
 

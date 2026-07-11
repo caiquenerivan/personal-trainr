@@ -37,6 +37,8 @@ const express_1 = require("express");
 const exerciseController = __importStar(require("../controllers/exercise.controller"));
 const routineController = __importStar(require("../controllers/routine.controller"));
 const workoutController = __importStar(require("../controllers/workout.controller"));
+const trainerController = __importStar(require("../controllers/trainer.controller"));
+const connectionController = __importStar(require("../controllers/connection.controller"));
 const auth_context_middleware_1 = require("../middlewares/auth-context.middleware");
 const router = (0, express_1.Router)();
 // Exercises
@@ -47,6 +49,11 @@ router.post("/routines", (0, auth_context_middleware_1.requireRole)("TRAINER"), 
 router.post("/routines/assign", (0, auth_context_middleware_1.requireRole)("TRAINER"), routineController.assign);
 // Student routine
 router.get("/my-routine", (0, auth_context_middleware_1.requireRole)("ALUNO"), routineController.getMyRoutine);
+// Trainers
+router.get("/trainers/search", trainerController.search);
+router.get("/trainers/invite/:username", trainerController.invite);
+// Connections
+router.post("/connections", (0, auth_context_middleware_1.requireRole)("ALUNO"), connectionController.create);
 // Workout logs
 router.post("/workout/complete", (0, auth_context_middleware_1.requireRole)("ALUNO"), workoutController.complete);
 router.get("/workout/history", (0, auth_context_middleware_1.requireRole)("ALUNO"), workoutController.history);

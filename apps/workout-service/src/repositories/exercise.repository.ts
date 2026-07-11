@@ -19,6 +19,10 @@ export const exerciseRepository = {
     return prisma.exercise.findUnique({ where: { id } });
   },
 
+  async findByName(name: string): Promise<Exercise | null> {
+    return prisma.exercise.findFirst({ where: { name } });
+  },
+
   async findManyByIds(ids: string[]): Promise<Exercise[]> {
     return prisma.exercise.findMany({ where: { id: { in: ids } } });
   },

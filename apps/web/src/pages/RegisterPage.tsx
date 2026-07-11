@@ -1,17 +1,26 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
-import { register } from '../api/auth';
+import { register, login } from '../api/auth';
+import { api } from '../api/client';
+import { createConnection } from '../api/connections';
 
 export function RegisterPage() {
   const navigate = useNavigate();
+  const [inviteUsername, setInviteUsername] = useState<string | null>(null);
   const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState<'TRAINER' | 'ALUNO'>('ALUNO');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('@ptrainr:invite');
+    if (stored) setInviteUsername(stored);
+  }, []);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,8 +34,24 @@ export function RegisterPage() {
     setLoading(true);
 
     try {
-      await register({ name, email, password, role });
-      navigate('/login', { replace: true });
+      await register({ name, email, password, role, username: username || undefined });
+
+      const storedInvite = localStorage.getItem('@ptrainr:invite');
+
+      if (storedInvite && role === 'ALUNO') {
+        const session = await login({ email, password });
+        localStorage.setItem('personaltrainr.token', session.token);
+        localStorage.setItem('personaltrainr.user', JSON.stringify(session.user));
+
+        const inviteRes = await api.get(`/api/trainers/invite/${storedInvite}`);
+        const trainerId = inviteRes.data.trainer.id;
+        await createConnection(trainerId);
+
+        localStorage.removeItem('@ptrainr:invite');
+        navigate('/aluno/painel', { replace: true });
+      } else {
+        navigate('/login', { replace: true });
+      }
     } catch (err: unknown) {
       const msg =
         err instanceof AxiosError
@@ -47,12 +72,18 @@ export function RegisterPage() {
         >
           <Link
             to="/"
-            className="mb-6 inline-block text-xs uppercase text-accent transition hover:opacity-80"
+            className="inline-block text-xs uppercase text-accent transition hover:opacity-80"
           >
             &larr; Voltar para Home
           </Link>
 
-          <h1 className="font-title text-3xl uppercase tracking-wider text-text-primary">
+          {inviteUsername && (
+            <p className="mt-4 rounded-lg border border-accent/30 bg-accent/10 px-4 py-3 text-center text-xs text-accent">
+              Você está se cadastrando a convite de <span className="font-bold">@{inviteUsername}</span>
+            </p>
+          )}
+
+          <h1 className="mt-6 font-title text-3xl uppercase tracking-wider text-text-primary">
             Criar Conta
           </h1>
 
@@ -66,6 +97,22 @@ export function RegisterPage() {
                 className="h-12 w-full rounded-lg border border-border bg-base px-3 text-text-primary outline-none focus:border-accent"
                 required
               />
+            </label>
+
+            <label className="block space-y-2">
+              <span className="text-xs uppercase text-text-secondary">Nome de Usuário</span>
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-text-secondary">
+                  @
+                </span>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.replace(/\s/g, '').toLowerCase())}
+                  className="h-12 w-full rounded-lg border border-border bg-base pl-8 pr-3 text-text-primary outline-none focus:border-accent"
+                  placeholder="username"
+                />
+              </div>
             </label>
 
             <label className="block space-y-2">

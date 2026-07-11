@@ -27,6 +27,7 @@ export type RegisterPayload = {
   email: string;
   password: string;
   role: 'TRAINER' | 'ALUNO';
+  username?: string;
 };
 
 export type RegisterResponse = {

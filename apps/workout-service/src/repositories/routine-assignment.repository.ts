@@ -1,15 +1,11 @@
 import { prisma } from "../lib/prisma";
 import type { RoutineAssignment } from "../generated/prisma/client";
-import { routineRepository } from "./routine.repository";
 
 export interface CreateAssignmentData {
   routineId: string;
   alunoId: string;
+  weeklyGoal: number;
   expiresAt: Date;
-}
-
-export interface AssignmentWithRoutine extends RoutineAssignment {
-  routine: Awaited<ReturnType<typeof routineRepository.findById>>;
 }
 
 export const routineAssignmentRepository = {
@@ -17,20 +13,24 @@ export const routineAssignmentRepository = {
     return prisma.routineAssignment.create({ data });
   },
 
-  async findActiveByAlunoId(alunoId: string): Promise<AssignmentWithRoutine | null> {
-    const assignment = await prisma.routineAssignment.findFirst({
+  async findActiveByAlunoId(alunoId: string) {
+    return prisma.routineAssignment.findFirst({
       where: {
         alunoId,
         isActive: true,
         expiresAt: { gt: new Date() },
       },
       orderBy: { assignedAt: "desc" },
+      include: {
+        routine: {
+          include: {
+            exercises: {
+              include: { exercise: true },
+            },
+          },
+        },
+      },
     });
-
-    if (!assignment) return null;
-
-    const routine = await routineRepository.findById(assignment.routineId);
-    return { ...assignment, routine };
   },
 
   async deactivateExpired(): Promise<void> {

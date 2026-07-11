@@ -36,22 +36,91 @@ export const routineService = {
     routineId: string;
     alunoId: string;
     days: number;
+    weeklyGoal: number;
+    trainerId: string;
+    routineName?: string;
+    workouts?: Array<{
+      day: string;
+      description?: string;
+      exercises: Array<{
+        name: string;
+        series: number;
+        reps: number;
+        rest: number;
+      }>;
+    }>;
   }) {
-    const routine = await routineRepository.findById(data.routineId);
+    let routine = await routineRepository.findById(data.routineId);
     if (!routine) {
-      throw { status: 404, message: "Routine not found" };
+      if (!data.routineName) {
+        throw { status: 404, message: "Routine not found" };
+      }
+
+      if (data.workouts && data.workouts.length > 0) {
+        const typeMap: Record<number, RoutineType> = {
+          2: "AB", 3: "ABC", 4: "ABCD", 5: "ABCDE",
+        };
+        const routineType = typeMap[data.workouts.length] || "AB";
+
+        const exercises: Array<{
+          exerciseId: string;
+          day: Day;
+          series: number;
+          reps: number;
+          restTime: number;
+        }> = [];
+
+        for (const w of data.workouts) {
+          for (const ex of w.exercises) {
+            let dbExercise = await exerciseRepository.findByName(ex.name);
+            if (!dbExercise) {
+              dbExercise = await exerciseRepository.create({ name: ex.name });
+            }
+            exercises.push({
+              exerciseId: dbExercise.id,
+              day: w.day as Day,
+              series: ex.series,
+              reps: ex.reps,
+              restTime: ex.rest,
+            });
+          }
+        }
+
+        routine = await routineRepository.create(
+          { trainerId: data.trainerId, name: data.routineName, type: routineType },
+          exercises,
+        );
+      } else {
+        routine = await routineRepository.create(
+          { trainerId: data.trainerId, name: data.routineName, type: "AB" },
+          [],
+        );
+      }
     }
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + data.days);
 
     const assignment = await routineAssignmentRepository.create({
-      routineId: data.routineId,
+      routineId: routine.id,
       alunoId: data.alunoId,
+      weeklyGoal: data.weeklyGoal,
       expiresAt,
     });
 
     return { assignment, routine };
+  },
+
+  async listByTrainer(trainerId: string) {
+    const routines = await routineRepository.findByTrainerId(trainerId);
+    return {
+      routines: routines.map((r) => ({
+        id: r.id,
+        name: r.name,
+        type: r.type,
+        createdAt: r.createdAt,
+      })),
+    };
   },
 
   async getStudentRoutine(alunoId: string) {
@@ -73,6 +142,7 @@ export const routineService = {
       name: assignment.routine.name,
       type: assignment.routine.type,
       trainerId: assignment.routine.trainerId,
+      weeklyGoal: assignment.weeklyGoal,
       expiresAt: assignment.expiresAt,
       assignedAt: assignment.assignedAt,
       createdAt: assignment.routine.createdAt,

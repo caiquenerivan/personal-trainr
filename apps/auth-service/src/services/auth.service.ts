@@ -11,6 +11,7 @@ export const authService = {
     email: string;
     password: string;
     role: "TRAINER" | "ALUNO";
+    username?: string | null;
     avatarUrl?: string | null;
     phone?: string | null;
     birthDate?: string | null;
@@ -27,6 +28,7 @@ export const authService = {
       email: data.email,
       passwordHash,
       role: data.role,
+      username: data.username ?? null,
       avatarUrl: data.avatarUrl ?? null,
       phone: data.phone ?? null,
       birthDate: data.birthDate ? new Date(data.birthDate) : null,
@@ -86,6 +88,9 @@ export const authService = {
       weight?: number | null;
       height?: number | null;
       birthDate?: string | null;
+      username?: string | null;
+      bio?: string | null;
+      instagram?: string | null;
     },
   ) {
     const dbData: any = { ...data };
