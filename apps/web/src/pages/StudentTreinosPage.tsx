@@ -68,7 +68,7 @@ export function StudentTreinosPage() {
       <h1 className="font-title text-3xl uppercase text-text-primary">MEUS TREINOS</h1>
 
       {assignments.length === 0 ? (
-        <div className="mt-8 rounded-2xl border border-border bg-card p-6">
+        <div className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-accent/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)]">
           <p className="font-body text-text-secondary">
             Nenhum treino vinculado ainda. Consulte seu personal trainer.
           </p>
@@ -80,7 +80,7 @@ export function StudentTreinosPage() {
             return (
               <div
                 key={a.id}
-                className="rounded-xl border border-border bg-card p-5"
+                className="rounded-xl border border-border bg-card p-5 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-accent/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)]"
               >
                 <div className="flex items-start justify-between">
                   <h2 className="font-title text-lg uppercase tracking-wide text-text-primary">

@@ -153,7 +153,7 @@ export function StudentPersonalPage() {
       </h1>
 
       {hasLinkedTrainer && linkedTrainer ? (
-        <div className="mt-8 max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-xl shadow-black/30 md:p-8">
+        <div className="mt-8 max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-accent/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)] md:p-8">
           {/* Header */}
           <div className="flex flex-col gap-6 md:flex-row md:items-center">
             <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-accent bg-base text-4xl font-bold uppercase text-accent">
@@ -270,7 +270,7 @@ export function StudentPersonalPage() {
         </div>
       ) : (
         <div className="mt-8">
-          <div className="mx-auto max-w-4xl rounded-2xl border border-border/80 bg-card p-6 text-center shadow-xl shadow-black/30 md:p-8">
+          <div className="mx-auto max-w-4xl rounded-2xl border border-border/80 bg-card p-6 text-center shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-accent/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)] md:p-8">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
               <User size={28} />
             </div>
@@ -314,7 +314,7 @@ export function StudentPersonalPage() {
               {filteredResults.map((trainer) => (
                 <div
                   key={trainer.id}
-                  className="flex flex-col justify-between rounded-2xl border border-border bg-card p-6 shadow-lg shadow-black/30 transition-all duration-300 hover:border-accent/40 hover:shadow-[0_0_20px_rgba(175,145,80,0.35)]"
+                  className="flex flex-col justify-between rounded-2xl border border-border bg-card p-6 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-accent/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)]"
                 >
                   <div>
                     <div className="flex items-start gap-4">

@@ -36,7 +36,7 @@
 - [x] **Seção CTA ("Começar"):** Card centralizado com glow dourado forte, borda sutil (`hover:border-accent`), Headline "SEU PRÓXIMO RECORDE COMEÇA HOJE", botão "Criar Conta Grátis" (mesmo estilo do Hero).
 - [x] **Footer:** 3 colunas (Brand, Conta, Plataforma), slogan "TREINE FORTE, EVOLUA SEMPRE.", bordas sutis entre seções.
 - [x] Pontuação corrigida (vírgulas e pontos finais com `font-body` onde a `font-title` não renderiza).
-## [x] Phase 8: Feature de Conexão Aluno-Professor (Branch: `feat/aluno-professor-conexao`)
+## [x] Phase 8: Feature de Conexão Aluno-Professor (Branch: `feat/aluno-professor-conexao`) (CONCLUÍDO)
 - [x] **Backend Schema:** Atualizar Prisma com `TrainerProfile`, `TrainerStudentConnection`, enums `UF` e `Role.ADMIN`, e novos campos no `User` (username, instagram, bio).
 - [x] **Backend Controllers/Services:** - [x] Rota para atualizar o `TrainerProfile` (apenas para role TRAINER).
   - [x] Rota `POST /connections` para criar o vínculo entre aluno e professor.
@@ -55,6 +55,14 @@
   - [x] **Feed de Atividade Recente:** Lista estilo timeline com badges sobrepostos nos avatares (ícones de check, balança, atualizações) e textos ricos descrevendo as ações.
   - [x] **Rotinas Mais Usadas:** Grid de 2 colunas exibindo o ranking das rotinas ativas com mini-barra indicadora de volume de alunos.
 - [x] **Mock de Dados (Temporário):** Enquanto o backend não possui os logs de atividade complexos, criar dados mockados robustos no frontend para garantir que o visual do Dashboard funcione perfeitamente.
+
+## [x] Phase 8.6: Aba Progresso - Engajamento & Desempenho (CONCLUÍDO)
+- [x] **Backend:** Criar endpoint `GET /api/trainers/students-progress` que calcule por aluno: Frequência (Weekly Goal), Streak Semanal, Treinos nos últimos 7 dias e Porcentagem de Adesão Geral.
+- [x] **Frontend - Layout Base:** Criar página `/painel/progresso` com Header "ENGAJAMENTO & DESEMPENHO" e grid de cards.
+- [x] **Frontend - Card de Progresso:** - [x] Topo com Avatar, Nome, @username e Badge de Status.
+  - [x] Grid 2x2 interno (`bg-[#333333]`) para as 4 mini-métricas.
+  - [x] Componente `DonutChart` em SVG para renderizar o círculo de porcentagem.
+  - [x] Lógica condicional de cores: `>= 75%` (Excelente - Dourado), `>= 50%` (Boa - Amarelo/Dourado), `< 50%` (Atenção - Laranja/Vermelho claro), `< 30%` (Risco de Abandono - Vermelho forte).
 
 ## [ ] Phase 9: Mobile App (React Native / Expo) - Aluno (Adiado)
 - [ ] Inicializar projeto Expo e migrar funcionalidades do dashboard do aluno.

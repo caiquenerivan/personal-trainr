@@ -34,3 +34,20 @@ export async function createConnection(trainerId: string) {
   const response = await api.post('/api/connections', { trainerId });
   return response.data;
 }
+
+export type StudentProgress = {
+  id: string;
+  name: string;
+  username: string | null;
+  avatarUrl: string | null;
+  connectionStatus: 'ACTIVE' | 'INACTIVE';
+  weeklyGoal: number;
+  workoutsLast7Days: number;
+  weeklyStreak: number;
+  adhesionRate: number;
+};
+
+export async function getStudentsProgress() {
+  const response = await api.get<{ students: StudentProgress[] }>('/api/trainers/students-progress');
+  return response.data;
+}

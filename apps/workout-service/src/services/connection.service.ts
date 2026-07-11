@@ -95,6 +95,7 @@ export const connectionService = {
           bio: c.student.bio,
           hasActiveRoutine: !!assignment,
           routineName: assignment?.routine.name ?? null,
+          expiresAt: assignment?.expiresAt?.toISOString() ?? null,
         };
       }),
     );

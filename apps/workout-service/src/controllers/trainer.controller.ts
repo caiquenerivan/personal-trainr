@@ -74,3 +74,16 @@ export async function dashboard(req: Request, res: Response): Promise<any> {
     return res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export async function studentsProgress(req: Request, res: Response): Promise<any> {
+  try {
+    const result = await trainerService.getStudentsProgress(req.user!.id);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    console.error("Students progress error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}

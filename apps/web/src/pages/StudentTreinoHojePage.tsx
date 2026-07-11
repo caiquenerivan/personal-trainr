@@ -143,7 +143,7 @@ export function StudentTreinoHojePage() {
     return (
       <section className="mx-auto max-w-7xl">
         <h1 className="font-title text-3xl uppercase text-text-primary">TREINO DE HOJE</h1>
-        <div className="mt-8 rounded-2xl border border-border bg-card p-6">
+        <div className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-accent/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)]">
           <p className="font-body text-text-secondary">
             Nenhuma rotina ativa encontrada. Consulte seu personal trainer.
           </p>
@@ -180,7 +180,7 @@ export function StudentTreinoHojePage() {
       </div>
 
       {activeWorkout && (
-        <div className="mt-6 rounded-xl border border-border bg-card p-6">
+        <div className="mt-6 rounded-xl border border-border bg-card p-6 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-accent/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)]">
           <div className="space-y-3">
             {activeWorkout.exercises.map((exercise, ei) => {
               const wi = workouts.indexOf(activeWorkout);

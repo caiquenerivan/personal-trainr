@@ -1,5 +1,84 @@
 import { prisma } from "../lib/prisma";
 
+function getISOWeek(date: Date): { year: number; week: number } {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil(((d.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
+  return { year: d.getUTCFullYear(), week: weekNo };
+}
+
+function getMondayOfWeek(year: number, week: number): Date {
+  const jan4 = new Date(Date.UTC(year, 0, 4));
+  const dayOfWeek = jan4.getUTCDay() || 7;
+  const monday = new Date(jan4);
+  monday.setUTCDate(jan4.getUTCDate() - dayOfWeek + 1 + (week - 1) * 7);
+  monday.setUTCHours(0, 0, 0, 0);
+  return monday;
+}
+
+function getSundayOfWeek(year: number, week: number): Date {
+  const monday = getMondayOfWeek(year, week);
+  const sunday = new Date(monday);
+  sunday.setUTCDate(monday.getUTCDate() + 6);
+  sunday.setUTCHours(23, 59, 59, 999);
+  return sunday;
+}
+
+function groupLogsByWeek(logs: Array<{ completedAt: Date }>): Map<string, number> {
+  const weekCounts = new Map<string, number>();
+  for (const log of logs) {
+    const { year, week } = getISOWeek(new Date(log.completedAt));
+    const key = `${year}-W${String(week).padStart(2, "0")}`;
+    weekCounts.set(key, (weekCounts.get(key) || 0) + 1);
+  }
+  return weekCounts;
+}
+
+function calculateWeeklyStreak(weekCounts: Map<string, number>, weeklyGoal: number): number {
+  const now = new Date();
+  const currentWeek = getISOWeek(now);
+
+  let streak = 0;
+
+  const currentKey = `${currentWeek.year}-W${String(currentWeek.week).padStart(2, "0")}`;
+  const currentWeekCount = weekCounts.get(currentKey) || 0;
+  if (currentWeekCount >= weeklyGoal) {
+    streak = 1;
+  }
+
+  let checkYear = currentWeek.year;
+  let checkWeek = currentWeek.week - 1;
+
+  if (checkWeek < 1) {
+    checkYear -= 1;
+    const dec31 = new Date(Date.UTC(checkYear, 11, 31));
+    const dec31Week = getISOWeek(dec31);
+    checkWeek = dec31Week.week;
+  }
+
+  while (true) {
+    const key = `${checkYear}-W${String(checkWeek).padStart(2, "0")}`;
+    const count = weekCounts.get(key) || 0;
+
+    if (count >= weeklyGoal) {
+      streak++;
+      checkWeek--;
+      if (checkWeek < 1) {
+        checkYear -= 1;
+        const dec31 = new Date(Date.UTC(checkYear, 11, 31));
+        const dec31Week = getISOWeek(dec31);
+        checkWeek = dec31Week.week;
+      }
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
 export const trainerService = {
   async listAll() {
     const trainers = await prisma.user.findMany({
@@ -275,5 +354,117 @@ export const trainerService = {
       mostUsedRoutines,
       recentActivity,
     };
+  },
+
+  async getStudentsProgress(trainerId: string) {
+    const connections = await prisma.trainerStudentConnection.findMany({
+      where: { trainerId },
+      include: {
+        student: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            avatarUrl: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (connections.length === 0) {
+      return { students: [] };
+    }
+
+    const studentIds = connections.map((c) => c.studentId);
+
+    const now = new Date();
+    const sevenDaysAgo = new Date(now);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [activeAssignments, workoutLogsLast7Days, workoutLogsMonth] =
+      await Promise.all([
+        prisma.routineAssignment.findMany({
+          where: { alunoId: { in: studentIds }, isActive: true },
+          select: { alunoId: true, weeklyGoal: true },
+        }),
+        prisma.workoutLog.findMany({
+          where: {
+            alunoId: { in: studentIds },
+            completedAt: { gte: sevenDaysAgo },
+          },
+          select: { alunoId: true, completedAt: true },
+        }),
+        prisma.workoutLog.findMany({
+          where: {
+            alunoId: { in: studentIds },
+            completedAt: { gte: startOfMonth },
+          },
+          select: { alunoId: true, completedAt: true },
+        }),
+      ]);
+
+    const assignmentMap = new Map(
+      activeAssignments.map((a) => [a.alunoId, a.weeklyGoal]),
+    );
+
+    const logsLast7ByStudent = new Map<string, number>();
+    for (const log of workoutLogsLast7Days) {
+      logsLast7ByStudent.set(
+        log.alunoId,
+        (logsLast7ByStudent.get(log.alunoId) || 0) + 1,
+      );
+    }
+
+    const logsMonthByStudent = new Map<string, number>();
+    for (const log of workoutLogsMonth) {
+      logsMonthByStudent.set(
+        log.alunoId,
+        (logsMonthByStudent.get(log.alunoId) || 0) + 1,
+      );
+    }
+
+    const weekCountsByStudent = new Map<string, Map<string, number>>();
+    for (const log of workoutLogsMonth) {
+      if (!weekCountsByStudent.has(log.alunoId)) {
+        weekCountsByStudent.set(log.alunoId, new Map());
+      }
+      const wc = weekCountsByStudent.get(log.alunoId)!;
+      const { year, week } = getISOWeek(new Date(log.completedAt));
+      const key = `${year}-W${String(week).padStart(2, "0")}`;
+      wc.set(key, (wc.get(key) || 0) + 1);
+    }
+
+    const studentsProgress = connections.map((connection) => {
+      const studentId = connection.studentId;
+      const weeklyGoal = assignmentMap.get(studentId) ?? 3;
+      const workoutsLast7Days = logsLast7ByStudent.get(studentId) || 0;
+      const totalWorkoutsMonth = logsMonthByStudent.get(studentId) || 0;
+      const wc = weekCountsByStudent.get(studentId) || new Map();
+      const weeklyStreak = calculateWeeklyStreak(wc, weeklyGoal);
+
+      const monthlyTarget = weeklyGoal * 4;
+      const adhesionRate =
+        monthlyTarget > 0
+          ? Math.min(100, Math.round((totalWorkoutsMonth / monthlyTarget) * 100))
+          : 0;
+
+      return {
+        id: connection.student.id,
+        name: connection.student.name,
+        username: connection.student.username,
+        avatarUrl: connection.student.avatarUrl,
+        connectionStatus: connection.status,
+        weeklyGoal,
+        workoutsLast7Days,
+        weeklyStreak,
+        adhesionRate,
+      };
+    });
+
+    studentsProgress.sort((a, b) => a.adhesionRate - b.adhesionRate);
+
+    return { students: studentsProgress };
   },
 };

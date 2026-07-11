@@ -26,6 +26,7 @@ router.get("/trainers", trainerController.listAll);
 router.get("/trainers/search", trainerController.search);
 router.get("/trainers/invite/:username", trainerController.invite);
 router.get("/trainers/dashboard", requireRole("TRAINER"), trainerController.dashboard);
+router.get("/trainers/students-progress", requireRole("TRAINER"), trainerController.studentsProgress);
 
 // Connections
 router.get("/connections/my-trainers", requireRole("ALUNO"), connectionController.getMyTrainers);

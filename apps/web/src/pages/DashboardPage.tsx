@@ -190,7 +190,7 @@ export function DashboardPage() {
           return (
             <article
               key={m.label}
-              className="group rounded-xl bg-[#262626] p-6 transition-all duration-300 hover:ring-1 hover:ring-[#AF9150]/30 hover:shadow-[0_0_20px_rgba(175,145,80,0.12)]"
+              className="group rounded-xl border border-transparent bg-[#262626] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-[#AF9150]/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)]"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase text-[#A7A7A7]">{m.label}</span>
@@ -209,7 +209,7 @@ export function DashboardPage() {
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
 
         {/* ─── Card: Alunos Ativos ──────────────────────── */}
-        <article className="rounded-xl bg-[#262626] p-6">
+        <article className="rounded-xl border border-transparent bg-[#262626] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-[#AF9150]/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)]">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="font-title text-2xl uppercase text-white">Alunos Ativos</h2>
@@ -247,7 +247,7 @@ export function DashboardPage() {
         </article>
 
         {/* ─── Card: Atividade Recente ──────────────────── */}
-        <article className="rounded-xl bg-[#262626] p-6">
+        <article className="rounded-xl border border-transparent bg-[#262626] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-[#AF9150]/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)]">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="font-title text-2xl uppercase text-white">Atividade Recente</h2>
@@ -293,7 +293,7 @@ export function DashboardPage() {
         </article>
 
         {/* ─── Card: Rotinas Mais Usadas ────────────────── */}
-        <article className="rounded-xl bg-[#262626] p-6">
+        <article className="rounded-xl border border-transparent bg-[#262626] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-[#AF9150]/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)]">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="font-title text-2xl uppercase text-white">Rotinas Mais Usadas</h2>

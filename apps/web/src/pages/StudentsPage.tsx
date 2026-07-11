@@ -17,6 +17,7 @@ type StudentDTO = {
   bio: string | null;
   hasActiveRoutine: boolean;
   routineName: string | null;
+  expiresAt: string | null;
 };
 
 type RoutineItem = {
@@ -27,6 +28,14 @@ type RoutineItem = {
 };
 
 type FilterStatus = 'TODOS' | 'ATIVOS' | 'INATIVOS';
+
+function daysUntil(dateStr: string): number {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const target = new Date(dateStr);
+  target.setHours(0, 0, 0, 0);
+  return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+}
 
 const filters: FilterStatus[] = ['TODOS', 'ATIVOS', 'INATIVOS'];
 
@@ -207,12 +216,12 @@ export function StudentsPage() {
         </p>
       )}
 
-      <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
         {filteredStudents.map((student, i) => (
           <div
             key={student.id}
             onClick={() => setDetailTarget(student)}
-            className="cursor-pointer rounded-xl bg-card p-5 transition-shadow duration-300 ring-1 ring-transparent hover:ring-accent animate-slide-up"
+            className="cursor-pointer rounded-xl bg-card p-5 shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-accent/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)] animate-slide-up"
             style={{ animationDelay: `${Math.min(i * 50, 500)}ms` }}
           >
             <div className="flex items-start justify-between">
@@ -263,7 +272,7 @@ export function StudentsPage() {
                   <div>
                     <p className="text-xs uppercase text-text-secondary">ALTURA</p>
                     <p className="font-number text-accent">
-                      {student.height ? `${(student.height * 100).toFixed(0)} cm` : '—'}
+                      {student.height ? `${student.height} cm` : '—'}
                     </p>
                   </div>
                   <div>
@@ -283,6 +292,21 @@ export function StudentsPage() {
                 {student.routineName ?? 'Nenhuma vinculada'}
               </span>
             </div>
+
+            {student.hasActiveRoutine && student.expiresAt && (
+              <div className="mt-2">
+                {(() => {
+                  const days = daysUntil(student.expiresAt!);
+                  if (days < 0) return <p className="text-xs text-red-400">Rotina expirada</p>;
+                  if (days === 0) return <p className="text-xs text-orange-400">Vence hoje</p>;
+                  return (
+                    <p className="text-xs text-text-secondary">
+                      Vence em <span className="font-number text-accent">{days}</span> {days === 1 ? 'dia' : 'dias'}
+                    </p>
+                  );
+                })()}
+              </div>
+            )}
 
             <div className="mt-4 flex gap-3">
               <button
