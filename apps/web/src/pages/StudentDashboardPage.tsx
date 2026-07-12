@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getMyRoutine, completeExercise, getWorkoutHistory, getDashboard } from '../api/student';
+import { userGet, userSet } from '../utils/userStorage';
 import { Modal } from '../components/Modal';
 import {
   Flame,
@@ -37,6 +38,7 @@ type RoutineData = {
   trainerId: string;
   expiresAt: string;
   exercises: Record<string, ExerciseDetail[]>;
+  dayDescriptions?: Record<string, string | null>;
 };
 
 type WorkoutSession = {
@@ -149,11 +151,11 @@ export function StudentDashboardPage() {
 
   // Helper to compile backend logs and localStorage history
   const enrichHistoryList = (backendLogs: any[], activeRoutine: any): WorkoutSession[] => {
-    const localHistoryRaw = window.localStorage.getItem('personaltrainr.localHistory');
+    const localHistoryRaw = userGet('localHistory');
     let localHistory = localHistoryRaw ? JSON.parse(localHistoryRaw) : [];
     
     if (localHistory.length === 0) {
-      window.localStorage.setItem('personaltrainr.localHistory', JSON.stringify(defaultMockHistory));
+      userSet('localHistory', JSON.stringify(defaultMockHistory));
       localHistory = [...defaultMockHistory];
     }
 
@@ -212,6 +214,9 @@ export function StudentDashboardPage() {
   };
 
   const getWorkoutName = (letter: string, exercises: ExerciseDetail[]) => {
+    if (routine?.dayDescriptions?.[letter]) {
+      return routine.dayDescriptions[letter]!.toUpperCase();
+    }
     if (exercises.length === 0) return 'Descanso ou Cardio';
     const muscles = Array.from(
       new Set(exercises.map(e => e.exercise.muscle).filter(Boolean))
@@ -270,10 +275,10 @@ export function StudentDashboardPage() {
         completedAt: new Date().toISOString(),
       };
 
-      const localHistoryRaw = window.localStorage.getItem('personaltrainr.localHistory');
+      const localHistoryRaw = userGet('localHistory');
       const localHistory = localHistoryRaw ? JSON.parse(localHistoryRaw) : [];
       const updatedLocalHistory = [newSession, ...localHistory];
-      window.localStorage.setItem('personaltrainr.localHistory', JSON.stringify(updatedLocalHistory));
+      userSet('localHistory', JSON.stringify(updatedLocalHistory));
 
       // 3. Update UI state
       setCompletedWorkoutTitle(formattedTitle);

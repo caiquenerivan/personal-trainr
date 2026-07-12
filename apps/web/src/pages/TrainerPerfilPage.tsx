@@ -9,7 +9,10 @@ import {
   Quote,
   Eye,
   EyeOff,
+  Scale,
+  Ruler,
 } from 'lucide-react';
+import { DateInput } from '../components/DateInput';
 import { updateProfile, changePassword } from '../api/student';
 import { formatPhone, unformatPhone } from '../utils/phone';
 
@@ -23,6 +26,9 @@ type ProfileData = {
   username?: string | null;
   bio?: string | null;
   instagram?: string | null;
+  weight?: number | null;
+  height?: number | null;
+  birthDate?: string | null;
 };
 
 type ActiveTab = 'perfil' | 'conta';
@@ -36,6 +42,9 @@ export function TrainerPerfilPage() {
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [instagram, setInstagram] = useState('');
+  const [weight, setWeight] = useState('');
+  const [height, setHeight] = useState('');
+  const [birthDate, setBirthDate] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState(false);
   const [profileError, setProfileError] = useState('');
@@ -68,6 +77,9 @@ export function TrainerPerfilPage() {
     setPhone(formatPhone(user.phone ?? ''));
     setBio(user.bio ?? '');
     setInstagram(user.instagram ?? '');
+    setWeight(user.weight != null ? String(user.weight) : '');
+    setHeight(user.height != null ? String(user.height) : '');
+    setBirthDate(user.birthDate ? user.birthDate.substring(0, 10) : '');
   }, []);
 
   useEffect(() => {
@@ -99,6 +111,9 @@ export function TrainerPerfilPage() {
         username: username || null,
         bio: bio || null,
         instagram: instagram || null,
+        weight: weight ? parseFloat(weight) : null,
+        height: height ? parseFloat(height) : null,
+        birthDate: birthDate || null,
       });
 
       const updated = result.user;
@@ -121,6 +136,9 @@ export function TrainerPerfilPage() {
     setPhone(formatPhone(profile.phone ?? ''));
     setBio(profile.bio ?? '');
     setInstagram(profile.instagram ?? '');
+    setWeight(profile.weight != null ? String(profile.weight) : '');
+    setHeight(profile.height != null ? String(profile.height) : '');
+    setBirthDate(profile.birthDate ? profile.birthDate.substring(0, 10) : '');
     setSelectedFile(null);
     setProfileSuccess(false);
     setProfileError('');
@@ -385,6 +403,45 @@ export function TrainerPerfilPage() {
                   className="w-full rounded-lg border border-border bg-base p-3 pl-10 text-text-primary font-body text-sm outline-none focus:border-accent transition"
                 />
               </div>
+            </label>
+
+            <div className="grid grid-cols-2 gap-4">
+              <label className="block space-y-1.5">
+                <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Peso (kg)</span>
+                <div className="relative">
+                  <Scale size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-accent" />
+                  <input
+                    type="number"
+                    step="0.1"
+                    min={0}
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    placeholder="Ex: 80"
+                    className="w-full rounded-lg border border-border bg-base p-3 pl-10 text-text-primary font-number text-sm outline-none focus:border-accent transition"
+                  />
+                </div>
+              </label>
+
+              <label className="block space-y-1.5">
+                <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Altura (cm)</span>
+                <div className="relative">
+                  <Ruler size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-accent" />
+                  <input
+                    type="number"
+                    step="0.1"
+                    min={0}
+                    value={height}
+                    onChange={(e) => setHeight(e.target.value)}
+                    placeholder="Ex: 175"
+                    className="w-full rounded-lg border border-border bg-base p-3 pl-10 text-text-primary font-number text-sm outline-none focus:border-accent transition"
+                  />
+                </div>
+              </label>
+            </div>
+
+            <label className="block space-y-1.5">
+              <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Data de Nascimento</span>
+              <DateInput value={birthDate} onChange={setBirthDate} />
             </label>
           </div>
 

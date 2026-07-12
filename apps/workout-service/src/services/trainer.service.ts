@@ -286,15 +286,16 @@ export const trainerService = {
       };
     });
 
-    // Step 5: Recent activity feed (last 8 workout logs)
+    // Step 5: Recent activity feed (last 5 workout logs)
     const recentLogs = await prisma.workoutLog.findMany({
       where: { alunoId: { in: studentIds } },
       orderBy: { completedAt: "desc" },
-      take: 8,
+      take: 5,
       include: {
         routineExercise: {
           include: {
             routine: { select: { id: true, name: true } },
+            exercise: { select: { name: true } },
           },
         },
       },
@@ -304,18 +305,23 @@ export const trainerService = {
     const logStudentIds = [...new Set(recentLogs.map((l) => l.alunoId))];
     const logStudents = await prisma.user.findMany({
       where: { id: { in: logStudentIds } },
-      select: { id: true, name: true, avatarUrl: true },
+      select: { id: true, username: true, avatarUrl: true },
     });
     const studentMap = new Map(logStudents.map((s) => [s.id, s]));
 
     const recentActivity = recentLogs.map((log) => {
       const student = studentMap.get(log.alunoId);
-      const routine = log.routineExercise?.routine;
+      const re = log.routineExercise;
+      const routine = re?.routine;
+      const workoutLetter = re?.day ?? null;
+      const exerciseName = re?.exercise?.name ?? null;
       return {
         id: log.id,
-        studentName: student?.name ?? "Aluno",
+        studentUsername: student?.username ?? "aluno",
         studentAvatar: student?.avatarUrl ?? null,
         routineName: routine?.name ?? null,
+        workoutLetter,
+        exerciseName,
         completedAt: log.completedAt.toISOString(),
       };
     });

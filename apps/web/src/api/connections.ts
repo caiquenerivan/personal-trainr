@@ -35,6 +35,24 @@ export async function createConnection(trainerId: string) {
   return response.data;
 }
 
+export type AssignRoutinePayload = {
+  routineId: string;
+  alunoId: string;
+  days: number;
+  weeklyGoal: number;
+  routineName?: string;
+  workouts?: Array<{
+    day: string;
+    description?: string;
+    exercises: Array<{ name: string; series: number; reps: number; rest: number }>;
+  }>;
+};
+
+export async function assignRoutine(payload: AssignRoutinePayload) {
+  const response = await api.post('/api/routines/assign', payload);
+  return response.data;
+}
+
 export type StudentProgress = {
   id: string;
   name: string;

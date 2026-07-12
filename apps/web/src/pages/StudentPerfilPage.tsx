@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { updateProfile, changePassword } from '../api/student';
 import { formatPhone, unformatPhone } from '../utils/phone';
+import { DateInput } from '../components/DateInput';
+import { userGet } from '../utils/userStorage';
 
 
 type ProfileData = {
@@ -83,7 +85,7 @@ export function StudentPerfilPage() {
   // ─── Computed stats ────────────────────────────────────────
   const completedWorkouts = (() => {
     try {
-      const raw = window.localStorage.getItem('personaltrainr.localHistory');
+      const raw = userGet('localHistory');
       return raw ? JSON.parse(raw).length : 0;
     } catch {
       return 0;
@@ -529,15 +531,7 @@ export function StudentPerfilPage() {
             {/* Birth Date */}
             <label className="block space-y-1.5">
               <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Data de Nascimento</span>
-              <div className="relative">
-                <Calendar size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-accent z-10" />
-                <input
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-base p-3 pl-10 text-text-primary font-body text-sm outline-none focus:border-accent transition [color-scheme:dark]"
-                />
-              </div>
+              <DateInput value={birthDate} onChange={setBirthDate} />
             </label>
           </div>
 

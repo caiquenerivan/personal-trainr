@@ -5,7 +5,7 @@ import * as workoutController from "../controllers/workout.controller";
 import * as trainerController from "../controllers/trainer.controller";
 import * as connectionController from "../controllers/connection.controller";
 import * as dashboardController from "../controllers/dashboard.controller";
-import { requireRole } from "../middlewares/auth-context.middleware";
+import { requireRole, requireAnyRole } from "../middlewares/auth-context.middleware";
 
 const router = Router();
 
@@ -18,8 +18,8 @@ router.post("/routines", requireRole("TRAINER"), routineController.create);
 router.get("/routines", requireRole("TRAINER"), routineController.listMyRoutines);
 router.post("/routines/assign", requireRole("TRAINER"), routineController.assign);
 
-// Student routine
-router.get("/my-routine", requireRole("ALUNO"), routineController.getMyRoutine);
+// Student routine (accessible by both ALUNO and TRAINER for self-assignment)
+router.get("/my-routine", requireAnyRole("ALUNO", "TRAINER"), routineController.getMyRoutine);
 
 // Trainers
 router.get("/trainers", trainerController.listAll);
@@ -36,11 +36,11 @@ router.delete("/connections/:id", requireRole("ALUNO"), connectionController.rem
 // Students (trainer view)
 router.get("/students", requireRole("TRAINER"), connectionController.getMyStudents);
 
-// Student dashboard
-router.get("/students/dashboard", requireRole("ALUNO"), dashboardController.getDashboard);
+// Student dashboard (accessible by both ALUNO and TRAINER for self-training)
+router.get("/students/dashboard", requireAnyRole("ALUNO", "TRAINER"), dashboardController.getDashboard);
 
-// Workout logs
-router.post("/workout/complete", requireRole("ALUNO"), workoutController.complete);
-router.get("/workout/history", requireRole("ALUNO"), workoutController.history);
+// Workout logs (accessible by both ALUNO and TRAINER for self-training)
+router.post("/workout/complete", requireAnyRole("ALUNO", "TRAINER"), workoutController.complete);
+router.get("/workout/history", requireAnyRole("ALUNO", "TRAINER"), workoutController.history);
 
 export default router;

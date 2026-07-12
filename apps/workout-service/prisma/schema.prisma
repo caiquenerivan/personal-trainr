@@ -142,16 +142,17 @@ model Exercise {
 }
 
 model RoutineExercise {
-  id          String       @id @default(uuid())
-  routineId   String
-  routine     Routine      @relation(fields: [routineId], references: [id], onDelete: Cascade)
-  exerciseId  String
-  exercise    Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
-  day         Day
-  series      Int
-  reps        Int
-  restTime    Int
-  workoutLogs WorkoutLog[]
+  id              String       @id @default(uuid())
+  routineId       String
+  routine         Routine      @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  exerciseId      String
+  exercise        Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  day             Day
+  dayDescription  String?
+  series          Int
+  reps            Int
+  restTime        Int
+  workoutLogs     WorkoutLog[]
 }
 
 model WorkoutLog {

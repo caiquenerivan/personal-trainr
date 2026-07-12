@@ -10,6 +10,7 @@ export interface CreateRoutineData {
 export interface CreateRoutineExerciseData {
   exerciseId: string;
   day: Day;
+  dayDescription?: string;
   series: number;
   reps: number;
   restTime: number;
@@ -19,6 +20,7 @@ export interface RoutineWithExercises extends Routine {
   exercises: Array<{
     id: string;
     day: Day;
+    dayDescription: string | null;
     series: number;
     reps: number;
     restTime: number;
@@ -46,6 +48,7 @@ export const routineRepository = {
             create: exercises.map((e) => ({
               exerciseId: e.exerciseId,
               day: e.day,
+              dayDescription: e.dayDescription ?? null,
               series: e.series,
               reps: e.reps,
               restTime: e.restTime,

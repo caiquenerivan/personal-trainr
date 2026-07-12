@@ -65,6 +65,7 @@ export const routineService = {
         const exercises: Array<{
           exerciseId: string;
           day: Day;
+          dayDescription?: string;
           series: number;
           reps: number;
           restTime: number;
@@ -79,6 +80,7 @@ export const routineService = {
             exercises.push({
               exerciseId: dbExercise.id,
               day: w.day as Day,
+              dayDescription: w.description || undefined,
               series: ex.series,
               reps: ex.reps,
               restTime: ex.rest,
@@ -131,10 +133,12 @@ export const routineService = {
     }
 
     const groupedExercises: Record<string, typeof assignment.routine.exercises> = {};
+    const dayDescriptions: Record<string, string | null> = {};
     for (const ex of assignment.routine.exercises) {
       const day = ex.day;
       if (!groupedExercises[day]) groupedExercises[day] = [];
       groupedExercises[day].push(ex);
+      if (!dayDescriptions[day]) dayDescriptions[day] = ex.dayDescription ?? null;
     }
 
     return {
@@ -147,6 +151,7 @@ export const routineService = {
       assignedAt: assignment.assignedAt,
       createdAt: assignment.routine.createdAt,
       exercises: groupedExercises,
+      dayDescriptions,
     };
   },
 };

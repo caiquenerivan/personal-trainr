@@ -35,9 +35,11 @@ type DashboardData = {
   }>;
   recentActivity: Array<{
     id: string;
-    studentName: string;
+    studentUsername: string;
     studentAvatar: string | null;
     routineName: string | null;
+    workoutLetter: string | null;
+    exerciseName: string | null;
     completedAt: string;
   }>;
 };
@@ -265,7 +267,7 @@ export function DashboardPage() {
                     <img src={ev.studentAvatar} alt="" className="h-10 w-10 rounded-full object-cover" />
                   ) : (
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#333333] text-xs font-bold text-[#AF9150]">
-                      {getInitials(ev.studentName)}
+                      {getInitials(ev.studentUsername)}
                     </div>
                   )}
                   <span className="absolute -bottom-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full border border-[#262626] bg-[#1a1a1a] text-[#AF9150]">
@@ -275,11 +277,14 @@ export function DashboardPage() {
 
                 <div className="min-w-0 flex-1">
                   <p className="text-sm">
-                    <span className="font-semibold text-white">{ev.studentName}</span>{' '}
-                    <span className="text-[#A7A7A7]">concluiu treino</span>
+                    <span className="font-semibold text-white">@{ev.studentUsername}</span>{' '}
+                    <span className="text-[#A7A7A7]">concluiu exercício</span>
+                  </p>
+                  <p className="mt-0.5 truncate text-xs text-[#AF9150]">
+                    {ev.exerciseName}{ev.workoutLetter && ` - Treino ${ev.workoutLetter}`}
                   </p>
                   {ev.routineName && (
-                    <p className="mt-0.5 truncate text-xs text-[#A7A7A7]">{ev.routineName}</p>
+                    <p className="mt-0.5 truncate text-[10px] text-[#A7A7A7]">{ev.routineName}</p>
                   )}
                 </div>
 

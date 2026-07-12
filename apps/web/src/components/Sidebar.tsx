@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+import { clearUserData } from '../utils/userStorage';
 import {
   LayoutDashboard,
   Users,
@@ -31,6 +32,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const navigate = useNavigate();
 
   function handleLogout() {
+    clearUserData();
     window.localStorage.removeItem('personaltrainr.token');
     window.localStorage.removeItem('personaltrainr.user');
     onClose?.();

@@ -63,6 +63,24 @@
   - [x] Grid 2x2 interno (`bg-[#333333]`) para as 4 mini-métricas.
   - [x] Componente `DonutChart` em SVG para renderizar o círculo de porcentagem.
   - [x] Lógica condicional de cores: `>= 75%` (Excelente - Dourado), `>= 50%` (Boa - Amarelo/Dourado), `< 50%` (Atenção - Laranja/Vermelho claro), `< 30%` (Risco de Abandono - Vermelho forte).
+- [x] **Padronização de Cards:** Shadow `[0_4px_24px_rgba(0,0,0,0.4)]` + hover glow dourado + borda dourada fina em todos os cards do dashboard de personal e aluno.
+- [x] **Grid Responsivo:** Ajuste de `md:grid-cols-2` para `lg:grid-cols-2` nas abas Progresso e Alunos para corrigir visualização no tablet.
 
+## [x] Phase 8.7: Aba "Meu Treino" do Personal (CONCLUÍDO)
+- [x] **Backend:** Adaptar rota `POST /api/routines/assign` para permitir que o Personal envie o próprio ID como `alunoId`. Garantir que a rota de `GET /my-active-routine` funcione tanto para a role ALUNO quanto para TRAINER.
+- [x] **Backend:** Criar middleware `requireAnyRole()` e liberar rotas `GET /my-routine`, `POST /workout/complete`, `GET /workout/history`, `GET /students/dashboard` para ambas as roles.
+- [x] **Frontend - Lógica de Auto-Atribuição:** - [x] Criar um "Empty State" na tela `/painel/meu-treino`. Se o personal não tiver rotina, exibir um `<select>` listando as rotinas que ele mesmo criou e um botão "Vincular a Mim Mesmo".
+- [x] **Frontend - Layout do Treino:** - [x] Replicar a interface premium do Painel do Aluno: Stat Cards superiores (Streak, Objetivo, Peso, Altura), Abas de Seleção (A, B, C, D, E).
+  - [x] Card "Treino do Dia" com checkboxes, inputs de carga e barra de progresso.
+  - [x] Card "Histórico" listando os treinos concluídos do próprio personal.
+  - [x] Botão sutil no header para "Trocar Rotina", permitindo reabrir a seleção de treinos.
+
+## [x] Correções e melhorias diversas (CONCLUÍDO)
+- [x] **Altura corrigida:** Removido `* 100` desnecessário na exibição de altura (18000cm → 180cm) no dashboard de Alunos.
+- [x] **Dias restantes da rotina:** Adicionado countdown de dias para vencer a rotina no card da aba Alunos do personal.
+- [x] **Data de nascimento (dd/mm/yyyy):** Componente `DateInput` customizado para exibir data no formato brasileiro em ambos os perfis (Personal e Aluno).
+- [x] **Perfil do Personal:** Adicionados campos de Peso, Altura e Data de Nascimento no formulário de edição de perfil.
+
+  
 ## [ ] Phase 9: Mobile App (React Native / Expo) - Aluno (Adiado)
 - [ ] Inicializar projeto Expo e migrar funcionalidades do dashboard do aluno.

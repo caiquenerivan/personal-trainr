@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, Users, User, LogOut, X } from 'lucide-react';
+import { clearUserData } from '../utils/userStorage';
 import logoFitnessGoldRunner from '../assets/logo-fitness-gold-runner.png';
 
 const menuItems = [
@@ -17,6 +18,7 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
   const navigate = useNavigate();
 
   function handleLogout() {
+    clearUserData();
     window.localStorage.removeItem('personaltrainr.token');
     window.localStorage.removeItem('personaltrainr.user');
     onClose?.();
