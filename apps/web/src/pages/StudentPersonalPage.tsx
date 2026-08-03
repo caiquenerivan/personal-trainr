@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AxiosError } from 'axios';
-import { listAllTrainers, getMyTrainers, createConnection, removeConnection } from '../api/connections';
+import { listAllTrainers, getMyTrainers, createConnection, removeConnection, rateTrainer } from '../api/connections';
+import { StarRating } from '../components/StarRating';
 import {
   User, Search, ShieldCheck, MessageCircle, X,
   Phone, Globe, Camera, Trash2, Hash, MapPin,
@@ -13,6 +14,8 @@ type SearchResult = {
   avatarUrl: string | null;
   bio: string | null;
   especialidades: string | null;
+  avgRating: number | null;
+  ratingCount: number;
 };
 
 type LinkedTrainer = {
@@ -28,6 +31,9 @@ type LinkedTrainer = {
   crefState: string | null;
   website: string | null;
   especialidades: string | null;
+  avgRating: number | null;
+  ratingCount: number;
+  myRating: number | null;
 };
 
 function toInstagramUrl(value: string): string {
@@ -114,6 +120,23 @@ export function StudentPersonalPage() {
       });
   }
 
+  function handleRate(trainerId: string, rating: number) {
+    setLinkedTrainer((prev) => (prev ? { ...prev, myRating: rating } : prev));
+    rateTrainer(trainerId, rating)
+      .then(({ average, count, myRating }) => {
+        setLinkedTrainer((prev) => (prev ? { ...prev, avgRating: average, ratingCount: count, myRating } : prev));
+        showToast('Avaliação enviada com sucesso!');
+      })
+      .catch((err: unknown) => {
+        const msg =
+          err instanceof AxiosError
+            ? err.response?.data?.message || 'Erro ao enviar avaliação'
+            : 'Erro ao enviar avaliação';
+        showToast(msg);
+        refetchMyTrainers();
+      });
+  }
+
   function handleRemove(connectionId: string) {
     removeConnection(connectionId)
       .then(() => {
@@ -174,7 +197,27 @@ export function StudentPersonalPage() {
               {linkedTrainer.username && (
                 <p className="font-body text-sm text-text-secondary">@{linkedTrainer.username}</p>
               )}
+              <div className="flex items-center gap-2">
+                <StarRating value={linkedTrainer.avgRating ?? 0} readOnly size={16} />
+                <span className="font-body text-xs text-text-secondary">
+                  {linkedTrainer.avgRating != null
+                    ? `${linkedTrainer.avgRating.toFixed(2)} (${linkedTrainer.ratingCount})`
+                    : 'Sem avaliações ainda'}
+                </span>
+              </div>
             </div>
+          </div>
+
+          {/* Rate this trainer */}
+          <div className="mt-6 rounded-xl border border-border/60 bg-base/30 p-4">
+            <p className="font-body text-xs uppercase tracking-wide text-text-secondary mb-2">
+              Sua avaliação
+            </p>
+            <StarRating
+              value={linkedTrainer.myRating ?? 0}
+              onChange={(rating) => handleRate(linkedTrainer.id, rating)}
+              size={24}
+            />
           </div>
 
           {/* Info rows */}
@@ -328,6 +371,14 @@ export function StudentPersonalPage() {
                       <div className="min-w-0 flex-1">
                         <h3 className="font-title text-lg uppercase tracking-wide text-text-primary">{trainer.name}</h3>
                         <p className="mt-0.5 truncate text-xs text-text-secondary">@{trainer.username}</p>
+                        <div className="mt-1 flex items-center gap-1.5">
+                          <StarRating value={trainer.avgRating ?? 0} readOnly size={12} />
+                          {trainer.avgRating != null && (
+                            <span className="font-body text-[10px] text-text-secondary">
+                              {trainer.avgRating.toFixed(2)} ({trainer.ratingCount})
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
 

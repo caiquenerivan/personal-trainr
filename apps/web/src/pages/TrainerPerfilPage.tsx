@@ -12,10 +12,22 @@ import {
   EyeOff,
   Scale,
   Ruler,
+  BadgeCheck,
+  MapPin,
+  Globe,
+  Award,
+  Briefcase,
 } from 'lucide-react';
 import { DateInput } from '../components/DateInput';
-import { updateProfile, changePassword } from '../api/student';
+import { updateProfile, changePassword, getTrainerProfile, updateTrainerProfile } from '../api/student';
+import { getTrainerRating } from '../api/connections';
+import { StarRating } from '../components/StarRating';
 import { formatPhone, unformatPhone } from '../utils/phone';
+
+const UF_OPTIONS = [
+  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
+  'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
+];
 
 type ProfileData = {
   id: string;
@@ -32,7 +44,7 @@ type ProfileData = {
   birthDate?: string | null;
 };
 
-type ActiveTab = 'perfil' | 'conta';
+type ActiveTab = 'perfil' | 'profissional' | 'conta';
 
 export function TrainerPerfilPage() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -60,6 +72,20 @@ export function TrainerPerfilPage() {
   const [accountSuccess, setAccountSuccess] = useState(false);
   const [accountError, setAccountError] = useState('');
 
+  const [cref, setCref] = useState('');
+  const [crefState, setCrefState] = useState('');
+  const [crefCity, setCrefCity] = useState('');
+  const [experienceYears, setExperienceYears] = useState('');
+  const [specialties, setSpecialties] = useState('');
+  const [website, setWebsite] = useState('');
+  const [loadingProfessional, setLoadingProfessional] = useState(false);
+  const [savingProfessional, setSavingProfessional] = useState(false);
+  const [professionalSuccess, setProfessionalSuccess] = useState(false);
+  const [professionalError, setProfessionalError] = useState('');
+
+  const [avgRating, setAvgRating] = useState<number | null>(null);
+  const [ratingCount, setRatingCount] = useState(0);
+
   const [activeTab, setActiveTab] = useState<ActiveTab>('perfil');
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -81,6 +107,28 @@ export function TrainerPerfilPage() {
     setWeight(user.weight != null ? String(user.weight) : '');
     setHeight(user.height != null ? String(user.height) : '');
     setBirthDate(user.birthDate ? user.birthDate.substring(0, 10) : '');
+
+    if (user.role === 'TRAINER') {
+      setLoadingProfessional(true);
+      getTrainerProfile()
+        .then(({ trainerProfile }) => {
+          if (!trainerProfile) return;
+          setCref(trainerProfile.cref ?? '');
+          setCrefState(trainerProfile.crefState ?? '');
+          setCrefCity(trainerProfile.crefCity ?? '');
+          setExperienceYears(trainerProfile.experienceYears != null ? String(trainerProfile.experienceYears) : '');
+          setSpecialties(trainerProfile.specialties ?? '');
+          setWebsite(trainerProfile.website ?? '');
+        })
+        .finally(() => setLoadingProfessional(false));
+
+      getTrainerRating(user.id)
+        .then(({ average, count }) => {
+          setAvgRating(average);
+          setRatingCount(count);
+        })
+        .catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
@@ -147,6 +195,39 @@ export function TrainerPerfilPage() {
     setSelectedFile(null);
     setProfileSuccess(false);
     setProfileError('');
+  }
+
+  async function handleProfessionalSubmit(e: FormEvent) {
+    e.preventDefault();
+    setSavingProfessional(true);
+    setProfessionalSuccess(false);
+    setProfessionalError('');
+
+    try {
+      const { trainerProfile } = await updateTrainerProfile({
+        cref,
+        crefState,
+        crefCity,
+        experienceYears: experienceYears ? parseInt(experienceYears, 10) : null,
+        specialties: specialties || null,
+        website: website || null,
+      });
+      setCref(trainerProfile.cref ?? '');
+      setCrefState(trainerProfile.crefState ?? '');
+      setCrefCity(trainerProfile.crefCity ?? '');
+      setExperienceYears(trainerProfile.experienceYears != null ? String(trainerProfile.experienceYears) : '');
+      setSpecialties(trainerProfile.specialties ?? '');
+      setWebsite(trainerProfile.website ?? '');
+      setProfessionalSuccess(true);
+    } catch (err: unknown) {
+      const msg =
+        err instanceof AxiosError
+          ? String(err.response?.data?.message ?? '')
+          : '';
+      setProfessionalError(msg || 'Erro ao salvar informações profissionais. Tente novamente.');
+    } finally {
+      setSavingProfessional(false);
+    }
   }
 
   async function handleAccountSubmit(e: FormEvent) {
@@ -263,6 +344,12 @@ export function TrainerPerfilPage() {
               <span className="text-[10px] uppercase font-bold text-accent tracking-widest">
                 Personal Trainer
               </span>
+              <div className="mt-1.5 flex items-center gap-2">
+                <StarRating value={avgRating ?? 0} readOnly size={16} />
+                <span className="font-body text-xs text-text-secondary">
+                  {avgRating != null ? `${avgRating.toFixed(2)} (${ratingCount} avaliações)` : 'Sem avaliações ainda'}
+                </span>
+              </div>
               {profile.bio && (
                 <p className="mt-2 font-body text-sm leading-relaxed text-text-secondary line-clamp-2">
                   {profile.bio}
@@ -305,7 +392,7 @@ export function TrainerPerfilPage() {
         </div>
       </div>
 
-      <div className="flex gap-1 rounded-xl bg-black/20 border border-border/20 p-1 max-w-xs">
+      <div className="flex gap-1 rounded-xl bg-black/20 border border-border/20 p-1 max-w-md">
         <button
           type="button"
           onClick={() => setActiveTab('perfil')}
@@ -317,6 +404,18 @@ export function TrainerPerfilPage() {
         >
           <User size={14} />
           Perfil
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('profissional')}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-body text-xs font-bold uppercase tracking-wider transition active:scale-95 ${
+            activeTab === 'profissional'
+              ? 'bg-accent text-black shadow'
+              : 'text-text-secondary hover:text-text-primary hover:bg-base/30'
+          }`}
+        >
+          <BadgeCheck size={14} />
+          Profissional
         </button>
         <button
           type="button"
@@ -478,6 +577,141 @@ export function TrainerPerfilPage() {
               {savingProfile ? 'Salvando...' : 'Salvar'}
             </button>
           </div>
+        </form>
+      )}
+
+      {activeTab === 'profissional' && (
+        <form
+          onSubmit={handleProfessionalSubmit}
+          className="rounded-2xl border border-border/60 bg-card p-6 md:p-8 max-w-2xl animate-fade-in shadow-xl shadow-black/30 hover:shadow-[0_0_25px_rgba(175,145,80,0.3)] transition-all duration-300"
+        >
+          <h3 className="font-title text-lg uppercase tracking-wide text-text-primary mb-1">
+            INFORMAÇÕES PROFISSIONAIS
+          </h3>
+          <p className="text-xs text-text-secondary mb-6">
+            Dados usados para validar seu registro profissional junto aos alunos.
+          </p>
+
+          {loadingProfessional ? (
+            <p className="font-body text-sm text-text-secondary animate-pulse">Carregando...</p>
+          ) : (
+            <div className="space-y-5">
+              <div className="grid grid-cols-3 gap-4">
+                <label className="col-span-2 block space-y-1.5">
+                  <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Registro CREF</span>
+                  <div className="relative">
+                    <BadgeCheck size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-accent" />
+                    <input
+                      type="text"
+                      value={cref}
+                      onChange={(e) => setCref(e.target.value)}
+                      placeholder="Ex: 123456-G"
+                      required
+                      className="w-full rounded-lg border border-border bg-base p-3 pl-10 text-text-primary font-body text-sm outline-none focus:border-accent transition"
+                    />
+                  </div>
+                </label>
+
+                <label className="block space-y-1.5">
+                  <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">UF</span>
+                  <select
+                    value={crefState}
+                    onChange={(e) => setCrefState(e.target.value)}
+                    required
+                    className="w-full rounded-lg border border-border bg-base p-3 text-text-primary font-body text-sm outline-none focus:border-accent transition"
+                  >
+                    <option value="" disabled>—</option>
+                    {UF_OPTIONS.map((uf) => (
+                      <option key={uf} value={uf}>{uf}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <label className="block space-y-1.5">
+                <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Cidade do registro</span>
+                <div className="relative">
+                  <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-accent" />
+                  <input
+                    type="text"
+                    value={crefCity}
+                    onChange={(e) => setCrefCity(e.target.value)}
+                    placeholder="Ex: São Paulo"
+                    required
+                    className="w-full rounded-lg border border-border bg-base p-3 pl-10 text-text-primary font-body text-sm outline-none focus:border-accent transition"
+                  />
+                </div>
+              </label>
+
+              <label className="block space-y-1.5">
+                <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Anos de experiência</span>
+                <div className="relative">
+                  <Briefcase size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-accent" />
+                  <input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={experienceYears}
+                    onChange={(e) => setExperienceYears(e.target.value)}
+                    placeholder="Ex: 5"
+                    className="w-full rounded-lg border border-border bg-base p-3 pl-10 text-text-primary font-number text-sm outline-none focus:border-accent transition"
+                  />
+                </div>
+              </label>
+
+              <label className="block space-y-1.5">
+                <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Especialidades</span>
+                <div className="relative">
+                  <Award size={16} className="absolute left-3 top-3 text-accent" />
+                  <textarea
+                    value={specialties}
+                    onChange={(e) => setSpecialties(e.target.value)}
+                    placeholder="Ex: Hipertrofia, Emagrecimento, Reabilitação"
+                    rows={3}
+                    className="w-full rounded-lg border border-border bg-base p-3 pl-10 text-text-primary font-body text-sm outline-none focus:border-accent transition resize-none"
+                  />
+                </div>
+              </label>
+
+              <label className="block space-y-1.5">
+                <span className="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Website</span>
+                <div className="relative">
+                  <Globe size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-accent" />
+                  <input
+                    type="text"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    placeholder="www.seusite.com"
+                    className="w-full rounded-lg border border-border bg-base p-3 pl-10 text-text-primary font-body text-sm outline-none focus:border-accent transition"
+                  />
+                </div>
+              </label>
+            </div>
+          )}
+
+          {professionalSuccess && (
+            <p role="status" className="mt-5 rounded-lg border border-green-500/30 bg-green-900/10 px-4 py-3 text-sm text-green-400">
+              Informações profissionais atualizadas com sucesso.
+            </p>
+          )}
+
+          {professionalError && (
+            <p role="alert" className="mt-5 rounded-lg border border-border px-4 py-3 text-sm text-accent">
+              {professionalError}
+            </p>
+          )}
+
+          {!loadingProfessional && (
+            <div className="mt-6 flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={savingProfessional}
+                className="flex-1 rounded-lg bg-accent px-5 py-3 font-body text-xs font-bold uppercase text-black transition hover:opacity-90 active:scale-98 disabled:opacity-50 disabled:cursor-wait"
+              >
+                {savingProfessional ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
+          )}
         </form>
       )}
 

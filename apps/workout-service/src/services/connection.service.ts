@@ -1,4 +1,10 @@
 import { prisma } from "../lib/prisma";
+import { ratingRepository } from "../repositories/rating.repository";
+
+function round2(value: number | null): number | null {
+  if (value == null) return null;
+  return Math.round(value * 100) / 100;
+}
 
 export const connectionService = {
   async getMyTrainers(studentId: string) {
@@ -30,21 +36,31 @@ export const connectionService = {
       },
     });
 
+    const ratings = await ratingRepository.getAggregatesForTrainers(connections.map((c) => c.trainer.id));
+
     return {
-      trainers: connections.map((c) => ({
-        connectionId: c.id,
-        id: c.trainer.id,
-        name: c.trainer.name,
-        username: c.trainer.username,
-        avatarUrl: c.trainer.avatarUrl,
-        phone: c.trainer.phone,
-        instagram: c.trainer.instagram,
-        bio: c.trainer.bio,
-        cref: c.trainer.trainerProfile?.cref ?? null,
-        crefState: c.trainer.trainerProfile?.crefState ?? null,
-        website: c.trainer.trainerProfile?.website ?? null,
-        especialidades: c.trainer.trainerProfile?.specialties ?? null,
-      })),
+      trainers: await Promise.all(
+        connections.map(async (c) => {
+          const myRatingRecord = await ratingRepository.findByTrainerAndStudent(c.trainer.id, studentId);
+          return {
+            connectionId: c.id,
+            id: c.trainer.id,
+            name: c.trainer.name,
+            username: c.trainer.username,
+            avatarUrl: c.trainer.avatarUrl,
+            phone: c.trainer.phone,
+            instagram: c.trainer.instagram,
+            bio: c.trainer.bio,
+            cref: c.trainer.trainerProfile?.cref ?? null,
+            crefState: c.trainer.trainerProfile?.crefState ?? null,
+            website: c.trainer.trainerProfile?.website ?? null,
+            especialidades: c.trainer.trainerProfile?.specialties ?? null,
+            avgRating: round2(ratings.get(c.trainer.id)?.average ?? null),
+            ratingCount: ratings.get(c.trainer.id)?.count ?? 0,
+            myRating: myRatingRecord?.rating ?? null,
+          };
+        }),
+      ),
     };
   },
 

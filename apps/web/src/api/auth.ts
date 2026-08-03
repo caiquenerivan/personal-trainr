@@ -28,6 +28,9 @@ export type RegisterPayload = {
   password: string;
   role: 'TRAINER' | 'ALUNO';
   username?: string;
+  cref?: string;
+  crefState?: string;
+  crefCity?: string;
 };
 
 export type RegisterResponse = {

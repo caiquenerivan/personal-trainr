@@ -5,6 +5,11 @@ import { register, login } from '../api/auth';
 import { api } from '../api/client';
 import { createConnection } from '../api/connections';
 
+const UF_OPTIONS = [
+  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
+  'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
+];
+
 export function RegisterPage() {
   const navigate = useNavigate();
   const [inviteUsername, setInviteUsername] = useState<string | null>(null);
@@ -14,6 +19,9 @@ export function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState<'TRAINER' | 'ALUNO'>('ALUNO');
+  const [cref, setCref] = useState('');
+  const [crefState, setCrefState] = useState('');
+  const [crefCity, setCrefCity] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -31,10 +39,22 @@ export function RegisterPage() {
       return;
     }
 
+    if (role === 'TRAINER' && (!cref || !crefState || !crefCity)) {
+      setError('Preencha o registro CREF, UF e cidade para continuar.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await register({ name, email, password, role, username: username || undefined });
+      await register({
+        name,
+        email,
+        password,
+        role,
+        username: username || undefined,
+        ...(role === 'TRAINER' ? { cref, crefState, crefCity } : {}),
+      });
 
       const storedInvite = localStorage.getItem('@ptrainr:invite');
 
@@ -156,6 +176,55 @@ export function RegisterPage() {
                 <p className="text-xs text-red-400">As senhas não conferem.</p>
               )}
             </label>
+
+            {role === 'TRAINER' && (
+              <div className="space-y-5 rounded-lg border border-border/60 bg-base/40 p-4">
+                <p className="text-xs uppercase text-text-secondary">
+                  Registro profissional (CREF)
+                </p>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <label className="col-span-2 block space-y-2">
+                    <span className="text-xs uppercase text-text-secondary">Registro CREF</span>
+                    <input
+                      type="text"
+                      value={cref}
+                      onChange={(e) => setCref(e.target.value)}
+                      placeholder="Ex: 123456-G"
+                      className="h-12 w-full rounded-lg border border-border bg-base px-3 text-text-primary outline-none focus:border-accent"
+                      required
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-xs uppercase text-text-secondary">UF</span>
+                    <select
+                      value={crefState}
+                      onChange={(e) => setCrefState(e.target.value)}
+                      className="h-12 w-full rounded-lg border border-border bg-base px-2 text-text-primary outline-none focus:border-accent"
+                      required
+                    >
+                      <option value="" disabled>—</option>
+                      {UF_OPTIONS.map((uf) => (
+                        <option key={uf} value={uf}>{uf}</option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                <label className="block space-y-2">
+                  <span className="text-xs uppercase text-text-secondary">Cidade do registro</span>
+                  <input
+                    type="text"
+                    value={crefCity}
+                    onChange={(e) => setCrefCity(e.target.value)}
+                    placeholder="Ex: São Paulo"
+                    className="h-12 w-full rounded-lg border border-border bg-base px-3 text-text-primary outline-none focus:border-accent"
+                    required
+                  />
+                </label>
+              </div>
+            )}
 
             <label className="block space-y-2">
               <span className="text-xs uppercase text-text-secondary">

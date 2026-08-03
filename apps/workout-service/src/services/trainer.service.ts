@@ -1,4 +1,10 @@
 import { prisma } from "../lib/prisma";
+import { ratingRepository } from "../repositories/rating.repository";
+
+function round2(value: number | null): number | null {
+  if (value == null) return null;
+  return Math.round(value * 100) / 100;
+}
 
 function getISOWeek(date: Date): { year: number; week: number } {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -97,6 +103,8 @@ export const trainerService = {
       take: 50,
     });
 
+    const ratings = await ratingRepository.getAggregatesForTrainers(trainers.map((t) => t.id));
+
     return {
       trainers: trainers.map((trainer) => ({
         id: trainer.id,
@@ -105,6 +113,8 @@ export const trainerService = {
         avatarUrl: trainer.avatarUrl,
         bio: trainer.bio,
         especialidades: trainer.trainerProfile?.specialties ?? null,
+        avgRating: round2(ratings.get(trainer.id)?.average ?? null),
+        ratingCount: ratings.get(trainer.id)?.count ?? 0,
       })),
     };
   },
@@ -136,6 +146,8 @@ export const trainerService = {
       take: 20,
     });
 
+    const ratings = await ratingRepository.getAggregatesForTrainers(trainers.map((t) => t.id));
+
     return {
       trainers: trainers.map((trainer) => ({
         id: trainer.id,
@@ -144,6 +156,8 @@ export const trainerService = {
         avatarUrl: trainer.avatarUrl,
         bio: trainer.bio,
         especialidades: trainer.trainerProfile?.specialties ?? null,
+        avgRating: round2(ratings.get(trainer.id)?.average ?? null),
+        ratingCount: ratings.get(trainer.id)?.count ?? 0,
       })),
     };
   },

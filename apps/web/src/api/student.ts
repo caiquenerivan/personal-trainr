@@ -62,3 +62,22 @@ export async function changePassword(currentPassword: string, newPassword: strin
   return response.data;
 }
 
+export type TrainerProfileData = {
+  cref: string;
+  crefState: string;
+  crefCity: string;
+  experienceYears?: number | null;
+  specialties?: string | null;
+  website?: string | null;
+};
+
+export async function getTrainerProfile() {
+  const response = await api.get<{ trainerProfile: TrainerProfileData | null }>('/api/users/trainer-profile');
+  return response.data;
+}
+
+export async function updateTrainerProfile(data: TrainerProfileData) {
+  const response = await api.put<{ trainerProfile: TrainerProfileData }>('/api/users/trainer-profile', data);
+  return response.data;
+}
+

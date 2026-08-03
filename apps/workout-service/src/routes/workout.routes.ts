@@ -5,6 +5,7 @@ import * as workoutController from "../controllers/workout.controller";
 import * as trainerController from "../controllers/trainer.controller";
 import * as connectionController from "../controllers/connection.controller";
 import * as dashboardController from "../controllers/dashboard.controller";
+import * as ratingController from "../controllers/rating.controller";
 import { requireRole, requireAnyRole } from "../middlewares/auth-context.middleware";
 
 const router = Router();
@@ -27,6 +28,8 @@ router.get("/trainers/search", trainerController.search);
 router.get("/trainers/invite/:username", trainerController.invite);
 router.get("/trainers/dashboard", requireRole("TRAINER"), trainerController.dashboard);
 router.get("/trainers/students-progress", requireRole("TRAINER"), trainerController.studentsProgress);
+router.get("/trainers/:trainerId/rating", requireAnyRole("ALUNO", "TRAINER"), ratingController.getRating);
+router.post("/trainers/:trainerId/rating", requireRole("ALUNO"), ratingController.rate);
 
 // Connections
 router.get("/connections/my-trainers", requireRole("ALUNO"), connectionController.getMyTrainers);

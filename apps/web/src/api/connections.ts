@@ -69,3 +69,19 @@ export async function getStudentsProgress() {
   const response = await api.get<{ students: StudentProgress[] }>('/api/trainers/students-progress');
   return response.data;
 }
+
+export type TrainerRating = {
+  average: number | null;
+  count: number;
+  myRating: number | null;
+};
+
+export async function getTrainerRating(trainerId: string) {
+  const response = await api.get<TrainerRating>(`/api/trainers/${trainerId}/rating`);
+  return response.data;
+}
+
+export async function rateTrainer(trainerId: string, rating: number) {
+  const response = await api.post<TrainerRating>(`/api/trainers/${trainerId}/rating`, { rating });
+  return response.data;
+}

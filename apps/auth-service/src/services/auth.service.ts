@@ -4,6 +4,8 @@ import crypto from "crypto";
 import { userRepository } from "../repositories/user.repository";
 import type { CreateUserData } from "../repositories/user.repository";
 import { passwordResetTokenRepository } from "../repositories/passwordResetToken.repository";
+import { trainerProfileRepository } from "../repositories/trainerProfile.repository";
+import type { TrainerProfileData } from "../repositories/trainerProfile.repository";
 import { sendPasswordResetEmail } from "../providers/EmailProvider";
 
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-for-local-dev";
@@ -23,6 +25,9 @@ export const authService = {
     avatarUrl?: string | null;
     phone?: string | null;
     birthDate?: string | null;
+    cref?: string;
+    crefState?: string;
+    crefCity?: string;
   }) {
     const existing = await userRepository.findByEmail(data.email);
     if (existing) {
@@ -32,6 +37,16 @@ export const authService = {
     const existingUsername = await userRepository.findByUsername(data.username);
     if (existingUsername) {
       throw { status: 400, message: "Nome de usuário já existe" };
+    }
+
+    if (data.role === "TRAINER") {
+      if (!data.cref || !data.crefState || !data.crefCity) {
+        throw { status: 400, message: "Registro CREF, UF e cidade são obrigatórios para personal trainers" };
+      }
+      const existingCref = await trainerProfileRepository.findByCref(data.cref);
+      if (existingCref) {
+        throw { status: 400, message: "Este registro CREF já está cadastrado" };
+      }
     }
 
     const passwordHash = await bcrypt.hash(data.password, 10);
@@ -48,6 +63,15 @@ export const authService = {
     };
 
     const user = await userRepository.create(userData);
+
+    if (data.role === "TRAINER") {
+      await trainerProfileRepository.upsert(user.id, {
+        cref: data.cref!,
+        crefState: data.crefState as any,
+        crefCity: data.crefCity!,
+      });
+    }
+
     return { user };
   },
 
@@ -181,5 +205,27 @@ export const authService = {
     await passwordResetTokenRepository.markUsed(resetToken.id);
 
     return { message: "Senha redefinida com sucesso" };
+  },
+
+  async getTrainerProfile(userId: string, role: string) {
+    if (role !== "TRAINER") {
+      throw { status: 403, message: "Apenas treinadores possuem perfil profissional" };
+    }
+    const trainerProfile = await trainerProfileRepository.findByUserId(userId);
+    return { trainerProfile };
+  },
+
+  async updateTrainerProfile(userId: string, role: string, data: TrainerProfileData) {
+    if (role !== "TRAINER") {
+      throw { status: 403, message: "Apenas treinadores possuem perfil profissional" };
+    }
+
+    const existingCref = await trainerProfileRepository.findByCref(data.cref);
+    if (existingCref && existingCref.userId !== userId) {
+      throw { status: 400, message: "Este registro CREF já está cadastrado" };
+    }
+
+    const trainerProfile = await trainerProfileRepository.upsert(userId, data);
+    return { trainerProfile };
   },
 };

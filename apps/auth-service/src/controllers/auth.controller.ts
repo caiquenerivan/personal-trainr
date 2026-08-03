@@ -3,16 +3,32 @@ import { z } from "zod";
 import { authService } from "../services/auth.service";
 import { uploadToCloudinary } from "../services/upload.service";
 
-const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters long"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
-  role: z.enum(["TRAINER", "ALUNO"]),
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  avatarUrl: z.string().url("Invalid URL").optional().nullable(),
-  phone: z.string().optional().nullable(),
-  birthDate: z.string().optional().nullable(),
-});
+const ufValues = [
+  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
+  "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
+] as const;
+
+const registerSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters long"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+    role: z.enum(["TRAINER", "ALUNO"]),
+    username: z.string().min(3, "Username must be at least 3 characters"),
+    avatarUrl: z.string().url("Invalid URL").optional().nullable(),
+    phone: z.string().optional().nullable(),
+    birthDate: z.string().optional().nullable(),
+    cref: z.string().optional(),
+    crefState: z.enum(ufValues).optional(),
+    crefCity: z.string().optional(),
+  })
+  .refine(
+    (data) => data.role !== "TRAINER" || (data.cref && data.crefState && data.crefCity),
+    {
+      message: "Registro CREF, UF e cidade são obrigatórios para personal trainers",
+      path: ["cref"],
+    },
+  );
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -179,6 +195,61 @@ export async function resetPassword(req: Request, res: Response): Promise<any> {
       return res.status(error.status).json({ message: error.message });
     }
     console.error("Reset password error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const trainerProfileSchema = z.object({
+  cref: z.string().min(1, "Registro CREF é obrigatório"),
+  crefState: z.enum(ufValues),
+  crefCity: z.string().min(1, "Cidade do registro é obrigatória"),
+  experienceYears: z.number().int().nonnegative().optional().nullable(),
+  specialties: z.string().optional().nullable(),
+  website: z.string().optional().nullable(),
+});
+
+export async function getTrainerProfile(req: Request, res: Response): Promise<any> {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    const role = req.headers["x-user-role"] as string;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const result = await authService.getTrainerProfile(userId, role);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    console.error("Get trainer profile error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function updateTrainerProfile(req: Request, res: Response): Promise<any> {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    const role = req.headers["x-user-role"] as string;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const validation = trainerProfileSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await authService.updateTrainerProfile(userId, role, validation.data);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    console.error("Update trainer profile error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
