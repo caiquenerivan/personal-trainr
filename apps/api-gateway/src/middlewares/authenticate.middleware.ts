@@ -6,6 +6,11 @@ interface JwtPayload {
   role: string;
 }
 
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is required");
+}
+const JWT_SECRET = process.env.JWT_SECRET;
+
 export function authenticate(req: Request, res: Response, next: NextFunction): any {
   const authHeader = req.headers.authorization;
 
@@ -14,10 +19,9 @@ export function authenticate(req: Request, res: Response, next: NextFunction): a
   }
 
   const token = authHeader.split(" ")[1];
-  const secret = process.env.JWT_SECRET || "super-secret-key-for-local-dev";
 
   try {
-    const decoded = jwt.verify(token, secret) as JwtPayload;
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
 
     // Inject user context headers for downstream microservices
     req.headers["x-user-id"] = decoded.userId;

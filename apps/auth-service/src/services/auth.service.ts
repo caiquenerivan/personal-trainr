@@ -10,7 +10,10 @@ import { subscriptionRepository } from "../repositories/subscription.repository"
 import { PLAN_STUDENT_LIMITS } from "../config/plans";
 import { sendPasswordResetEmail } from "../providers/EmailProvider";
 
-const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-for-local-dev";
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is required");
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
 
 function hashToken(token: string): string {

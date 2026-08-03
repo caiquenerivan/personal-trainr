@@ -37,11 +37,9 @@ export async function checkout(req: Request, res: Response): Promise<any> {
 export async function webhook(req: Request, res: Response): Promise<any> {
   try {
     const expectedToken = process.env.ASAAS_WEBHOOK_TOKEN;
-    if (expectedToken) {
-      const receivedToken = req.headers["asaas-access-token"];
-      if (receivedToken !== expectedToken) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
+    const receivedToken = req.headers["asaas-access-token"];
+    if (!expectedToken || receivedToken !== expectedToken) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
     await billingService.handleWebhook(req.body);
