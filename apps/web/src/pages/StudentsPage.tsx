@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AxiosError } from 'axios';
 import { Eye, Search, Mail, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { getMyStudents, listMyRoutines } from '../api/connections';
+import { getSubscription, SubscriptionData } from '../api/billing';
 import { api } from '../api/client';
 import { calculateAge } from '../utils/age';
 import { Modal } from '../components/Modal';
@@ -53,6 +55,7 @@ export function StudentsPage() {
   const [linking, setLinking] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(null);
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
 
   function showToast(msg: string) {
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -88,6 +91,10 @@ export function StudentsPage() {
       })
       .catch(() => setStudents([]))
       .finally(() => setLoading(false));
+
+    getSubscription()
+      .then(({ subscription }) => setSubscription(subscription))
+      .catch(() => {});
   }, []);
 
   const filteredStudents = useMemo(() => {
@@ -174,11 +181,28 @@ export function StudentsPage() {
         </div>
       )}
 
-      <div className="mb-2 flex items-baseline gap-3">
+      <div className="mb-2 flex items-baseline gap-3 flex-wrap">
         <h1 className="font-title text-3xl uppercase text-text-primary">ALUNOS</h1>
         <span className="text-sm text-text-secondary">
           {totalStudents} {totalStudents === 1 ? 'aluno' : 'alunos'} &bull; {activeStudents} com rotina ativa
         </span>
+        {subscription?.studentLimit != null && (
+          <span
+            className={`rounded-full border px-3 py-1 text-xs font-bold uppercase ${
+              totalStudents >= subscription.studentLimit
+                ? 'border-red-500/50 bg-red-500/10 text-red-400'
+                : 'border-border/60 text-text-secondary'
+            }`}
+          >
+            {totalStudents}/{subscription.studentLimit} do plano {subscription.plan === 'FREE' ? 'Grátis' : subscription.plan}
+            {totalStudents >= subscription.studentLimit && (
+              <>
+                {' '}
+                — <Link to="/perfil" className="underline">fazer upgrade</Link>
+              </>
+            )}
+          </span>
+        )}
       </div>
 
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

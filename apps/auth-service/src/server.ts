@@ -5,6 +5,7 @@ import cors from "cors";
 import "dotenv/config";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
+import billingRoutes from "./routes/billing.routes";
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -24,6 +25,7 @@ app.use(express.json());
 // Mount the routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/billing", billingRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {

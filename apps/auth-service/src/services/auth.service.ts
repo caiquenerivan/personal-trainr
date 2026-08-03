@@ -6,6 +6,8 @@ import type { CreateUserData } from "../repositories/user.repository";
 import { passwordResetTokenRepository } from "../repositories/passwordResetToken.repository";
 import { trainerProfileRepository } from "../repositories/trainerProfile.repository";
 import type { TrainerProfileData } from "../repositories/trainerProfile.repository";
+import { subscriptionRepository } from "../repositories/subscription.repository";
+import { PLAN_STUDENT_LIMITS } from "../config/plans";
 import { sendPasswordResetEmail } from "../providers/EmailProvider";
 
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-for-local-dev";
@@ -70,9 +72,28 @@ export const authService = {
         crefState: data.crefState as any,
         crefCity: data.crefCity!,
       });
+      await subscriptionRepository.createDefault(user.id);
     }
 
     return { user };
+  },
+
+  async getSubscription(userId: string, role: string) {
+    if (role !== "TRAINER") {
+      throw { status: 403, message: "Apenas treinadores possuem assinatura" };
+    }
+    let subscription = await subscriptionRepository.findByUserId(userId);
+    if (!subscription) {
+      subscription = await subscriptionRepository.createDefault(userId);
+    }
+    return {
+      subscription: {
+        plan: subscription.plan,
+        status: subscription.status,
+        studentLimit: PLAN_STUDENT_LIMITS[subscription.plan],
+        currentPeriodEnd: subscription.currentPeriodEnd,
+      },
+    };
   },
 
   async login(email: string, password: string) {

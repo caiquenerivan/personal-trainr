@@ -199,6 +199,25 @@ export async function resetPassword(req: Request, res: Response): Promise<any> {
   }
 }
 
+export async function getSubscription(req: Request, res: Response): Promise<any> {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    const role = req.headers["x-user-role"] as string;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const result = await authService.getSubscription(userId, role);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    console.error("Get subscription error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 const trainerProfileSchema = z.object({
   cref: z.string().min(1, "Registro CREF é obrigatório"),
   crefState: z.enum(ufValues),

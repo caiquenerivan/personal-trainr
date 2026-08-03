@@ -52,6 +52,19 @@ enum ConnectionStatus {
   INACTIVE
 }
 
+enum PlanTier {
+  FREE
+  PRO
+  UNLIMITED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+}
+
 model User {
   id           String    @id @default(uuid())
   name         String
@@ -78,6 +91,7 @@ model User {
   trainers TrainerStudentConnection[] @relation("StudentToConnection")
 
   passwordResetTokens PasswordResetToken[]
+  subscription        Subscription?
 }
 
 // 5. Tokens de redefinição de senha
@@ -104,6 +118,23 @@ model TrainerProfile {
   experienceYears Int?
   specialties     String? // Ex: "Hipertrofia, Emagrecimento"
   website         String?
+}
+
+// 6. Assinatura do plano (só para Personal Trainers)
+model Subscription {
+  id                  String             @id @default(uuid())
+  userId              String             @unique
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plan                PlanTier           @default(FREE)
+  status              SubscriptionStatus @default(ACTIVE)
+
+  asaasCustomerId     String?
+  asaasSubscriptionId String?
+  currentPeriodEnd    DateTime?
+
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
 }
 
 // 4. A Tabela Pivô de Conexão (A "Contratação")

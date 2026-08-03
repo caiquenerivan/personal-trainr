@@ -40,9 +40,12 @@ function proxyTo(target: string, pathPrefix: string): RequestHandler {
 // ─── Public Routes (no auth required) ───────────────────────────────────────
 app.use("/api/auth", proxyTo(AUTH_SERVICE_URL, "/api/auth"));
 app.use("/api/trainers/invite", proxyTo(WORKOUT_SERVICE_URL, "/api/trainers/invite"));
+// Asaas calls this directly — no user JWT to validate.
+app.use("/api/billing/webhook", proxyTo(AUTH_SERVICE_URL, "/api/billing/webhook"));
 
 // ─── Protected: Profile (auth required) ─────────────────────────────────────
 app.use("/api/users", authenticate, proxyTo(AUTH_SERVICE_URL, "/api/users"));
+app.use("/api/billing", authenticate, proxyTo(AUTH_SERVICE_URL, "/api/billing"));
 
 // ─── Protected: Workout routes (auth required) ──────────────────────────────
 const workoutRoutes: [string, string][] = [

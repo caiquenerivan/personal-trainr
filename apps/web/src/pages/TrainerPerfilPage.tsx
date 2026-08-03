@@ -17,10 +17,13 @@ import {
   Globe,
   Award,
   Briefcase,
+  CreditCard,
+  Check,
 } from 'lucide-react';
 import { DateInput } from '../components/DateInput';
 import { updateProfile, changePassword, getTrainerProfile, updateTrainerProfile } from '../api/student';
 import { getTrainerRating } from '../api/connections';
+import { getSubscription, checkout, SubscriptionData, PlanTier } from '../api/billing';
 import { StarRating } from '../components/StarRating';
 import { formatPhone, unformatPhone } from '../utils/phone';
 
@@ -28,6 +31,27 @@ const UF_OPTIONS = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
   'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
 ];
+
+const PLAN_DETAILS: Record<PlanTier, { label: string; price: string; limitLabel: string; features: string[] }> = {
+  FREE: {
+    label: 'Grátis',
+    price: 'R$ 0',
+    limitLabel: 'até 3 alunos',
+    features: ['Rotinas de treino', 'Acompanhamento básico'],
+  },
+  PRO: {
+    label: 'Pro',
+    price: 'R$ 39,90/mês',
+    limitLabel: 'até 20 alunos',
+    features: ['Tudo do Grátis', 'Dashboard de aderência', 'Avaliação por estrelas'],
+  },
+  UNLIMITED: {
+    label: 'Ilimitado',
+    price: 'R$ 89,90/mês',
+    limitLabel: 'alunos ilimitados',
+    features: ['Tudo do Pro', 'Sem limite de alunos'],
+  },
+};
 
 type ProfileData = {
   id: string;
@@ -44,7 +68,7 @@ type ProfileData = {
   birthDate?: string | null;
 };
 
-type ActiveTab = 'perfil' | 'profissional' | 'conta';
+type ActiveTab = 'perfil' | 'profissional' | 'assinatura' | 'conta';
 
 export function TrainerPerfilPage() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -85,6 +109,12 @@ export function TrainerPerfilPage() {
 
   const [avgRating, setAvgRating] = useState<number | null>(null);
   const [ratingCount, setRatingCount] = useState(0);
+
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<PlanTier | null>(null);
+  const [cpfCnpj, setCpfCnpj] = useState('');
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('perfil');
   const fileRef = useRef<HTMLInputElement>(null);
@@ -128,8 +158,35 @@ export function TrainerPerfilPage() {
           setRatingCount(count);
         })
         .catch(() => {});
+
+      getSubscription()
+        .then(({ subscription }) => setSubscription(subscription))
+        .catch(() => {});
     }
   }, []);
+
+  async function handleCheckout(plan: PlanTier) {
+    if (plan === 'FREE') return;
+    setCheckoutError('');
+
+    if (!cpfCnpj.trim()) {
+      setCheckoutPlan(plan);
+      return;
+    }
+
+    setCheckoutLoading(true);
+    try {
+      const { checkoutUrl } = await checkout(plan, cpfCnpj);
+      window.location.href = checkoutUrl;
+    } catch (err: unknown) {
+      const msg =
+        err instanceof AxiosError
+          ? String(err.response?.data?.message ?? '')
+          : '';
+      setCheckoutError(msg || 'Erro ao iniciar pagamento. Tente novamente.');
+      setCheckoutLoading(false);
+    }
+  }
 
   useEffect(() => {
     if (!selectedFile) {
@@ -392,7 +449,7 @@ export function TrainerPerfilPage() {
         </div>
       </div>
 
-      <div className="flex gap-1 rounded-xl bg-black/20 border border-border/20 p-1 max-w-md">
+      <div className="flex gap-1 rounded-xl bg-black/20 border border-border/20 p-1 max-w-xl flex-wrap">
         <button
           type="button"
           onClick={() => setActiveTab('perfil')}
@@ -416,6 +473,18 @@ export function TrainerPerfilPage() {
         >
           <BadgeCheck size={14} />
           Profissional
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('assinatura')}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-body text-xs font-bold uppercase tracking-wider transition active:scale-95 ${
+            activeTab === 'assinatura'
+              ? 'bg-accent text-black shadow'
+              : 'text-text-secondary hover:text-text-primary hover:bg-base/30'
+          }`}
+        >
+          <CreditCard size={14} />
+          Assinatura
         </button>
         <button
           type="button"
@@ -713,6 +782,108 @@ export function TrainerPerfilPage() {
             </div>
           )}
         </form>
+      )}
+
+      {activeTab === 'assinatura' && (
+        <div className="max-w-3xl animate-fade-in space-y-6">
+          {subscription && (
+            <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-xl shadow-black/30">
+              <p className="text-xs uppercase font-bold text-text-secondary tracking-wider mb-1">
+                Plano atual
+              </p>
+              <h3 className="font-title text-2xl uppercase tracking-wide text-text-primary">
+                {PLAN_DETAILS[subscription.plan].label}
+              </h3>
+              <p className="font-body text-sm text-text-secondary mt-1">
+                {PLAN_DETAILS[subscription.plan].limitLabel}
+                {subscription.status === 'PAST_DUE' && (
+                  <span className="ml-2 text-red-400 font-bold">— Pagamento pendente</span>
+                )}
+              </p>
+              {subscription.currentPeriodEnd && subscription.status === 'ACTIVE' && (
+                <p className="font-body text-xs text-text-secondary mt-1">
+                  Válido até {new Date(subscription.currentPeriodEnd).toLocaleDateString('pt-BR')}
+                </p>
+              )}
+            </div>
+          )}
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            {(Object.keys(PLAN_DETAILS) as PlanTier[]).map((plan) => {
+              const details = PLAN_DETAILS[plan];
+              const isCurrent = subscription?.plan === plan && subscription.status === 'ACTIVE';
+              return (
+                <div
+                  key={plan}
+                  className={`rounded-2xl border p-5 flex flex-col shadow-xl shadow-black/30 transition-all ${
+                    isCurrent ? 'border-accent bg-accent/5' : 'border-border/60 bg-card'
+                  }`}
+                >
+                  <h4 className="font-title text-lg uppercase tracking-wide text-text-primary">
+                    {details.label}
+                  </h4>
+                  <p className="font-number text-xl font-bold text-accent mt-1">{details.price}</p>
+                  <p className="font-body text-xs text-text-secondary mt-1">{details.limitLabel}</p>
+                  <ul className="mt-4 space-y-1.5 flex-1">
+                    {details.features.map((f) => (
+                      <li key={f} className="flex items-center gap-2 font-body text-xs text-text-secondary">
+                        <Check size={12} className="text-accent shrink-0" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {plan === 'FREE' ? (
+                    <div className="mt-4 text-center font-body text-xs uppercase font-bold text-text-secondary">
+                      {isCurrent ? 'Plano atual' : '—'}
+                    </div>
+                  ) : isCurrent ? (
+                    <div className="mt-4 rounded-lg border border-accent/40 bg-accent/10 px-4 py-2.5 text-center font-body text-xs font-bold uppercase text-accent">
+                      Plano atual
+                    </div>
+                  ) : checkoutPlan === plan ? (
+                    <div className="mt-4 space-y-2">
+                      <input
+                        type="text"
+                        value={cpfCnpj}
+                        onChange={(e) => setCpfCnpj(e.target.value)}
+                        placeholder="CPF (só números)"
+                        className="w-full rounded-lg border border-border bg-base p-2.5 text-text-primary font-body text-xs outline-none focus:border-accent transition"
+                      />
+                      <button
+                        type="button"
+                        disabled={checkoutLoading}
+                        onClick={() => handleCheckout(plan)}
+                        className="w-full rounded-lg bg-accent px-4 py-2.5 font-body text-xs font-bold uppercase text-black transition hover:opacity-90 active:scale-98 disabled:opacity-50 disabled:cursor-wait"
+                      >
+                        {checkoutLoading ? 'Gerando link...' : 'Confirmar'}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleCheckout(plan)}
+                      className="mt-4 w-full rounded-lg border border-accent/50 bg-transparent px-4 py-2.5 font-body text-xs font-bold uppercase text-accent transition hover:bg-accent/10 active:scale-98"
+                    >
+                      Assinar
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {checkoutError && (
+            <p role="alert" className="rounded-lg border border-border px-4 py-3 text-sm text-accent">
+              {checkoutError}
+            </p>
+          )}
+
+          <p className="font-body text-xs text-text-secondary">
+            O pagamento é processado pela Asaas via Pix ou cartão de crédito. Você será redirecionado para
+            concluir o pagamento com segurança.
+          </p>
+        </div>
       )}
 
       {activeTab === 'conta' && (

@@ -1,5 +1,7 @@
 import { prisma } from "../lib/prisma";
 import { ratingRepository } from "../repositories/rating.repository";
+import { subscriptionRepository } from "../repositories/subscription.repository";
+import { PLAN_STUDENT_LIMITS } from "../config/plans";
 
 function round2(value: number | null): number | null {
   if (value == null) return null;
@@ -165,6 +167,22 @@ export const connectionService = {
 
     if (!trainer) {
       throw { status: 404, message: "Personal não encontrado" };
+    }
+
+    const subscription = await subscriptionRepository.findByUserId(data.trainerId);
+    const plan = subscription?.status === "ACTIVE" ? subscription.plan : "FREE";
+    const limit = PLAN_STUDENT_LIMITS[plan];
+
+    if (limit !== null) {
+      const activeStudentsCount = await prisma.trainerStudentConnection.count({
+        where: { trainerId: data.trainerId, status: "ACTIVE" },
+      });
+      if (activeStudentsCount >= limit) {
+        throw {
+          status: 403,
+          message: `Este personal atingiu o limite de ${limit} alunos do plano atual. Peça para ele fazer upgrade do plano.`,
+        };
+      }
     }
 
     const connection = await prisma.trainerStudentConnection.create({
