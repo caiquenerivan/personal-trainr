@@ -12,9 +12,17 @@ const port = process.env.PORT || 8000;
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || "http://localhost:3001";
 const WORKOUT_SERVICE_URL = process.env.WORKOUT_SERVICE_URL || "http://localhost:3002";
 
+// Trust the first proxy hop (reverse proxy/load balancer) so req.ip and
+// express-rate-limit see the real client IP instead of the proxy's.
+app.set("trust proxy", 1);
+
+const corsOrigin = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
+  : "http://localhost:3000";
+
 // Security
 app.use(helmet());
-app.use(cors({ origin: process.env.CORS_ORIGIN || "*" }));
+app.use(cors({ origin: corsOrigin }));
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,

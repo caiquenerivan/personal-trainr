@@ -9,9 +9,17 @@ import { gatewayContextMiddleware } from "./middlewares/auth-context.middleware"
 const app = express();
 const port = process.env.PORT || 3002;
 
+// Trust the first proxy hop (reverse proxy/load balancer) so req.ip and
+// express-rate-limit see the real client IP instead of the proxy's.
+app.set("trust proxy", 1);
+
+const corsOrigin = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
+  : "http://localhost:3000";
+
 // Security
 app.use(helmet());
-app.use(cors({ origin: process.env.CORS_ORIGIN || "*" }));
+app.use(cors({ origin: corsOrigin }));
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -30,6 +38,12 @@ app.use("/api", workoutRoutes);
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK", service: "workout-service" });
+});
+
+// Error handler (must be registered last)
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ message: "Internal server error" });
 });
 
 app.listen(port, () => {
