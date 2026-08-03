@@ -55,7 +55,7 @@ enum ConnectionStatus {
 model User {
   id           String    @id @default(uuid())
   name         String
-  username     String?   @unique // Novo: Único geral
+  username     String    @unique // Novo: Único geral
   email        String    @unique
   passwordHash String
   role         Role      @default(ALUNO)
@@ -76,6 +76,20 @@ model User {
   // Relações de Conexão (Quem ele treina vs Quem o treina)
   students TrainerStudentConnection[] @relation("TrainerToConnection")
   trainers TrainerStudentConnection[] @relation("StudentToConnection")
+
+  passwordResetTokens PasswordResetToken[]
+}
+
+// 5. Tokens de redefinição de senha
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // 3. Tabela exclusiva para dados profissionais do Personal

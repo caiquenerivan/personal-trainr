@@ -196,15 +196,21 @@ export const trainerService = {
     const thirtyDaysAgo = new Date(now);
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const [activeAssignmentsCount, workoutsLast7Days, distinctRoutines] =
+    const [activeAssignmentsCount, activeAssignments, distinctRoutines] =
       await Promise.all([
         prisma.routineAssignment.count({
           where: { alunoId: { in: studentIds }, isActive: true },
         }),
-        prisma.workoutLog.count({
-          where: {
-            alunoId: { in: studentIds },
-            completedAt: { gte: sevenDaysAgo },
+        prisma.routineAssignment.findMany({
+          where: { alunoId: { in: studentIds }, isActive: true },
+          select: {
+            alunoId: true,
+            routineId: true,
+            routine: {
+              select: {
+                exercises: { select: { id: true, day: true } },
+              },
+            },
           },
         }),
         prisma.routineAssignment.findMany({
@@ -215,6 +221,60 @@ export const trainerService = {
       ]);
 
     const routinesInUseCount = distinctRoutines.length;
+
+    // Build expected exercise count per student+day from active assignments
+    const expectedByStudentDay = new Map<string, number>();
+    for (const a of activeAssignments) {
+      for (const ex of a.routine.exercises) {
+        const key = `${a.alunoId}:${ex.day}`;
+        expectedByStudentDay.set(key, (expectedByStudentDay.get(key) || 0) + 1);
+      }
+    }
+
+    // Fetch workout logs in last 7 days with day info
+    const logsLast7 = await prisma.workoutLog.findMany({
+      where: {
+        alunoId: { in: studentIds },
+        completedAt: { gte: sevenDaysAgo },
+      },
+      select: {
+        alunoId: true,
+        completedAt: true,
+        routineExercise: { select: { day: true } },
+      },
+    });
+
+    // Count fully completed workouts (all exercises for a day done)
+    const completedLogsByStudentDayDate = new Map<string, Set<string>>();
+    for (const log of logsLast7) {
+      const day = log.routineExercise?.day;
+      if (!day) continue;
+      const dateKey = new Date(log.completedAt).toDateString();
+      const mapKey = `${log.alunoId}:${day}`;
+      if (!completedLogsByStudentDayDate.has(mapKey)) {
+        completedLogsByStudentDayDate.set(mapKey, new Set());
+      }
+      completedLogsByStudentDayDate.get(mapKey)!.add(dateKey);
+    }
+
+    let workoutsLast7Days = 0;
+    for (const [key, dates] of completedLogsByStudentDayDate) {
+      const [alunoId, day] = [key.substring(0, key.lastIndexOf(":")), key.substring(key.lastIndexOf(":") + 1)];
+      const expected = expectedByStudentDay.get(`${alunoId}:${day}`) || 0;
+      if (expected === 0) continue;
+      // Fetch actual completed count per date for this student+day
+      const logsForDay = logsLast7.filter(
+        (l) => l.alunoId === alunoId && l.routineExercise?.day === day,
+      );
+      const completedByDate = new Map<string, number>();
+      for (const log of logsForDay) {
+        const d = new Date(log.completedAt).toDateString();
+        completedByDate.set(d, (completedByDate.get(d) || 0) + 1);
+      }
+      for (const [, count] of completedByDate) {
+        if (count >= expected) workoutsLast7Days++;
+      }
+    }
 
     // Step 3: Active students list (top 5 with routine info)
     const recentConnections = await prisma.trainerStudentConnection.findMany({
@@ -235,7 +295,7 @@ export const trainerService = {
     const studentIdsForAssignments = recentConnections.map(
       (c) => c.studentId,
     );
-    const activeAssignments = await prisma.routineAssignment.findMany({
+    const recentAssignments = await prisma.routineAssignment.findMany({
       where: {
         alunoId: { in: studentIdsForAssignments },
         isActive: true,
@@ -246,7 +306,7 @@ export const trainerService = {
     });
 
     const assignmentByStudent = new Map(
-      activeAssignments.map((a) => [a.alunoId, a]),
+      recentAssignments.map((a) => [a.alunoId, a]),
     );
 
     const activeStudentsList = recentConnections.map((c) => {
@@ -332,12 +392,48 @@ export const trainerService = {
       select: { weeklyGoal: true },
     });
 
-    const totalWorkoutsLastMonth = await prisma.workoutLog.count({
+    // Count fully completed workouts in last 30 days
+    const logsMonth = await prisma.workoutLog.findMany({
       where: {
         alunoId: { in: studentIds },
         completedAt: { gte: thirtyDaysAgo },
       },
+      select: {
+        alunoId: true,
+        completedAt: true,
+        routineExercise: { select: { day: true } },
+      },
     });
+
+    const completedMonthByStudentDayDate = new Map<string, Set<string>>();
+    for (const log of logsMonth) {
+      const day = log.routineExercise?.day;
+      if (!day) continue;
+      const dateKey = new Date(log.completedAt).toDateString();
+      const mapKey = `${log.alunoId}:${day}`;
+      if (!completedMonthByStudentDayDate.has(mapKey)) {
+        completedMonthByStudentDayDate.set(mapKey, new Set());
+      }
+      completedMonthByStudentDayDate.get(mapKey)!.add(dateKey);
+    }
+
+    let totalWorkoutsLastMonth = 0;
+    for (const [key] of completedMonthByStudentDayDate) {
+      const [alunoId, day] = [key.substring(0, key.lastIndexOf(":")), key.substring(key.lastIndexOf(":") + 1)];
+      const expected = expectedByStudentDay.get(`${alunoId}:${day}`) || 0;
+      if (expected === 0) continue;
+      const logsForDay = logsMonth.filter(
+        (l) => l.alunoId === alunoId && l.routineExercise?.day === day,
+      );
+      const completedByDate = new Map<string, number>();
+      for (const log of logsForDay) {
+        const d = new Date(log.completedAt).toDateString();
+        completedByDate.set(d, (completedByDate.get(d) || 0) + 1);
+      }
+      for (const [, count] of completedByDate) {
+        if (count >= expected) totalWorkoutsLastMonth++;
+      }
+    }
 
     let adhesionRate = 0;
     if (activeAssignmentsWithGoal.length > 0) {

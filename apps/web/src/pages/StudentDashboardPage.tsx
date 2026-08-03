@@ -12,7 +12,7 @@ import {
   Sparkles,
   Trophy,
   Activity,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 
 type ExerciseDetail = {
@@ -47,21 +47,6 @@ type WorkoutSession = {
   duration: string;
   completedAt: string;
 };
-
-const defaultMockHistory: WorkoutSession[] = [
-  {
-    id: 'mock-1',
-    title: 'TREINO A - PEITO E TRÍCEPS',
-    duration: '45 min',
-    completedAt: new Date(Date.now() - 24 * 60 * 60 * 1000 * 2).toISOString(),
-  },
-  {
-    id: 'mock-2',
-    title: 'TREINO B - COSTAS E BÍCEPS',
-    duration: '50 min',
-    completedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
 
 export function StudentDashboardPage() {
   const [routine, setRoutine] = useState<RoutineData | null>(null);
@@ -139,7 +124,6 @@ export function StudentDashboardPage() {
       setError('Nenhuma rotina ativa vinculada. Peça ao seu personal trainer para atribuir um treino.');
       setLoading(false);
       
-      // Still show mock history even if routine loading fails
       const enrichedHistory = enrichHistoryList([], null);
       setHistoryList(enrichedHistory);
     }
@@ -152,12 +136,7 @@ export function StudentDashboardPage() {
   // Helper to compile backend logs and localStorage history
   const enrichHistoryList = (backendLogs: any[], activeRoutine: any): WorkoutSession[] => {
     const localHistoryRaw = userGet('localHistory');
-    let localHistory = localHistoryRaw ? JSON.parse(localHistoryRaw) : [];
-    
-    if (localHistory.length === 0) {
-      userSet('localHistory', JSON.stringify(defaultMockHistory));
-      localHistory = [...defaultMockHistory];
-    }
+    const localHistory = localHistoryRaw ? JSON.parse(localHistoryRaw) : [];
 
     const sessionsFromLogs: WorkoutSession[] = [];
     const logsByDate: Record<string, any[]> = {};
@@ -392,7 +371,7 @@ export function StudentDashboardPage() {
           Selecione o Treino
         </label>
         <div className="flex gap-2 p-1 rounded-xl bg-black/20 border border-border/20 max-w-md">
-          {['A', 'B', 'C', 'D', 'E'].map(letter => {
+          {(routine?.type?.split('') ?? ['A', 'B', 'C', 'D', 'E']).map(letter => {
             const isSelected = selectedLetter === letter;
             const hasExercises = routine?.exercises?.[letter] && routine.exercises[letter].length > 0;
             return (
@@ -549,6 +528,11 @@ export function StudentDashboardPage() {
 
             {/* History List */}
             <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
+              {historyList.length === 0 && (
+                <p className="font-body text-xs text-text-secondary text-center py-6">
+                  Nenhum treino concluído ainda.
+                </p>
+              )}
               {historyList.map(session => {
                 const { day, month } = getCalendarDate(session.completedAt);
                 return (

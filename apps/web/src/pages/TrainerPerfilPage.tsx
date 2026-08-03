@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import { AxiosError } from 'axios';
 import {
   Camera,
   User,
@@ -122,8 +123,12 @@ export function TrainerPerfilPage() {
       setPhone(formatPhone(updated.phone ?? ''));
       setSelectedFile(null);
       setProfileSuccess(true);
-    } catch {
-      setProfileError('Erro ao salvar alterações. Tente novamente.');
+    } catch (err: unknown) {
+      const msg =
+        err instanceof AxiosError
+          ? String(err.response?.data?.message ?? '')
+          : '';
+      setProfileError(msg || 'Erro ao salvar alterações. Tente novamente.');
     } finally {
       setSavingProfile(false);
     }

@@ -6,7 +6,7 @@ export interface CreateUserData {
   email: string;
   passwordHash: string;
   role: "TRAINER" | "ALUNO";
-  username?: string | null;
+  username: string;
   avatarUrl?: string | null;
   phone?: string | null;
   birthDate?: Date | null;
@@ -27,6 +27,10 @@ export const userRepository = {
 
   async findByEmail(email: string): Promise<User | null> {
     return prisma.user.findUnique({ where: { email } });
+  },
+
+  async findByUsername(username: string): Promise<User | null> {
+    return prisma.user.findUnique({ where: { username } });
   },
 
   async findById(id: string): Promise<PublicUser | null> {

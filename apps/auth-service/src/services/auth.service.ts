@@ -1,9 +1,17 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import { userRepository } from "../repositories/user.repository";
 import type { CreateUserData } from "../repositories/user.repository";
+import { passwordResetTokenRepository } from "../repositories/passwordResetToken.repository";
+import { sendPasswordResetEmail } from "../providers/EmailProvider";
 
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-for-local-dev";
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
+
+function hashToken(token: string): string {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
 
 export const authService = {
   async register(data: {
@@ -11,7 +19,7 @@ export const authService = {
     email: string;
     password: string;
     role: "TRAINER" | "ALUNO";
-    username?: string | null;
+    username: string;
     avatarUrl?: string | null;
     phone?: string | null;
     birthDate?: string | null;
@@ -21,6 +29,11 @@ export const authService = {
       throw { status: 400, message: "Email already in use" };
     }
 
+    const existingUsername = await userRepository.findByUsername(data.username);
+    if (existingUsername) {
+      throw { status: 400, message: "Nome de usuário já existe" };
+    }
+
     const passwordHash = await bcrypt.hash(data.password, 10);
 
     const userData: CreateUserData = {
@@ -28,7 +41,7 @@ export const authService = {
       email: data.email,
       passwordHash,
       role: data.role,
-      username: data.username ?? null,
+      username: data.username,
       avatarUrl: data.avatarUrl ?? null,
       phone: data.phone ?? null,
       birthDate: data.birthDate ? new Date(data.birthDate) : null,
@@ -62,8 +75,11 @@ export const authService = {
         name: user.name,
         email: user.email,
         role: user.role,
+        username: user.username,
         avatarUrl: user.avatarUrl,
         phone: user.phone,
+        bio: user.bio,
+        instagram: user.instagram,
         weight: user.weight,
         height: user.height,
         birthDate: user.birthDate,
@@ -93,6 +109,13 @@ export const authService = {
       instagram?: string | null;
     },
   ) {
+    if (data.username) {
+      const existingUsername = await userRepository.findByUsername(data.username);
+      if (existingUsername && existingUsername.id !== userId) {
+        throw { status: 400, message: "Nome de usuário já existe" };
+      }
+    }
+
     const dbData: any = { ...data };
     if (data.birthDate !== undefined) {
       dbData.birthDate = data.birthDate ? new Date(data.birthDate) : null;
@@ -123,5 +146,40 @@ export const authService = {
     await userRepository.updatePasswordHash(userId, newHash);
 
     return { message: "Password updated successfully" };
+  },
+
+  async requestPasswordReset(email: string) {
+    const user = await userRepository.findByEmail(email);
+    if (user) {
+      const rawToken = crypto.randomBytes(32).toString("hex");
+      const tokenHash = hashToken(rawToken);
+      const expiresAt = new Date(Date.now() + RESET_TOKEN_TTL_MS);
+
+      await passwordResetTokenRepository.create({ userId: user.id, tokenHash, expiresAt });
+
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+      const resetUrl = `${frontendUrl}/redefinir-senha?token=${rawToken}`;
+      try {
+        await sendPasswordResetEmail(user.email, resetUrl);
+      } catch (err) {
+        console.error("Failed to send password reset email:", err);
+      }
+    }
+
+    return { message: "Se o email existir em nossa base, enviaremos um link de redefinição." };
+  },
+
+  async resetPassword(token: string, newPassword: string) {
+    const tokenHash = hashToken(token);
+    const resetToken = await passwordResetTokenRepository.findValidByHash(tokenHash);
+    if (!resetToken) {
+      throw { status: 400, message: "Token inválido ou expirado" };
+    }
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+    await userRepository.updatePasswordHash(resetToken.userId, newHash);
+    await passwordResetTokenRepository.markUsed(resetToken.id);
+
+    return { message: "Senha redefinida com sucesso" };
   },
 };

@@ -67,7 +67,7 @@ enum Day {
 model User {
   id             String                     @id @default(uuid())
   name           String
-  username       String?                    @unique
+  username       String                     @unique
   email          String                     @unique
   passwordHash   String
   role           Role                       @default(ALUNO)

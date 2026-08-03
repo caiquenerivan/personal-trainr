@@ -8,7 +8,7 @@ const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
   role: z.enum(["TRAINER", "ALUNO"]),
-  username: z.string().min(3, "Username must be at least 3 characters").optional(),
+  username: z.string().min(3, "Username must be at least 3 characters"),
   avatarUrl: z.string().url("Invalid URL").optional().nullable(),
   phone: z.string().optional().nullable(),
   birthDate: z.string().optional().nullable(),
@@ -131,6 +131,54 @@ export async function profile(req: Request, res: Response): Promise<any> {
       return res.status(error.status).json({ message: error.message });
     }
     console.error("Profile error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+  newPassword: z.string().min(6, "Password must be at least 6 characters long"),
+});
+
+export async function forgotPassword(req: Request, res: Response): Promise<any> {
+  try {
+    const validation = forgotPasswordSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await authService.requestPasswordReset(validation.data.email);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    console.error("Forgot password error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function resetPassword(req: Request, res: Response): Promise<any> {
+  try {
+    const validation = resetPasswordSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await authService.resetPassword(validation.data.token, validation.data.newPassword);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    console.error("Reset password error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }

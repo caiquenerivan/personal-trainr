@@ -85,6 +85,13 @@ export function LoginScreen() {
                 required
               />
             </label>
+
+            <Link
+              to="/esqueci-senha"
+              className="block text-right text-xs text-accent underline transition hover:opacity-80"
+            >
+              Esqueci minha senha
+            </Link>
           </div>
 
           {status === 'error' && (

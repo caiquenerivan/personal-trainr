@@ -520,7 +520,7 @@ export function MeuTreinoPage() {
           Selecione o Treino
         </label>
         <div className="flex gap-2 p-1 rounded-xl bg-black/20 border border-border/20 max-w-md">
-          {['A', 'B', 'C', 'D', 'E'].map((letter) => {
+          {(routine?.type?.split('') ?? ['A', 'B', 'C', 'D', 'E']).map((letter) => {
             const isSelected = selectedLetter === letter;
             const hasExercises = routine?.exercises?.[letter] && routine.exercises[letter].length > 0;
             return (
