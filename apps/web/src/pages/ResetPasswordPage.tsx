@@ -69,7 +69,7 @@ export function ResetPasswordPage() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     className="h-12 w-full rounded-lg border border-border bg-base px-3 text-text-primary outline-none focus:border-accent"
-                    minLength={6}
+                    minLength={8}
                     required
                   />
                 </label>
@@ -81,7 +81,7 @@ export function ResetPasswordPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="h-12 w-full rounded-lg border border-border bg-base px-3 text-text-primary outline-none focus:border-accent"
-                    minLength={6}
+                    minLength={8}
                     required
                   />
                 </label>

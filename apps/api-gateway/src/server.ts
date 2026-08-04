@@ -2,9 +2,11 @@ import express from "express";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
+import pinoHttp from "pino-http";
 import "dotenv/config";
 import { createProxyMiddleware, RequestHandler } from "http-proxy-middleware";
 import { authenticate } from "./middlewares/authenticate.middleware";
+import { logger } from "./lib/logger";
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -29,6 +31,7 @@ app.use(rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 }));
+app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === "/health" } }));
 
 // Helper: proxy the request with the full original path preserved.
 function proxyTo(target: string, pathPrefix: string): RequestHandler {
@@ -38,7 +41,7 @@ function proxyTo(target: string, pathPrefix: string): RequestHandler {
     pathRewrite: (path) => (path === '/' || path === '' ? pathPrefix : `${pathPrefix}${path}`),
     on: {
       error: (err, _req, res: any) => {
-        console.error("[proxy error]", err.message);
+        logger.error({ err }, "[proxy error]");
         res.status(502).json({ message: "Bad Gateway: upstream service unavailable" });
       },
     },
@@ -83,7 +86,6 @@ app.get("/health", (_req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`API Gateway running on port ${port}`);
-  console.log(`  → Auth Service:    ${AUTH_SERVICE_URL}`);
-  console.log(`  → Workout Service: ${WORKOUT_SERVICE_URL}`);
+  logger.info(`API Gateway running on port ${port}`);
+  logger.info(`Auth Service: ${AUTH_SERVICE_URL} | Workout Service: ${WORKOUT_SERVICE_URL}`);
 });

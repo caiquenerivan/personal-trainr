@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { logger } from "../lib/logger";
 import { z } from "zod";
 import { trainerService } from "../services/trainer.service";
 
@@ -15,7 +16,7 @@ export async function listAll(req: Request, res: Response): Promise<any> {
     const result = await trainerService.listAll();
     return res.status(200).json(result);
   } catch (error: any) {
-    console.error("List trainers error:", error);
+    logger.error({ err: error }, "List trainers error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -36,7 +37,7 @@ export async function search(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Search trainers error:", error);
+    logger.error({ err: error }, "Search trainers error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -57,7 +58,7 @@ export async function invite(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Get trainer invite error:", error);
+    logger.error({ err: error }, "Get trainer invite error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -70,7 +71,7 @@ export async function dashboard(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Trainer dashboard error:", error);
+    logger.error({ err: error }, "Trainer dashboard error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -83,7 +84,7 @@ export async function studentsProgress(req: Request, res: Response): Promise<any
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Students progress error:", error);
+    logger.error({ err: error }, "Students progress error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }

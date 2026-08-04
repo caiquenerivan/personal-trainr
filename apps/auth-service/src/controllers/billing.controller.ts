@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { billingService } from "../services/billing.service";
+import { logger } from "../lib/logger";
 
 const checkoutSchema = z.object({
   plan: z.enum(["PRO", "UNLIMITED"]),
@@ -29,7 +30,7 @@ export async function checkout(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Checkout error:", error?.response?.data ?? error);
+    logger.error({ err: error?.response?.data ?? error }, "Checkout error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -45,7 +46,7 @@ export async function webhook(req: Request, res: Response): Promise<any> {
     await billingService.handleWebhook(req.body);
     return res.status(200).json({ received: true });
   } catch (error) {
-    console.error("Webhook error:", error);
+    logger.error({ err: error }, "Webhook error");
     return res.status(200).json({ received: true });
   }
 }

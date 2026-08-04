@@ -2,10 +2,12 @@ import express from "express";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
+import pinoHttp from "pino-http";
 import "dotenv/config";
 import workoutRoutes from "./routes/workout.routes";
 import { gatewayContextMiddleware } from "./middlewares/auth-context.middleware";
 import { prisma } from "./lib/prisma";
+import { logger } from "./lib/logger";
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -29,6 +31,7 @@ app.use(rateLimit({
 }));
 
 app.use(express.json());
+app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === "/health" } }));
 
 // Mount simulated gateway authentication context middleware
 app.use(gatewayContextMiddleware);
@@ -42,17 +45,17 @@ app.get("/health", async (_req, res) => {
     await prisma.$queryRaw`SELECT 1`;
     res.status(200).json({ status: "OK", service: "workout-service", database: "connected" });
   } catch (err) {
-    console.error("Health check failed:", err);
+    logger.error({ err }, "Health check failed");
     res.status(503).json({ status: "ERROR", service: "workout-service", database: "disconnected" });
   }
 });
 
 // Error handler (must be registered last)
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error("Unhandled error:", err);
+  logger.error({ err }, "Unhandled error");
   res.status(500).json({ message: "Internal server error" });
 });
 
 app.listen(port, () => {
-  console.log(`Workout service running on port ${port}`);
+  logger.info(`Workout service running on port ${port}`);
 });

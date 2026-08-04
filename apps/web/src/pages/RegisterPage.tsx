@@ -22,6 +22,7 @@ export function RegisterPage() {
   const [cref, setCref] = useState('');
   const [crefState, setCrefState] = useState('');
   const [crefCity, setCrefCity] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -41,6 +42,11 @@ export function RegisterPage() {
 
     if (role === 'TRAINER' && (!cref || !crefState || !crefCity)) {
       setError('Preencha o registro CREF, UF e cidade para continuar.');
+      return;
+    }
+
+    if (!acceptedTerms) {
+      setError('Você precisa aceitar os Termos de Uso e a Política de Privacidade para continuar.');
       return;
     }
 
@@ -153,9 +159,12 @@ export function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-12 w-full rounded-lg border border-border bg-base px-3 text-text-primary outline-none focus:border-accent"
-                minLength={6}
+                minLength={8}
                 required
               />
+              <span className="block text-[11px] text-text-secondary">
+                Mínimo 8 caracteres, com letra e número.
+              </span>
             </label>
 
             <label className="block space-y-2">
@@ -169,7 +178,7 @@ export function RegisterPage() {
                     ? 'border-red-500'
                     : 'border-border'
                 }`}
-                minLength={6}
+                minLength={8}
                 required
               />
               {confirmPassword && password !== confirmPassword && (
@@ -268,6 +277,26 @@ export function RegisterPage() {
               </div>
             </label>
           </div>
+
+          <label className="mt-5 flex items-start gap-2.5">
+            <input
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 rounded border-border bg-base accent-accent"
+            />
+            <span className="text-xs text-text-secondary">
+              Li e aceito os{' '}
+              <Link to="/termos" target="_blank" className="text-accent underline transition hover:opacity-80">
+                Termos de Uso
+              </Link>{' '}
+              e a{' '}
+              <Link to="/privacidade" target="_blank" className="text-accent underline transition hover:opacity-80">
+                Política de Privacidade
+              </Link>
+              .
+            </span>
+          </label>
 
           {error && (
             <p role="alert" className="mt-5 rounded-lg border border-border px-4 py-3 text-sm text-accent">

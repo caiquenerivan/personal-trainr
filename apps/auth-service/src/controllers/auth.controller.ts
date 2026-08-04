@@ -2,17 +2,24 @@ import { Request, Response } from "express";
 import { z } from "zod";
 import { authService } from "../services/auth.service";
 import { uploadToCloudinary } from "../services/upload.service";
+import { logger } from "../lib/logger";
 
 const ufValues = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
   "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
 ] as const;
 
+const passwordSchema = z
+  .string()
+  .min(8, "A senha deve ter no mínimo 8 caracteres")
+  .regex(/[a-zA-Z]/, "A senha deve conter pelo menos uma letra")
+  .regex(/[0-9]/, "A senha deve conter pelo menos um número");
+
 const registerSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters long"),
     email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters long"),
+    password: passwordSchema,
     role: z.enum(["TRAINER", "ALUNO"]),
     username: z.string().min(3, "Username must be at least 3 characters"),
     avatarUrl: z.string().url("Invalid URL").optional().nullable(),
@@ -63,7 +70,7 @@ export async function register(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Register error:", error);
+    logger.error({ err: error }, "Register error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -84,7 +91,7 @@ export async function login(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Login error:", error);
+    logger.error({ err: error }, "Login error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -128,7 +135,7 @@ export async function updateProfile(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Update profile error:", error);
+    logger.error({ err: error }, "Update profile error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -146,7 +153,7 @@ export async function profile(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Profile error:", error);
+    logger.error({ err: error }, "Profile error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -157,7 +164,7 @@ const forgotPasswordSchema = z.object({
 
 const resetPasswordSchema = z.object({
   token: z.string().min(1, "Token is required"),
-  newPassword: z.string().min(6, "Password must be at least 6 characters long"),
+  newPassword: passwordSchema,
 });
 
 export async function forgotPassword(req: Request, res: Response): Promise<any> {
@@ -173,7 +180,7 @@ export async function forgotPassword(req: Request, res: Response): Promise<any> 
     const result = await authService.requestPasswordReset(validation.data.email);
     return res.status(200).json(result);
   } catch (error: any) {
-    console.error("Forgot password error:", error);
+    logger.error({ err: error }, "Forgot password error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -194,7 +201,7 @@ export async function resetPassword(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Reset password error:", error);
+    logger.error({ err: error }, "Reset password error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -213,7 +220,7 @@ export async function getSubscription(req: Request, res: Response): Promise<any>
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Get subscription error:", error);
+    logger.error({ err: error }, "Get subscription error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -241,7 +248,7 @@ export async function getTrainerProfile(req: Request, res: Response): Promise<an
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Get trainer profile error:", error);
+    logger.error({ err: error }, "Get trainer profile error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -268,14 +275,14 @@ export async function updateTrainerProfile(req: Request, res: Response): Promise
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Update trainer profile error:", error);
+    logger.error({ err: error }, "Update trainer profile error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(6, "New password must be at least 6 characters long"),
+  newPassword: passwordSchema,
 });
 
 export async function changePassword(req: Request, res: Response): Promise<any> {
@@ -303,7 +310,7 @@ export async function changePassword(req: Request, res: Response): Promise<any> 
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Change password error:", error);
+    logger.error({ err: error }, "Change password error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }

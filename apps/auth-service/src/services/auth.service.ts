@@ -9,6 +9,7 @@ import type { TrainerProfileData } from "../repositories/trainerProfile.reposito
 import { subscriptionRepository } from "../repositories/subscription.repository";
 import { PLAN_STUDENT_LIMITS } from "../config/plans";
 import { sendPasswordResetEmail } from "../providers/EmailProvider";
+import { logger } from "../lib/logger";
 
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is required");
@@ -210,7 +211,7 @@ export const authService = {
       try {
         await sendPasswordResetEmail(user.email, resetUrl);
       } catch (err) {
-        console.error("Failed to send password reset email:", err);
+        logger.error({ err }, "Failed to send password reset email");
       }
     }
 

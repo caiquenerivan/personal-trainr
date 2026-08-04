@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { logger } from "../lib/logger";
 import { z } from "zod";
 import { ratingService } from "../services/rating.service";
 
@@ -23,7 +24,7 @@ export async function rate(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Rate trainer error:", error);
+    logger.error({ err: error }, "Rate trainer error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -35,7 +36,7 @@ export async function getRating(req: Request, res: Response): Promise<any> {
     const result = await ratingService.getForTrainer(trainerId, studentId);
     return res.status(200).json(result);
   } catch (error: any) {
-    console.error("Get trainer rating error:", error);
+    logger.error({ err: error }, "Get trainer rating error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }

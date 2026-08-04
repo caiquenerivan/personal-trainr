@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { logger } from "../lib/logger";
 import { z } from "zod";
 import { exerciseService } from "../services/exercise.service";
 
@@ -27,7 +28,7 @@ export async function create(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Create exercise error:", error);
+    logger.error({ err: error }, "Create exercise error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -40,7 +41,7 @@ export async function list(_req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("List exercises error:", error);
+    logger.error({ err: error }, "List exercises error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }

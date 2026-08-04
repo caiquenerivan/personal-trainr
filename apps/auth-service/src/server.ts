@@ -3,11 +3,13 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
 import multer from "multer";
+import pinoHttp from "pino-http";
 import "dotenv/config";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
 import billingRoutes from "./routes/billing.routes";
 import { prisma } from "./lib/prisma";
+import { logger } from "./lib/logger";
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -31,6 +33,7 @@ app.use(rateLimit({
 }));
 
 app.use(express.json());
+app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === "/health" } }));
 
 // Mount the routes
 app.use("/api/auth", authRoutes);
@@ -43,7 +46,7 @@ app.get("/health", async (_req, res) => {
     await prisma.$queryRaw`SELECT 1`;
     res.status(200).json({ status: "OK", service: "auth-service", database: "connected" });
   } catch (err) {
-    console.error("Health check failed:", err);
+    logger.error({ err }, "Health check failed");
     res.status(503).json({ status: "ERROR", service: "auth-service", database: "disconnected" });
   }
 });
@@ -57,10 +60,10 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   if (err?.message?.includes("Tipo de arquivo não permitido")) {
     return res.status(400).json({ message: err.message });
   }
-  console.error("Unhandled error:", err);
+  logger.error({ err }, "Unhandled error");
   return res.status(500).json({ message: "Internal server error" });
 });
 
 app.listen(port, () => {
-  console.log(`Auth service running on port ${port}`);
+  logger.info(`Auth service running on port ${port}`);
 });

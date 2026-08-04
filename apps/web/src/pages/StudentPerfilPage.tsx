@@ -631,9 +631,9 @@ export function StudentPerfilPage() {
                   type={showNewPw ? 'text' : 'password'}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder="Mínimo 8 caracteres, com letra e número"
                   required
-                  minLength={6}
+                  minLength={8}
                   className="w-full rounded-lg border border-border bg-base p-3 pl-10 pr-12 text-text-primary font-body text-sm outline-none focus:border-accent transition"
                 />
                 <button
@@ -657,7 +657,7 @@ export function StudentPerfilPage() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirme a nova senha"
                   required
-                  minLength={6}
+                  minLength={8}
                   className={`w-full rounded-lg border bg-base p-3 pl-10 pr-12 text-text-primary font-body text-sm outline-none transition ${
                     passwordMismatch
                       ? 'border-red-500/60 focus:border-red-500'

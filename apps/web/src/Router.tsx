@@ -26,6 +26,8 @@ const StudentTreinoHojePage = lazy(() => import('./pages/StudentTreinoHojePage')
 const StudentPerfilPage = lazy(() => import('./pages/StudentPerfilPage').then((m) => ({ default: m.StudentPerfilPage })));
 const StudentPersonalPage = lazy(() => import('./pages/StudentPersonalPage').then((m) => ({ default: m.StudentPersonalPage })));
 const ConvitePage = lazy(() => import('./pages/ConvitePage').then((m) => ({ default: m.ConvitePage })));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage })));
+const TermsPage = lazy(() => import('./pages/TermsPage').then((m) => ({ default: m.TermsPage })));
 
 function PageLoader() {
   return (
@@ -79,6 +81,8 @@ export function AppRouter() {
 
         {/* ─── Public (no guard) ─────────────────────────── */}
         <Route path="/convite/:username" element={<ConvitePage />} />
+        <Route path="/privacidade" element={<PrivacyPolicyPage />} />
+        <Route path="/termos" element={<TermsPage />} />
 
         {/* ─── Fallback ──────────────────────────────────── */}
         <Route path="*" element={<Navigate to="/" replace />} />

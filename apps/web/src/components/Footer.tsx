@@ -4,7 +4,7 @@ import { Dumbbell } from 'lucide-react';
 export function Footer() {
   return (
     <footer className="bg-card">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 grid md:grid-cols-3 gap-12">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 grid sm:grid-cols-2 md:grid-cols-4 gap-12">
         {/* Coluna 1 — Brand */}
         <div>
           <Link to="/" className="flex items-center gap-3">
@@ -59,6 +59,27 @@ export function Footer() {
               className="text-text-primary hover:text-white transition text-sm"
             >
               Recursos
+            </Link>
+          </div>
+        </div>
+
+        {/* Coluna 4 — Legal */}
+        <div>
+          <h4 className="text-accent text-sm tracking-widest uppercase font-semibold mb-6">
+            Legal
+          </h4>
+          <div className="flex flex-col gap-3">
+            <Link
+              to="/termos"
+              className="text-text-primary hover:text-white transition text-sm"
+            >
+              Termos de Uso
+            </Link>
+            <Link
+              to="/privacidade"
+              className="text-text-primary hover:text-white transition text-sm"
+            >
+              Política de Privacidade
             </Link>
           </div>
         </div>

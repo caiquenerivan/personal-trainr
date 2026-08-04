@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { logger } from "../lib/logger";
 import { z } from "zod";
 import { routineService } from "../services/routine.service";
 
@@ -58,7 +59,7 @@ export async function create(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Create routine error:", error);
+    logger.error({ err: error }, "Create routine error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -82,7 +83,7 @@ export async function assign(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Assign routine error:", error);
+    logger.error({ err: error }, "Assign routine error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -92,7 +93,7 @@ export async function listMyRoutines(req: Request, res: Response): Promise<any> 
     const result = await routineService.listByTrainer(req.user!.id);
     return res.status(200).json(result);
   } catch (error: any) {
-    console.error("List my routines error:", error);
+    logger.error({ err: error }, "List my routines error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -106,7 +107,7 @@ export async function getMyRoutine(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Get my routine error:", error);
+    logger.error({ err: error }, "Get my routine error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }

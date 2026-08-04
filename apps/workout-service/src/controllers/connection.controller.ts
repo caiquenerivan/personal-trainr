@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { logger } from "../lib/logger";
 import { z } from "zod";
 import { connectionService } from "../services/connection.service";
 
@@ -11,7 +12,7 @@ export async function getMyTrainers(req: Request, res: Response): Promise<any> {
     const result = await connectionService.getMyTrainers(req.user!.id);
     return res.status(200).json(result);
   } catch (error: any) {
-    console.error("Get my trainers error:", error);
+    logger.error({ err: error }, "Get my trainers error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -21,7 +22,7 @@ export async function getMyStudents(req: Request, res: Response): Promise<any> {
     const result = await connectionService.getMyStudents(req.user!.id);
     return res.status(200).json(result);
   } catch (error: any) {
-    console.error("Get my students error:", error);
+    logger.error({ err: error }, "Get my students error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -35,7 +36,7 @@ export async function remove(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Remove connection error:", error);
+    logger.error({ err: error }, "Remove connection error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -60,7 +61,7 @@ export async function create(req: Request, res: Response): Promise<any> {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
-    console.error("Create connection error:", error);
+    logger.error({ err: error }, "Create connection error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
