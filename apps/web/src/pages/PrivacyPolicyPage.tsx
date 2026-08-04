@@ -66,7 +66,7 @@ export function PrivacyPolicyPage() {
             </ul>
             <p className="mt-2">
               Para exercer esses direitos, entre em contato pelo e-mail{' '}
-              <span className="text-text-primary">[email de contato a definir]</span>.
+              <a href="mailto:caique@nerivan.site" className="text-accent underline">caique@nerivan.site</a>.
             </p>
           </section>
 

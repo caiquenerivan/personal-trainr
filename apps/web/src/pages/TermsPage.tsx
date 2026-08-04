@@ -86,7 +86,7 @@ export function TermsPage() {
             <h2 className="font-title text-lg uppercase text-text-primary mb-2">8. Contato</h2>
             <p>
               Dúvidas sobre estes Termos podem ser enviadas para{' '}
-              <span className="text-text-primary">[email de contato a definir]</span>.
+              <a href="mailto:caique@nerivan.site" className="text-accent underline">caique@nerivan.site</a>.
             </p>
           </section>
         </div>
