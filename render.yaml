@@ -1,0 +1,69 @@
+services:
+  - type: web
+    name: personaltrainr-auth-service
+    runtime: docker
+    dockerfilePath: ./apps/auth-service/Dockerfile
+    dockerContext: ./apps/auth-service
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: ASAAS_API_URL
+        sync: false
+      - key: ASAAS_API_KEY
+        sync: false
+      - key: ASAAS_WEBHOOK_TOKEN
+        sync: false
+
+  - type: web
+    name: personaltrainr-workout-service
+    runtime: docker
+    dockerfilePath: ./apps/workout-service/Dockerfile
+    dockerContext: ./apps/workout-service
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+
+  - type: web
+    name: personaltrainr-api-gateway
+    runtime: docker
+    dockerfilePath: ./apps/api-gateway/Dockerfile
+    dockerContext: ./apps/api-gateway
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: JWT_SECRET
+        sync: false
+      - key: AUTH_SERVICE_URL
+        sync: false
+      - key: WORKOUT_SERVICE_URL
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
