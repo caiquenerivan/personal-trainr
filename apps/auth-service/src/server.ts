@@ -7,6 +7,7 @@ import "dotenv/config";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
 import billingRoutes from "./routes/billing.routes";
+import { prisma } from "./lib/prisma";
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -37,8 +38,14 @@ app.use("/api/users", userRoutes);
 app.use("/api/billing", billingRoutes);
 
 // Health check endpoint
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK", service: "auth-service" });
+app.get("/health", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.status(200).json({ status: "OK", service: "auth-service", database: "connected" });
+  } catch (err) {
+    console.error("Health check failed:", err);
+    res.status(503).json({ status: "ERROR", service: "auth-service", database: "disconnected" });
+  }
 });
 
 // Error handler (must be registered last)

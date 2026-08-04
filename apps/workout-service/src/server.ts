@@ -5,6 +5,7 @@ import cors from "cors";
 import "dotenv/config";
 import workoutRoutes from "./routes/workout.routes";
 import { gatewayContextMiddleware } from "./middlewares/auth-context.middleware";
+import { prisma } from "./lib/prisma";
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -36,8 +37,14 @@ app.use(gatewayContextMiddleware);
 app.use("/api", workoutRoutes);
 
 // Health check endpoint
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK", service: "workout-service" });
+app.get("/health", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.status(200).json({ status: "OK", service: "workout-service", database: "connected" });
+  } catch (err) {
+    console.error("Health check failed:", err);
+    res.status(503).json({ status: "ERROR", service: "workout-service", database: "disconnected" });
+  }
 });
 
 // Error handler (must be registered last)
