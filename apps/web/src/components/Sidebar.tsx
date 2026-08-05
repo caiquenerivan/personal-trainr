@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { clearUserData } from '../utils/userStorage';
 import {
@@ -12,6 +13,14 @@ import {
   X,
 } from 'lucide-react';
 import logoFitnessGoldRunner from '../assets/logo-fitness-gold-runner.png';
+import type { UserData } from '../api/auth';
+import { getSubscription, PlanTier } from '../api/billing';
+
+const PLAN_LABELS: Record<PlanTier, string> = {
+  FREE: 'Plano Grátis',
+  PRO: 'Plano Pro',
+  UNLIMITED: 'Plano Ilimitado',
+};
 
 const menuItems = [
   { label: 'Painel', to: '/painel', icon: LayoutDashboard },
@@ -26,10 +35,18 @@ const menuItems = [
 type SidebarProps = {
   isOpen?: boolean;
   onClose?: () => void;
+  user?: UserData | null;
 };
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
+export function Sidebar({ isOpen, onClose, user }: SidebarProps) {
   const navigate = useNavigate();
+  const [planLabel, setPlanLabel] = useState<string | null>(null);
+
+  useEffect(() => {
+    getSubscription()
+      .then(({ subscription }) => setPlanLabel(PLAN_LABELS[subscription.plan]))
+      .catch(() => {});
+  }, []);
 
   function handleLogout() {
     clearUserData();
@@ -72,13 +89,37 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         ))}
       </nav>
 
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-3 rounded-xl px-4 py-3 font-body text-sm uppercase text-text-primary transition hover:bg-base hover:text-accent"
-      >
-        <LogOut size={18} className="shrink-0 text-accent" />
-        Sair
-      </button>
+      <div className="mt-auto space-y-3 border-t border-border pt-4">
+        <div className="flex items-center gap-3 rounded-xl px-4 py-2">
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt=""
+              className="h-9 w-9 shrink-0 rounded-full object-cover"
+            />
+          ) : (
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-base text-xs uppercase text-text-secondary">
+              {user?.name?.charAt(0) ?? '?'}
+            </div>
+          )}
+          <div className="min-w-0">
+            <span className="block truncate font-body text-sm text-text-primary">
+              {user?.name ?? 'Usuário'}
+            </span>
+            <span className="block truncate font-body text-[11px] text-text-secondary">
+              Personal Trainer{planLabel ? ` · ${planLabel}` : ''}
+            </span>
+          </div>
+        </div>
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 rounded-xl px-4 py-3 font-body text-sm uppercase text-text-primary transition hover:bg-base hover:text-accent"
+        >
+          <LogOut size={18} className="shrink-0 text-accent" />
+          Sair
+        </button>
+      </div>
     </>
   );
 

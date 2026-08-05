@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { ratingRepository } from "../repositories/rating.repository";
+import { subscriptionRepository } from "../repositories/subscription.repository";
 
 function round2(value: number | null): number | null {
   if (value == null) return null;
@@ -13,6 +14,15 @@ export const ratingService = {
     });
     if (!connection) {
       throw { status: 403, message: "Você precisa estar vinculado a este personal para avaliá-lo" };
+    }
+
+    const subscription = await subscriptionRepository.findByUserId(trainerId);
+    const plan = subscription?.status === "ACTIVE" ? subscription.plan : "FREE";
+    if (plan === "FREE") {
+      throw {
+        status: 403,
+        message: "Avaliações estão disponíveis apenas para personais nos planos Pro e Ilimitado.",
+      };
     }
 
     await ratingRepository.upsert(trainerId, studentId, rating);

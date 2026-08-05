@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { AxiosError } from 'axios';
 import {
   Target,
   Flame,
   CalendarDays,
   TrendingUp,
   Filter,
+  Lock,
 } from 'lucide-react';
 import { getStudentsProgress, type StudentProgress } from '../api/connections';
 import { DonutProgress } from '../components/DonutProgress';
@@ -100,19 +103,50 @@ function EmptyState() {
   );
 }
 
+/* ─── Plan Locked State ─────────────────────────────── */
+function PlanLockedState() {
+  return (
+    <section className="mx-auto max-w-2xl py-16 text-center">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
+        <Lock size={28} />
+      </div>
+      <h1 className="mt-4 font-title text-2xl uppercase tracking-wide text-text-primary">
+        Progresso dos alunos
+      </h1>
+      <p className="mx-auto mt-2 max-w-md font-body text-sm leading-relaxed text-text-secondary">
+        Esse recurso está disponível apenas nos planos Pro e Ilimitado. Faça upgrade pra acompanhar
+        adesão, sequência e evolução de cada aluno.
+      </p>
+      <Link
+        to="/perfil"
+        className="mt-6 inline-block rounded-xl bg-accent px-6 py-3 font-body text-sm font-bold uppercase text-black transition hover:opacity-90"
+      >
+        Ver planos
+      </Link>
+    </section>
+  );
+}
+
 /* ─── Component ─────────────────────────────────────── */
 export function ProgressPage() {
   const [students, setStudents] = useState<StudentProgress[]>([]);
   const [loading, setLoading] = useState(true);
+  const [planLocked, setPlanLocked] = useState(false);
 
   useEffect(() => {
     getStudentsProgress()
       .then((res) => setStudents(res.students))
-      .catch(() => setStudents([]))
+      .catch((err: unknown) => {
+        setStudents([]);
+        if (err instanceof AxiosError && err.response?.status === 403) {
+          setPlanLocked(true);
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <ProgressSkeleton />;
+  if (planLocked) return <PlanLockedState />;
   if (students.length === 0) return <EmptyState />;
 
   return (

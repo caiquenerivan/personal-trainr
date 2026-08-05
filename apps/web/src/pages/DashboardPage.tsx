@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AxiosError } from 'axios';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
 import {
@@ -11,6 +12,7 @@ import {
   CheckCircle,
   Scale,
   ClipboardList,
+  Lock,
 } from 'lucide-react';
 import { api } from '../api/client';
 
@@ -137,16 +139,46 @@ export function DashboardPage() {
 
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [planLocked, setPlanLocked] = useState(false);
 
   useEffect(() => {
     api
       .get<DashboardData>('/api/trainers/dashboard')
       .then((res) => setData(res.data))
-      .catch(() => setData(null))
+      .catch((err: unknown) => {
+        setData(null);
+        if (err instanceof AxiosError && err.response?.status === 403) {
+          setPlanLocked(true);
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <DashboardSkeleton />;
+
+  if (planLocked) {
+    return (
+      <section className="mx-auto max-w-2xl py-16 text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
+          <Lock size={28} />
+        </div>
+        <h1 className="mt-4 font-title text-2xl uppercase tracking-wide text-text-primary">
+          Dashboard de aderência
+        </h1>
+        <p className="mx-auto mt-2 max-w-md font-body text-sm leading-relaxed text-text-secondary">
+          Esse recurso está disponível apenas nos planos Pro e Ilimitado. Faça upgrade pra ver
+          aderência, sequência de treinos e atividade dos seus alunos em tempo real.
+        </p>
+        <Link
+          to="/perfil"
+          className="mt-6 inline-block rounded-xl bg-accent px-6 py-3 font-body text-sm font-bold uppercase text-black transition hover:opacity-90"
+        >
+          Ver planos
+        </Link>
+      </section>
+    );
+  }
+
   if (!data) return null;
 
   const maxRoutineStudents = Math.max(

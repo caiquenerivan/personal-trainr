@@ -29,15 +29,13 @@ export function StudentLayout() {
         <StudentSidebar
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
+          user={user}
         />
         <main
           id="main-content"
           className="min-w-0 flex-1 overflow-x-hidden px-5 py-6 sm:px-8 lg:px-10 md:ml-64"
         >
-          <Header
-            onToggleSidebar={() => setSidebarOpen((v) => !v)}
-            user={user}
-          />
+          <Header onToggleSidebar={() => setSidebarOpen((v) => !v)} />
           <Outlet />
         </main>
       </div>

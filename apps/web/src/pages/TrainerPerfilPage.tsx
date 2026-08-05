@@ -838,9 +838,13 @@ export function TrainerPerfilPage() {
                       {isCurrent ? 'Plano atual' : '—'}
                     </div>
                   ) : isCurrent ? (
-                    <div className="mt-4 rounded-lg border border-accent/40 bg-accent/10 px-4 py-2.5 text-center font-body text-xs font-bold uppercase text-accent">
-                      Plano atual
-                    </div>
+                    <button
+                      type="button"
+                      disabled
+                      className="mt-4 w-full rounded-lg border border-accent/40 bg-accent/10 px-4 py-2.5 text-center font-body text-xs font-bold uppercase text-accent cursor-default"
+                    >
+                      Assinado
+                    </button>
                   ) : checkoutPlan === plan ? (
                     <div className="mt-4 space-y-2">
                       <input

@@ -1,9 +1,21 @@
 import { prisma } from "../lib/prisma";
 import { ratingRepository } from "../repositories/rating.repository";
+import { subscriptionRepository } from "../repositories/subscription.repository";
 
 function round2(value: number | null): number | null {
   if (value == null) return null;
   return Math.round(value * 100) / 100;
+}
+
+async function requirePaidPlan(trainerId: string): Promise<void> {
+  const subscription = await subscriptionRepository.findByUserId(trainerId);
+  const plan = subscription?.status === "ACTIVE" ? subscription.plan : "FREE";
+  if (plan === "FREE") {
+    throw {
+      status: 403,
+      message: "Este recurso está disponível apenas nos planos Pro e Ilimitado. Faça upgrade do seu plano.",
+    };
+  }
 }
 
 function getISOWeek(date: Date): { year: number; week: number } {
@@ -184,6 +196,8 @@ export const trainerService = {
   },
 
   async getDashboard(trainerId: string) {
+    await requirePaidPlan(trainerId);
+
     // Step 1: Active student IDs
     const connections = await prisma.trainerStudentConnection.findMany({
       where: { trainerId, status: "ACTIVE" },
@@ -473,6 +487,8 @@ export const trainerService = {
   },
 
   async getStudentsProgress(trainerId: string) {
+    await requirePaidPlan(trainerId);
+
     const connections = await prisma.trainerStudentConnection.findMany({
       where: { trainerId },
       include: {

@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, Users, User, LogOut, X } from 'lucide-react';
 import { clearUserData } from '../utils/userStorage';
 import logoFitnessGoldRunner from '../assets/logo-fitness-gold-runner.png';
+import type { UserData } from '../api/auth';
 
 const menuItems = [
   { label: 'Painel', to: '/aluno/painel', icon: Home },
@@ -12,9 +13,10 @@ const menuItems = [
 type StudentSidebarProps = {
   isOpen?: boolean;
   onClose?: () => void;
+  user?: UserData | null;
 };
 
-export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
+export function StudentSidebar({ isOpen, onClose, user }: StudentSidebarProps) {
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -51,6 +53,30 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
     </nav>
   );
 
+  const userBlock = (
+    <div className="flex items-center gap-3 rounded-xl px-4 py-2">
+      {user?.avatarUrl ? (
+        <img
+          src={user.avatarUrl}
+          alt=""
+          className="h-9 w-9 shrink-0 rounded-full object-cover"
+        />
+      ) : (
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-base text-xs uppercase text-text-secondary">
+          {user?.name?.charAt(0) ?? '?'}
+        </div>
+      )}
+      <div className="min-w-0">
+        <span className="block truncate font-body text-sm text-text-primary">
+          {user?.name ?? 'Usuário'}
+        </span>
+        <span className="block truncate font-body text-[11px] text-text-secondary">
+          Aluno
+        </span>
+      </div>
+    </div>
+  );
+
   const logoutButton = (
     <button
       onClick={handleLogout}
@@ -73,7 +99,7 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
           />
         </div>
         {sidebarNav}
-        <div className="mt-auto pt-4">{logoutButton}</div>
+        <div className="mt-auto space-y-3 border-t border-border pt-4">{userBlock}{logoutButton}</div>
       </aside>
 
       {/* Mobile sidebar */}
@@ -98,7 +124,7 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
               </button>
             </div>
             {sidebarNav}
-            <div className="mt-auto pt-4">{logoutButton}</div>
+            <div className="mt-auto space-y-3 border-t border-border pt-4">{userBlock}{logoutButton}</div>
           </aside>
         </div>
       )}

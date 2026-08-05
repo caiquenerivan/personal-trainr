@@ -22,12 +22,10 @@ export function DashboardLayout() {
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        user={user}
       />
       <main className="min-h-screen overflow-x-hidden px-5 py-6 sm:px-8 lg:px-10 md:ml-64">
-        <Header
-          onToggleSidebar={() => setSidebarOpen((v) => !v)}
-          user={user}
-        />
+        <Header onToggleSidebar={() => setSidebarOpen((v) => !v)} />
         <Outlet />
       </main>
     </div>

@@ -27,7 +27,7 @@ app.use(helmet());
 app.use(cors({ origin: corsOrigin }));
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: Number(process.env.RATE_LIMIT_MAX) || 100,
   standardHeaders: true,
   legacyHeaders: false,
 }));

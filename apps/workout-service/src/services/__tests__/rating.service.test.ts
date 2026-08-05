@@ -14,10 +14,28 @@ vi.mock("../../repositories/rating.repository", () => ({
     getAggregateForTrainer: vi.fn(),
   },
 }));
+vi.mock("../../repositories/subscription.repository", () => ({
+  subscriptionRepository: {
+    findByUserId: vi.fn(),
+  },
+}));
 
 import { ratingService } from "../rating.service";
 import { prisma } from "../../lib/prisma";
 import { ratingRepository } from "../../repositories/rating.repository";
+import { subscriptionRepository } from "../../repositories/subscription.repository";
+
+const proSubscription = {
+  id: "sub-1",
+  userId: "trainer-1",
+  plan: "PRO" as const,
+  status: "ACTIVE" as const,
+  asaasCustomerId: null,
+  asaasSubscriptionId: null,
+  currentPeriodEnd: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -34,8 +52,20 @@ describe("ratingService.rate", () => {
     expect(ratingRepository.upsert).not.toHaveBeenCalled();
   });
 
-  it("registra a avaliação quando há conexão ativa", async () => {
+  it("rejeita avaliação quando o trainer está no plano Grátis", async () => {
     vi.mocked(prisma.trainerStudentConnection.findFirst).mockResolvedValue({ id: "conn-1" } as any);
+    vi.mocked(subscriptionRepository.findByUserId).mockResolvedValue(null);
+
+    await expect(ratingService.rate("student-1", "trainer-1", 5)).rejects.toMatchObject({
+      status: 403,
+      message: "Avaliações estão disponíveis apenas para personais nos planos Pro e Ilimitado.",
+    });
+    expect(ratingRepository.upsert).not.toHaveBeenCalled();
+  });
+
+  it("registra a avaliação quando há conexão ativa e o trainer está no plano Pro", async () => {
+    vi.mocked(prisma.trainerStudentConnection.findFirst).mockResolvedValue({ id: "conn-1" } as any);
+    vi.mocked(subscriptionRepository.findByUserId).mockResolvedValue(proSubscription);
     vi.mocked(ratingRepository.getAggregateForTrainer).mockResolvedValue({ average: 5, count: 1 });
     vi.mocked(ratingRepository.findByTrainerAndStudent).mockResolvedValue({
       id: "r-1",
