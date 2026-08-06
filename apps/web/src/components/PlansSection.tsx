@@ -68,7 +68,7 @@ export function PlansSection() {
                 {plan.label}
               </h3>
               <div className="mt-4 flex items-baseline gap-1">
-                <span className="font-title text-4xl text-accent">{plan.price}</span>
+                <span className="font-number text-4xl font-bold text-accent">{plan.price}</span>
                 {plan.period && (
                   <span className="text-sm text-text-secondary">{plan.period}</span>
                 )}
