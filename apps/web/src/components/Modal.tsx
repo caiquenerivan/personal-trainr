@@ -22,6 +22,15 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
     );
   }, []);
 
+  // Keep the latest onClose without putting it in the effect below's deps —
+  // onClose is typically a fresh inline function on every parent render, and
+  // depending on it there would re-run the effect (and re-steal focus to the
+  // first focusable element) on every keystroke inside the modal's form.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     if (!open) return;
 
@@ -35,7 +44,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
 
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key !== 'Tab') return;
@@ -60,7 +69,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
         previouslyFocused.focus();
       }
     };
-  }, [open, onClose, getFocusableElements]);
+  }, [open, getFocusableElements]);
 
   if (!open) return null;
 
