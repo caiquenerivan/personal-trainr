@@ -37,7 +37,7 @@ export function PlansSection() {
       <div className="mx-auto max-w-6xl">
         <div className="text-center mb-16">
           <p className="text-accent-light text-sm tracking-widest uppercase font-semibold">
-            Planos
+            Planos para personal trainers
           </p>
           <h2 className="font-title text-4xl md:text-5xl uppercase leading-tight mt-4">
             <span className="text-white">Escolha o plano </span>
@@ -45,6 +45,9 @@ export function PlansSection() {
           </h2>
           <p className="text-text-secondary mt-4 max-w-xl mx-auto">
             Comece grátis e evolua conforme sua base de alunos cresce.
+          </p>
+          <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-accent-light">
+            Para alunos, a plataforma é 100% gratuita
           </p>
         </div>
 
