@@ -2,6 +2,7 @@ import { Navbar } from '../components/Navbar';
 import { HeroSection } from '../components/HeroSection';
 import { ComoFunciona } from '../components/ComoFunciona';
 import { Recursos } from '../components/Recursos';
+import { PlansSection } from '../components/PlansSection';
 import { CtaSection } from '../components/CtaSection';
 import { Footer } from '../components/Footer';
 
@@ -18,6 +19,7 @@ export function LandingPage() {
       <HeroSection />
       <ComoFunciona />
       <Recursos />
+      <PlansSection />
       <CtaSection />
       <Footer />
     </main>

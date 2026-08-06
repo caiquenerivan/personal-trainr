@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 
 export function CtaSection() {
   return (
-    <section id="comecar" className="bg-base py-24 md:py-32 px-6 md:px-12">
+    <section className="bg-base py-24 md:py-32 px-6 md:px-12">
       <div className="mx-auto max-w-4xl">
         <div className="bg-card rounded-2xl border border-white/10 shadow-[0_0_50px_rgba(175,145,80,0.05)] p-12 md:p-16 text-center relative overflow-hidden transition hover:border-accent">
           <div className="absolute top-10 -left-10 w-64 h-64 rounded-full bg-accent/10 blur-[100px] pointer-events-none" />
