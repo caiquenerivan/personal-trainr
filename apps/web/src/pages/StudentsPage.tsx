@@ -71,23 +71,7 @@ export function StudentsPage() {
     ])
       .then(([studentsData, routinesData]) => {
         setStudents(studentsData.students ?? []);
-        let apiRoutines = routinesData.routines ?? [];
-        if (apiRoutines.length === 0) {
-          const stored = (() => {
-            try {
-              return JSON.parse(window.localStorage.getItem('personaltrainr.routines') ?? '[]');
-            } catch {
-              return [];
-            }
-          })();
-          apiRoutines = stored.map((r: any) => ({
-            id: r.id,
-            name: r.name,
-            type: r.type || r.goal || '',
-            createdAt: r.createdAt || '',
-          }));
-        }
-        setRoutines(apiRoutines);
+        setRoutines(routinesData.routines ?? []);
       })
       .catch(() => setStudents([]))
       .finally(() => setLoading(false));
@@ -114,25 +98,6 @@ export function StudentsPage() {
 
   async function handleLinkRoutine() {
     if (!linkTarget || !selectedRoutine) return;
-    const selected = routines.find((r) => r.id === selectedRoutine);
-
-    let workouts: Array<{ day: string; exercises: Array<{ name: string; series: number; reps: number; rest: number }> }> | undefined;
-    try {
-      const stored = JSON.parse(window.localStorage.getItem('personaltrainr.routines') ?? '[]');
-      const full = stored.find((r: any) => r.id === selectedRoutine);
-      if (full?.workouts) {
-        workouts = full.workouts.map((w: any) => ({
-          day: w.day,
-          description: w.description,
-          exercises: (w.exercises ?? []).map((e: any) => ({
-            name: e.name,
-            series: e.series,
-            reps: e.reps,
-            rest: e.rest,
-          })),
-        }));
-      }
-    } catch {}
 
     setLinking(true);
     try {
@@ -141,8 +106,6 @@ export function StudentsPage() {
         routineId: selectedRoutine,
         days: validityDays,
         weeklyGoal,
-        routineName: selected?.name,
-        workouts,
       });
       const data = await getMyStudents();
       setStudents(data.students ?? []);

@@ -157,6 +157,9 @@ model RoutineAssignment {
 
 model Exercise {
   id               String            @id @default(uuid())
+  // null = global exercise (visible to everyone); otherwise visible only to
+  // the trainer who created it.
+  trainerId        String?
   name             String
   videoUrl         String?
   gifUrl           String?

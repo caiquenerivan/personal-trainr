@@ -17,7 +17,7 @@ export const routineService = {
     }>;
   }) {
     const exerciseIds = data.exercises.map((e) => e.exerciseId);
-    const existingExercises = await exerciseRepository.findManyByIds(exerciseIds);
+    const existingExercises = await exerciseRepository.findManyByIds(exerciseIds, data.trainerId);
 
     const uniqueInputIds = new Set(exerciseIds);
     if (existingExercises.length !== uniqueInputIds.size) {
@@ -73,9 +73,9 @@ export const routineService = {
 
         for (const w of data.workouts) {
           for (const ex of w.exercises) {
-            let dbExercise = await exerciseRepository.findByName(ex.name);
+            let dbExercise = await exerciseRepository.findByName(ex.name, data.trainerId);
             if (!dbExercise) {
-              dbExercise = await exerciseRepository.create({ name: ex.name });
+              dbExercise = await exerciseRepository.create({ name: ex.name, trainerId: data.trainerId });
             }
             exercises.push({
               exerciseId: dbExercise.id,
@@ -121,6 +121,90 @@ export const routineService = {
         name: r.name,
         type: r.type,
         createdAt: r.createdAt,
+      })),
+    };
+  },
+
+  async getById(id: string, trainerId: string) {
+    const routine = await routineRepository.findById(id);
+    if (!routine) {
+      throw { status: 404, message: "Rotina não encontrada" };
+    }
+    if (routine.trainerId !== trainerId) {
+      throw { status: 403, message: "Você não pode ver esta rotina" };
+    }
+    return { routine };
+  },
+
+  async update(
+    id: string,
+    trainerId: string,
+    data: {
+      name: string;
+      type: RoutineType;
+      exercises: Array<{
+        exerciseId: string;
+        day: Day;
+        dayDescription?: string;
+        series: number;
+        reps: number;
+        restTime: number;
+      }>;
+    },
+  ) {
+    const existing = await routineRepository.findById(id);
+    if (!existing) {
+      throw { status: 404, message: "Rotina não encontrada" };
+    }
+    if (existing.trainerId !== trainerId) {
+      throw { status: 403, message: "Você não pode editar esta rotina" };
+    }
+
+    const exerciseIds = data.exercises.map((e) => e.exerciseId);
+    const existingExercises = await exerciseRepository.findManyByIds(exerciseIds, trainerId);
+    const uniqueInputIds = new Set(exerciseIds);
+    if (existingExercises.length !== uniqueInputIds.size) {
+      throw { status: 400, message: "One or more exercises not found in database" };
+    }
+
+    const routine = await routineRepository.update(
+      id,
+      { name: data.name, type: data.type },
+      data.exercises,
+    );
+    return { routine };
+  },
+
+  async remove(id: string, trainerId: string) {
+    const existing = await routineRepository.findById(id);
+    if (!existing) {
+      throw { status: 404, message: "Rotina não encontrada" };
+    }
+    if (existing.trainerId !== trainerId) {
+      throw { status: 403, message: "Você não pode remover esta rotina" };
+    }
+
+    const activeAssignments = await routineAssignmentRepository.countActiveByRoutineId(id);
+    if (activeAssignments > 0) {
+      throw { status: 409, message: "Esta rotina está vinculada a um ou mais alunos e não pode ser removida" };
+    }
+
+    await routineRepository.delete(id);
+  },
+
+  async listByStudent(alunoId: string) {
+    const assignments = await routineAssignmentRepository.findAllByAlunoId(alunoId);
+    const now = new Date();
+    return {
+      assignments: assignments.map((a) => ({
+        id: a.id,
+        routineId: a.routineId,
+        routineName: a.routine.name,
+        routineType: a.routine.type,
+        weeklyGoal: a.weeklyGoal,
+        assignedAt: a.assignedAt,
+        expiresAt: a.expiresAt,
+        isActive: a.isActive && a.expiresAt > now,
       })),
     };
   },

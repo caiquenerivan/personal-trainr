@@ -14,6 +14,11 @@ const port = process.env.PORT || 8000;
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || "http://localhost:3001";
 const WORKOUT_SERVICE_URL = process.env.WORKOUT_SERVICE_URL || "http://localhost:3002";
 
+if (!process.env.INTERNAL_SERVICE_SECRET) {
+  throw new Error("INTERNAL_SERVICE_SECRET environment variable is required");
+}
+const INTERNAL_SERVICE_SECRET = process.env.INTERNAL_SERVICE_SECRET;
+
 // Trust the first proxy hop (reverse proxy/load balancer) so req.ip and
 // express-rate-limit see the real client IP instead of the proxy's.
 app.set("trust proxy", 1);
@@ -33,6 +38,17 @@ app.use(rateLimit({
 }));
 app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === "/health" } }));
 
+// Never trust identity headers coming from the client — only `authenticate`
+// (after verifying the JWT) may set x-user-id/x-user-role. Without this,
+// a client could set these headers directly and have them forwarded as-is
+// to internal services on routes that don't run `authenticate`.
+app.use((req, _res, next) => {
+  delete req.headers["x-user-id"];
+  delete req.headers["x-user-role"];
+  delete req.headers["x-internal-secret"];
+  next();
+});
+
 // Helper: proxy the request with the full original path preserved.
 function proxyTo(target: string, pathPrefix: string): RequestHandler {
   return createProxyMiddleware({
@@ -40,6 +56,12 @@ function proxyTo(target: string, pathPrefix: string): RequestHandler {
     changeOrigin: true,
     pathRewrite: (path) => (path === '/' || path === '' ? pathPrefix : `${pathPrefix}${path}`),
     on: {
+      proxyReq: (proxyReq) => {
+        // Prove to the internal service that this request actually came
+        // through the gateway, since auth-service/workout-service are also
+        // reachable directly on their own public URLs.
+        proxyReq.setHeader("x-internal-secret", INTERNAL_SERVICE_SECRET);
+      },
       error: (err, _req, res: any) => {
         logger.error({ err }, "[proxy error]");
         res.status(502).json({ message: "Bad Gateway: upstream service unavailable" });
@@ -67,6 +89,7 @@ const workoutRoutes: [string, string][] = [
   ["/api/connections", "/api/connections"],
   ["/api/students", "/api/students"],
   ["/api/my-routine", "/api/my-routine"],
+  ["/api/my-assignments", "/api/my-assignments"],
 ];
 
 for (const [mountPath, targetPath] of workoutRoutes) {

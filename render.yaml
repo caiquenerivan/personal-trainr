@@ -37,6 +37,8 @@ services:
         sync: false
       - key: ASAAS_WEBHOOK_TOKEN
         sync: false
+      - key: INTERNAL_SERVICE_SECRET
+        sync: false
 
   - type: web
     name: personaltrainr-workout-service
@@ -49,6 +51,8 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: CORS_ORIGIN
+        sync: false
+      - key: INTERNAL_SERVICE_SECRET
         sync: false
 
   - type: web
@@ -66,4 +70,6 @@ services:
       - key: WORKOUT_SERVICE_URL
         sync: false
       - key: CORS_ORIGIN
+        sync: false
+      - key: INTERNAL_SERVICE_SECRET
         sync: false

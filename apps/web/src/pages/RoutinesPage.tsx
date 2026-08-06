@@ -1,40 +1,75 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { AxiosError } from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, Pencil, Trash2 } from 'lucide-react';
-import type { Routine } from '../types/routine';
+import { Eye, Pencil, Trash2, X } from 'lucide-react';
+import { listMyRoutines } from '../api/connections';
+import { deleteRoutine, type RoutineType } from '../api/routines';
 import { Modal } from '../components/Modal';
 
-function loadJSON<T>(key: string, fallback: T): T {
-  try {
-    return JSON.parse(window.localStorage.getItem(key) ?? JSON.stringify(fallback));
-  } catch {
-    return fallback;
-  }
-}
+type RoutineSummary = {
+  id: string;
+  name: string;
+  type: RoutineType;
+  createdAt: string;
+};
 
 export function RoutinesPage() {
   const navigate = useNavigate();
-  const [routines, setRoutines] = useState<Routine[]>(
-    () => loadJSON<Routine[]>('personaltrainr.routines', []),
-  );
-  const [deleteTarget, setDeleteTarget] = useState<Routine | null>(null);
+  const [routines, setRoutines] = useState<RoutineSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<RoutineSummary | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
-  const assignments = loadJSON<any[]>('personaltrainr.assignments', []);
-
-  function getStudentCount(routineId: string) {
-    return assignments.filter((a: any) => a.routineId === routineId).length;
+  function showToast(message: string) {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast(message);
+    toastTimer.current = setTimeout(() => setToast(null), 4000);
   }
 
-  function handleConfirmDelete() {
+  useEffect(() => {
+    listMyRoutines()
+      .then((data) => setRoutines(data.routines ?? []))
+      .catch(() => showToast('Erro ao carregar rotinas'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function handleConfirmDelete() {
     if (!deleteTarget) return;
-    const updated = routines.filter((r) => r.id !== deleteTarget.id);
-    setRoutines(updated);
-    window.localStorage.setItem('personaltrainr.routines', JSON.stringify(updated));
-    setDeleteTarget(null);
+    setDeleting(true);
+    try {
+      await deleteRoutine(deleteTarget.id);
+      setRoutines((prev) => prev.filter((r) => r.id !== deleteTarget.id));
+      setDeleteTarget(null);
+      showToast('Rotina removida com sucesso.');
+    } catch (err: unknown) {
+      const msg = err instanceof AxiosError ? err.response?.data?.message || 'Erro ao remover rotina' : 'Erro ao remover rotina';
+      showToast(msg);
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <section className="mx-auto max-w-7xl">
+        <p className="font-body text-text-secondary">Carregando rotinas...</p>
+      </section>
+    );
   }
 
   return (
     <section className="mx-auto max-w-7xl">
+      {toast && (
+        <div className="fixed right-4 top-4 z-50 flex items-center gap-3 rounded-xl border border-accent/40 bg-card px-5 py-3 shadow-lg shadow-black/40 animate-slide-up">
+          <span className="font-body text-sm text-text-primary">{toast}</span>
+          <button onClick={() => setToast(null)} className="text-text-secondary hover:text-text-primary">
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-title text-3xl uppercase text-text-primary">ROTINAS</h1>
         <Link
@@ -59,11 +94,7 @@ export function RoutinesPage() {
             >
               <div>
                 <h2 className="font-body text-base text-text-primary">{routine.name}</h2>
-                <p className="mt-0.5 text-sm text-text-secondary">
-                  {routine.savedAsModel
-                    ? 'Modelo sem aluno vinculado'
-                    : 'Rotina vinculada a aluno'}
-                </p>
+                <p className="mt-0.5 text-sm text-text-secondary">{routine.type}</p>
               </div>
 
               <div className="flex items-center gap-3">
@@ -108,12 +139,6 @@ export function RoutinesPage() {
               Tem certeza que deseja excluir{' '}
               <strong className="text-accent">{deleteTarget.name}</strong>?
             </p>
-            {getStudentCount(deleteTarget.id) > 0 && (
-              <p className="mt-2 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-400">
-                Atenção: {getStudentCount(deleteTarget.id)} aluno(s) está(ão) vinculado(s) a esta
-                rotina.
-              </p>
-            )}
             <div className="mt-6 flex justify-end gap-3">
               <button
                 type="button"
@@ -125,9 +150,10 @@ export function RoutinesPage() {
               <button
                 type="button"
                 onClick={handleConfirmDelete}
-                className="rounded-lg bg-red-600 px-5 py-2 text-sm font-bold uppercase text-white transition hover:opacity-90"
+                disabled={deleting}
+                className="rounded-lg bg-red-600 px-5 py-2 text-sm font-bold uppercase text-white transition hover:opacity-90 disabled:cursor-wait disabled:opacity-50"
               >
-                Confirmar Exclusão
+                {deleting ? 'Removendo...' : 'Confirmar Exclusão'}
               </button>
             </div>
           </>

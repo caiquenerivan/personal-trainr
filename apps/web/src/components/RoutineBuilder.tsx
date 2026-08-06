@@ -1,11 +1,27 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { ChevronDown, Plus, Trash2 } from 'lucide-react';
-import type { Routine, Workout, Exercise } from '../types/routine';
-import { exercises as exerciseOptions } from '../data/mockData';
+import { useNavigate } from 'react-router-dom';
+import { AxiosError } from 'axios';
+import { ChevronDown, Plus, Trash2, X } from 'lucide-react';
+import { listExercises, type ApiExercise } from '../api/exercises';
+import { getRoutine, createRoutine, updateRoutine, type Day, type RoutineType } from '../api/routines';
 
-const WORKOUT_LABELS = ['A', 'B', 'C', 'D', 'E'];
+const WORKOUT_LABELS: Day[] = ['A', 'B', 'C', 'D', 'E'];
+const TYPE_BY_COUNT: Record<number, RoutineType> = { 2: 'AB', 3: 'ABC', 4: 'ABCD', 5: 'ABCDE' };
 
-function buildEmptyWorkouts(count: number): Workout[] {
+type BuilderExercise = {
+  exerciseId: string;
+  series: number;
+  reps: number;
+  restTime: number;
+};
+
+type BuilderWorkout = {
+  day: Day;
+  description: string;
+  exercises: BuilderExercise[];
+};
+
+function buildEmptyWorkouts(count: number): BuilderWorkout[] {
   return WORKOUT_LABELS.slice(0, count).map((day) => ({
     day,
     description: '',
@@ -18,31 +34,50 @@ type Props = {
 };
 
 export function RoutineBuilder({ routineId }: Props) {
-  const [name, setName] = useState('');
-  const [goal, setGoal] = useState('');
-  const [workoutCount, setWorkoutCount] = useState(2);
-  const [workouts, setWorkouts] = useState<Workout[]>(() => buildEmptyWorkouts(2));
-  const [activeTab, setActiveTab] = useState('A');
-  const [status, setStatus] = useState<'idle' | 'saving' | 'success'>('idle');
-
+  const navigate = useNavigate();
   const isEditing = !!routineId;
+
+  const [name, setName] = useState('');
+  const [workoutCount, setWorkoutCount] = useState(2);
+  const [workouts, setWorkouts] = useState<BuilderWorkout[]>(() => buildEmptyWorkouts(2));
+  const [activeTab, setActiveTab] = useState<Day>('A');
+  const [exerciseOptions, setExerciseOptions] = useState<ApiExercise[]>([]);
+  const [loading, setLoading] = useState(isEditing);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    listExercises().catch(() => []).then((options) => setExerciseOptions(options ?? []));
+  }, []);
 
   useEffect(() => {
     if (!routineId) return;
-    const saved: Routine[] = (() => {
-      try {
-        return JSON.parse(window.localStorage.getItem('personaltrainr.routines') ?? '[]');
-      } catch {
-        return [];
-      }
-    })();
-    const routine = saved.find((r) => r.id === routineId);
-    if (!routine) return;
-    setName(routine.name);
-    setGoal(routine.goal);
-    setWorkoutCount(routine.workouts.length);
-    setWorkouts(routine.workouts);
-    setActiveTab(routine.workouts[0]?.day ?? 'A');
+    setLoading(true);
+    getRoutine(routineId)
+      .then((routine) => {
+        setName(routine.name);
+        const count = routine.type.length;
+        setWorkoutCount(count);
+        const labels = WORKOUT_LABELS.slice(0, count);
+        setWorkouts(
+          labels.map((day) => {
+            const dayExercises = routine.exercises.filter((e) => e.day === day);
+            return {
+              day,
+              description: dayExercises[0]?.dayDescription ?? '',
+              exercises: dayExercises.map((e) => ({
+                exerciseId: e.exercise.id,
+                series: e.series,
+                reps: e.reps,
+                restTime: e.restTime,
+              })),
+            };
+          }),
+        );
+        setActiveTab(labels[0]);
+      })
+      .catch(() => setError('Erro ao carregar rotina'))
+      .finally(() => setLoading(false));
   }, [routineId]);
 
   function handleWorkoutCountChange(value: number) {
@@ -60,7 +95,7 @@ export function RoutineBuilder({ routineId }: Props) {
     setActiveTab(labels[0]);
   }
 
-  function updateWorkout(index: number, patch: Partial<Workout>) {
+  function updateWorkout(index: number, patch: Partial<BuilderWorkout>) {
     setWorkouts((prev) =>
       prev.map((w, i) => (i === index ? { ...w, ...patch } : w)),
     );
@@ -70,7 +105,7 @@ export function RoutineBuilder({ routineId }: Props) {
     setWorkouts((prev) =>
       prev.map((w, i) =>
         i === workoutIndex
-          ? { ...w, exercises: [...w.exercises, { name: '', series: 3, reps: 10, rest: 60 }] }
+          ? { ...w, exercises: [...w.exercises, { exerciseId: '', series: 3, reps: 10, restTime: 60 }] }
           : w,
       ),
     );
@@ -89,7 +124,7 @@ export function RoutineBuilder({ routineId }: Props) {
   function updateExercise(
     workoutIndex: number,
     exerciseIndex: number,
-    patch: Partial<Exercise>,
+    patch: Partial<BuilderExercise>,
   ) {
     setWorkouts((prev) =>
       prev.map((w, i) =>
@@ -105,57 +140,77 @@ export function RoutineBuilder({ routineId }: Props) {
     );
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus('saving');
+    setError(null);
 
-    const saved: Routine[] = (() => {
-      try {
-        return JSON.parse(window.localStorage.getItem('personaltrainr.routines') ?? '[]');
-      } catch {
-        return [];
-      }
-    })();
+    const exercises = workouts.flatMap((w) =>
+      w.exercises
+        .filter((e) => e.exerciseId)
+        .map((e) => ({
+          exerciseId: e.exerciseId,
+          day: w.day,
+          dayDescription: w.description || undefined,
+          series: e.series,
+          reps: e.reps,
+          restTime: e.restTime,
+        })),
+    );
 
-    if (isEditing) {
-      const updated = saved.map((r) =>
-        r.id === routineId
-          ? { ...r, name, goal, workouts }
-          : r,
-      );
-      window.localStorage.setItem('personaltrainr.routines', JSON.stringify(updated));
-    } else {
-      const routine: Routine = {
-        id: crypto.randomUUID(),
-        name,
-        goal,
-        savedAsModel: true,
-        createdAt: new Date().toISOString(),
-        workouts,
-      };
-      window.localStorage.setItem(
-        'personaltrainr.routines',
-        JSON.stringify([...saved, routine]),
-      );
+    if (exercises.length === 0) {
+      setError('Adicione ao menos um exercício.');
+      return;
     }
 
-    setStatus('success');
+    setSaving(true);
+    try {
+      const payload = { name, type: TYPE_BY_COUNT[workoutCount], exercises };
+      const routine = isEditing
+        ? await updateRoutine(routineId!, payload)
+        : await createRoutine(payload);
+      navigate(`/rotinas/ver/${routine.id}`);
+    } catch (err: unknown) {
+      const msg =
+        err instanceof AxiosError
+          ? err.response?.data?.message || 'Erro ao salvar rotina'
+          : 'Erro ao salvar rotina';
+      setError(msg);
+    } finally {
+      setSaving(false);
+    }
   }
 
-  const activeIndex = WORKOUT_LABELS.indexOf(activeTab);
+  const activeIndex = workouts.findIndex((w) => w.day === activeTab);
+
+  if (loading) {
+    return (
+      <section className="mx-auto max-w-7xl">
+        <p className="font-body text-text-secondary">Carregando rotina...</p>
+      </section>
+    );
+  }
 
   return (
     <section className="mx-auto max-w-7xl">
       <div className="mb-6 border-b border-border pb-6">
         <h1 className="font-title text-3xl uppercase text-text-primary">
-          MONTAR NOVA ROTINA
+          {isEditing ? 'EDITAR ROTINA' : 'MONTAR NOVA ROTINA'}
         </h1>
       </div>
+
+      {error && (
+        <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-red-500/40 bg-red-500/10 px-5 py-3">
+          <span className="font-body text-sm text-red-400">{error}</span>
+          <button onClick={() => setError(null)} className="text-red-400 hover:text-red-300">
+            <X size={16} />
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Header */}
         <div className="grid gap-4 rounded-xl border border-border bg-card p-6 md:grid-cols-4">
-          <label className="space-y-2 md:col-span-2">
+          <label className="space-y-2 md:col-span-3">
             <span className="text-xs uppercase text-text-secondary">
               Nome da Rotina
             </span>
@@ -164,17 +219,7 @@ export function RoutineBuilder({ routineId }: Props) {
               onChange={(e) => setName(e.target.value)}
               className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
               required
-            />
-          </label>
-
-          <label className="space-y-2">
-            <span className="text-xs uppercase text-text-secondary">
-              Objetivo
-            </span>
-            <input
-              value={goal}
-              onChange={(e) => setGoal(e.target.value)}
-              className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
+              minLength={2}
             />
           </label>
 
@@ -255,18 +300,19 @@ export function RoutineBuilder({ routineId }: Props) {
                     </span>
                     <div className="relative">
                       <select
-                        value={exercise.name}
+                        value={exercise.exerciseId}
                         onChange={(e) =>
                           updateExercise(activeIndex, ei, {
-                            name: e.target.value,
+                            exerciseId: e.target.value,
                           })
                         }
                         className="w-full appearance-none rounded-lg border border-border bg-base p-3 pr-10 text-text-primary outline-none focus:border-accent"
+                        required
                       >
                         <option value="">Selecione</option>
                         {exerciseOptions.map((opt) => (
-                          <option key={opt.id} value={opt.name}>
-                            {opt.name} ({opt.muscleGroup})
+                          <option key={opt.id} value={opt.id}>
+                            {opt.name}{opt.muscle ? ` (${opt.muscle})` : ''}
                           </option>
                         ))}
                       </select>
@@ -321,10 +367,10 @@ export function RoutineBuilder({ routineId }: Props) {
                       type="number"
                       min={0}
                       step={5}
-                      value={exercise.rest}
+                      value={exercise.restTime}
                       onChange={(e) =>
                         updateExercise(activeIndex, ei, {
-                          rest: Number(e.target.value),
+                          restTime: Number(e.target.value),
                         })
                       }
                       className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
@@ -356,18 +402,12 @@ export function RoutineBuilder({ routineId }: Props) {
         )}
         </div>
 
-        {status === 'success' && (
-          <p className="rounded-xl border border-border bg-card px-4 py-3 text-sm text-accent">
-            {isEditing ? 'Rotina atualizada com sucesso.' : 'Rotina salva com sucesso.'}
-          </p>
-        )}
-
         <button
           type="submit"
-          disabled={status === 'saving'}
+          disabled={saving}
           className="block min-h-14 w-full rounded-lg bg-accent px-6 py-4 font-bold uppercase text-black transition disabled:cursor-wait disabled:opacity-70"
         >
-          {status === 'saving' ? 'Salvando...' : isEditing ? 'ATUALIZAR ROTINA' : 'SALVAR ROTINA'}
+          {saving ? 'Salvando...' : isEditing ? 'ATUALIZAR ROTINA' : 'SALVAR ROTINA'}
         </button>
       </form>
     </section>

@@ -5,7 +5,7 @@ import cors from "cors";
 import pinoHttp from "pino-http";
 import "dotenv/config";
 import workoutRoutes from "./routes/workout.routes";
-import { gatewayContextMiddleware } from "./middlewares/auth-context.middleware";
+import { gatewayContextMiddleware, requireInternalSecret } from "./middlewares/auth-context.middleware";
 import { prisma } from "./lib/prisma";
 import { logger } from "./lib/logger";
 
@@ -33,13 +33,8 @@ app.use(rateLimit({
 app.use(express.json());
 app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === "/health" } }));
 
-// Mount simulated gateway authentication context middleware
-app.use(gatewayContextMiddleware);
-
-// Mount the workout routes under /api
-app.use("/api", workoutRoutes);
-
-// Health check endpoint
+// Health check endpoint (Render hits this directly on the service's own
+// public URL, bypassing the gateway, so it must stay outside the internal-secret gate).
 app.get("/health", async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
@@ -49,6 +44,16 @@ app.get("/health", async (_req, res) => {
     res.status(503).json({ status: "ERROR", service: "workout-service", database: "disconnected" });
   }
 });
+
+// Only accept requests proxied through the api-gateway from this point on,
+// since this service also has its own public URL (see render.yaml).
+app.use(requireInternalSecret);
+
+// Mount simulated gateway authentication context middleware
+app.use(gatewayContextMiddleware);
+
+// Mount the workout routes under /api
+app.use("/api", workoutRoutes);
 
 // Error handler (must be registered last)
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

@@ -6,6 +6,7 @@ import { routineService } from "../services/routine.service";
 const routineExerciseInputSchema = z.object({
   exerciseId: z.string().uuid("Invalid exercise ID (must be UUID)"),
   day: z.enum(["A", "B", "C", "D", "E"]),
+  dayDescription: z.string().optional(),
   series: z.number().int().positive("Series must be a positive integer"),
   reps: z.number().int().positive("Reps must be a positive integer"),
   restTime: z.number().int().positive("Rest time must be a positive integer"),
@@ -94,6 +95,63 @@ export async function listMyRoutines(req: Request, res: Response): Promise<any> 
     return res.status(200).json(result);
   } catch (error: any) {
     logger.error({ err: error }, "List my routines error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function getById(req: Request, res: Response): Promise<any> {
+  try {
+    const result = await routineService.getById(req.params.id as string, req.user!.id);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    logger.error({ err: error }, "Get routine error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function update(req: Request, res: Response): Promise<any> {
+  try {
+    const validation = createRoutineSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await routineService.update(req.params.id as string, req.user!.id, validation.data);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    logger.error({ err: error }, "Update routine error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function remove(req: Request, res: Response): Promise<any> {
+  try {
+    await routineService.remove(req.params.id as string, req.user!.id);
+    return res.status(204).send();
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    logger.error({ err: error }, "Delete routine error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function listMyAssignments(req: Request, res: Response): Promise<any> {
+  try {
+    const result = await routineService.listByStudent(req.user!.id);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    logger.error({ err: error }, "List my assignments error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getMyRoutine, completeExercise, getWorkoutHistory, getDashboard } from '../api/student';
-import { listMyRoutines, assignRoutine, type AssignRoutinePayload } from '../api/connections';
+import { listMyRoutines, assignRoutine } from '../api/connections';
 import { userGet, userSet } from '../utils/userStorage';
 import { Modal } from '../components/Modal';
 import {
@@ -173,24 +173,6 @@ export function MeuTreinoPage() {
     const user = getStoredUser();
     if (!user) return;
 
-    let workouts: AssignRoutinePayload['workouts'] | undefined;
-    try {
-      const stored = JSON.parse(window.localStorage.getItem('personaltrainr.routines') ?? '[]');
-      const full = stored.find((r: any) => r.id === selectedRoutineId);
-      if (full?.workouts) {
-        workouts = full.workouts.map((w: any) => ({
-          day: w.day,
-          description: w.description,
-          exercises: (w.exercises ?? []).map((e: any) => ({
-            name: e.name,
-            series: e.series,
-            reps: e.reps,
-            rest: e.rest,
-          })),
-        }));
-      }
-    } catch {}
-
     setAssigning(true);
     try {
       await assignRoutine({
@@ -198,7 +180,6 @@ export function MeuTreinoPage() {
         alunoId: user.id,
         days: 30,
         weeklyGoal,
-        workouts,
       });
       setSelectedRoutineId('');
       setWeeklyGoal(3);

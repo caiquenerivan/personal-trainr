@@ -8,6 +8,7 @@ import "dotenv/config";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
 import billingRoutes from "./routes/billing.routes";
+import { requireInternalSecret } from "./middlewares/internal-secret.middleware";
 import { prisma } from "./lib/prisma";
 import { logger } from "./lib/logger";
 
@@ -35,12 +36,8 @@ app.use(rateLimit({
 app.use(express.json());
 app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === "/health" } }));
 
-// Mount the routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/billing", billingRoutes);
-
-// Health check endpoint
+// Health check endpoint (Render hits this directly on the service's own
+// public URL, bypassing the gateway, so it must stay outside the internal-secret gate).
 app.get("/health", async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
@@ -50,6 +47,15 @@ app.get("/health", async (_req, res) => {
     res.status(503).json({ status: "ERROR", service: "auth-service", database: "disconnected" });
   }
 });
+
+// Only accept requests proxied through the api-gateway from this point on,
+// since this service also has its own public URL (see render.yaml).
+app.use(requireInternalSecret);
+
+// Mount the routes
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/billing", billingRoutes);
 
 // Error handler (must be registered last)
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

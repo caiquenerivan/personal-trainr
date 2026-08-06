@@ -40,12 +40,6 @@ export type AssignRoutinePayload = {
   alunoId: string;
   days: number;
   weeklyGoal: number;
-  routineName?: string;
-  workouts?: Array<{
-    day: string;
-    description?: string;
-    exercises: Array<{ name: string; series: number; reps: number; rest: number }>;
-  }>;
 };
 
 export async function assignRoutine(payload: AssignRoutinePayload) {

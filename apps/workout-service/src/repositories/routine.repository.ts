@@ -87,6 +87,38 @@ export const routineRepository = {
     }) as Promise<RoutineWithExercises[]>;
   },
 
+  async update(
+    id: string,
+    data: { name: string; type: RoutineType },
+    exercises: CreateRoutineExerciseData[],
+  ): Promise<RoutineWithExercises> {
+    return prisma.$transaction(async (tx) => {
+      await tx.routineExercise.deleteMany({ where: { routineId: id } });
+      return tx.routine.update({
+        where: { id },
+        data: {
+          name: data.name,
+          type: data.type,
+          exercises: {
+            create: exercises.map((e) => ({
+              exerciseId: e.exerciseId,
+              day: e.day,
+              dayDescription: e.dayDescription ?? null,
+              series: e.series,
+              reps: e.reps,
+              restTime: e.restTime,
+            })),
+          },
+        },
+        include: {
+          exercises: {
+            include: { exercise: true },
+          },
+        },
+      }) as Promise<RoutineWithExercises>;
+    });
+  },
+
   async delete(id: string): Promise<void> {
     await prisma.routine.delete({ where: { id } });
   },

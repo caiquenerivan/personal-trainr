@@ -33,6 +33,14 @@ export const routineAssignmentRepository = {
     });
   },
 
+  async findAllByAlunoId(alunoId: string) {
+    return prisma.routineAssignment.findMany({
+      where: { alunoId },
+      orderBy: { assignedAt: "desc" },
+      include: { routine: true },
+    });
+  },
+
   async deactivateExpired(): Promise<void> {
     await prisma.routineAssignment.updateMany({
       where: {
@@ -40,6 +48,12 @@ export const routineAssignmentRepository = {
         expiresAt: { lte: new Date() },
       },
       data: { isActive: false },
+    });
+  },
+
+  async countActiveByRoutineId(routineId: string): Promise<number> {
+    return prisma.routineAssignment.count({
+      where: { routineId, isActive: true, expiresAt: { gt: new Date() } },
     });
   },
 };

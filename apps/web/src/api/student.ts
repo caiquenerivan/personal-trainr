@@ -5,6 +5,22 @@ export async function getMyRoutine() {
   return response.data;
 }
 
+export type RoutineAssignmentSummary = {
+  id: string;
+  routineId: string;
+  routineName: string;
+  routineType: string;
+  weeklyGoal: number;
+  assignedAt: string;
+  expiresAt: string;
+  isActive: boolean;
+};
+
+export async function getMyAssignments() {
+  const response = await api.get<{ assignments: RoutineAssignmentSummary[] }>('/api/my-assignments');
+  return response.data.assignments;
+}
+
 export async function completeExercise(routineExerciseId: string, weightUsed?: number | null) {
   const response = await api.post('/api/workout/complete', {
     routineExerciseId,

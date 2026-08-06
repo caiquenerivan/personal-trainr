@@ -12,15 +12,21 @@ const router = Router();
 
 // Exercises
 router.post("/exercises", requireRole("TRAINER"), exerciseController.create);
-router.get("/exercises", exerciseController.list);
+router.get("/exercises", requireRole("TRAINER"), exerciseController.list);
+router.put("/exercises/:id", requireRole("TRAINER"), exerciseController.update);
+router.delete("/exercises/:id", requireRole("TRAINER"), exerciseController.remove);
 
 // Routines (templates)
 router.post("/routines", requireRole("TRAINER"), routineController.create);
 router.get("/routines", requireRole("TRAINER"), routineController.listMyRoutines);
+router.get("/routines/:id", requireRole("TRAINER"), routineController.getById);
+router.put("/routines/:id", requireRole("TRAINER"), routineController.update);
+router.delete("/routines/:id", requireRole("TRAINER"), routineController.remove);
 router.post("/routines/assign", requireRole("TRAINER"), routineController.assign);
 
 // Student routine (accessible by both ALUNO and TRAINER for self-assignment)
 router.get("/my-routine", requireAnyRole("ALUNO", "TRAINER"), routineController.getMyRoutine);
+router.get("/my-assignments", requireAnyRole("ALUNO", "TRAINER"), routineController.listMyAssignments);
 
 // Trainers
 router.get("/trainers", trainerController.listAll);
