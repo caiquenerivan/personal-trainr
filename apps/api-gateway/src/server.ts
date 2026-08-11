@@ -80,6 +80,27 @@ app.use("/api/billing/webhook", proxyTo(AUTH_SERVICE_URL, "/api/billing/webhook"
 app.use("/api/users", authenticate, proxyTo(AUTH_SERVICE_URL, "/api/users"));
 app.use("/api/billing", authenticate, proxyTo(AUTH_SERVICE_URL, "/api/billing"));
 
+// ─── Protected: Admin (auth required; role check happens downstream) ───────
+// Role-restricted to ADMIN by each service's own requireAdmin middleware —
+// the gateway only proves the JWT is valid, not which role it carries.
+const adminAuthRoutes: [string, string][] = [
+  ["/api/admin/overview", "/api/admin/overview"],
+  ["/api/admin/users", "/api/admin/users"],
+  ["/api/admin/subscriptions", "/api/admin/subscriptions"],
+];
+for (const [mountPath, targetPath] of adminAuthRoutes) {
+  app.use(mountPath, authenticate, proxyTo(AUTH_SERVICE_URL, targetPath));
+}
+
+const adminWorkoutRoutes: [string, string][] = [
+  ["/api/admin/stats", "/api/admin/stats"],
+  ["/api/admin/exercises", "/api/admin/exercises"],
+  ["/api/admin/connections", "/api/admin/connections"],
+];
+for (const [mountPath, targetPath] of adminWorkoutRoutes) {
+  app.use(mountPath, authenticate, proxyTo(WORKOUT_SERVICE_URL, targetPath));
+}
+
 // ─── Protected: Workout routes (auth required) ──────────────────────────────
 const workoutRoutes: [string, string][] = [
   ["/api/routines", "/api/routines"],

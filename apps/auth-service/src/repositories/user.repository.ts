@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import type { User } from "../generated/prisma/client";
+import type { Prisma, Role, User } from "../generated/prisma/client";
 
 export interface CreateUserData {
   name: string;
@@ -54,4 +54,59 @@ export const userRepository = {
     });
     return toPublic(user);
   },
+
+  async findMany(params: {
+    role?: Role;
+    isActive?: boolean;
+    search?: string;
+    skip: number;
+    take: number;
+  }): Promise<PublicUser[]> {
+    const where = buildAdminWhere(params);
+    const users = await prisma.user.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: params.skip,
+      take: params.take,
+      include: { trainerProfile: true, subscription: true },
+    });
+    return users.map(toPublic) as PublicUser[];
+  },
+
+  async count(params: { role?: Role; isActive?: boolean; search?: string }): Promise<number> {
+    return prisma.user.count({ where: buildAdminWhere(params) });
+  },
+
+  async findByIdWithRelations(id: string) {
+    return prisma.user.findUnique({
+      where: { id },
+      include: { trainerProfile: true, subscription: true },
+    });
+  },
+
+  async updateAdmin(
+    id: string,
+    data: Partial<Pick<User, "name" | "email" | "username" | "phone" | "role" | "isActive">>,
+  ): Promise<PublicUser> {
+    const user = await prisma.user.update({ where: { id }, data });
+    return toPublic(user);
+  },
+
+  async delete(id: string): Promise<void> {
+    await prisma.user.delete({ where: { id } });
+  },
 };
+
+function buildAdminWhere(params: { role?: Role; isActive?: boolean; search?: string }): Prisma.UserWhereInput {
+  const where: Prisma.UserWhereInput = {};
+  if (params.role) where.role = params.role;
+  if (params.isActive !== undefined) where.isActive = params.isActive;
+  if (params.search) {
+    where.OR = [
+      { name: { contains: params.search, mode: "insensitive" } },
+      { email: { contains: params.search, mode: "insensitive" } },
+      { username: { contains: params.search, mode: "insensitive" } },
+    ];
+  }
+  return where;
+}

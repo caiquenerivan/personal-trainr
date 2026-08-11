@@ -3,7 +3,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { LoginScreen } from './components/LoginScreen';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { StudentLayout } from './layouts/StudentLayout';
-import { PublicRoute, TrainerRoute, StudentRoute } from './components/ProtectedRoute';
+import { AdminLayout } from './layouts/AdminLayout';
+import { PublicRoute, TrainerRoute, StudentRoute, AdminRoute } from './components/ProtectedRoute';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 const LandingPage = lazy(() => import('./pages/LandingPage').then((m) => ({ default: m.LandingPage })));
@@ -26,6 +27,10 @@ const StudentTreinoHojePage = lazy(() => import('./pages/StudentTreinoHojePage')
 const StudentPerfilPage = lazy(() => import('./pages/StudentPerfilPage').then((m) => ({ default: m.StudentPerfilPage })));
 const StudentPersonalPage = lazy(() => import('./pages/StudentPersonalPage').then((m) => ({ default: m.StudentPersonalPage })));
 const ConvitePage = lazy(() => import('./pages/ConvitePage').then((m) => ({ default: m.ConvitePage })));
+const AdminOverviewPage = lazy(() => import('./pages/admin/AdminOverviewPage').then((m) => ({ default: m.AdminOverviewPage })));
+const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage').then((m) => ({ default: m.AdminUsersPage })));
+const AdminSubscriptionsPage = lazy(() => import('./pages/admin/AdminSubscriptionsPage').then((m) => ({ default: m.AdminSubscriptionsPage })));
+const AdminExercisesPage = lazy(() => import('./pages/admin/AdminExercisesPage').then((m) => ({ default: m.AdminExercisesPage })));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage })));
 const TermsPage = lazy(() => import('./pages/TermsPage').then((m) => ({ default: m.TermsPage })));
 
@@ -76,6 +81,16 @@ export function AppRouter() {
             <Route path="/aluno/treino-hoje" element={<StudentTreinoHojePage />} />
             <Route path="/aluno/perfil" element={<StudentPerfilPage />} />
             <Route path="/aluno/personal" element={<StudentPersonalPage />} />
+          </Route>
+        </Route>
+
+        {/* ─── Admin Routes ──────────────────────────────── */}
+        <Route element={<AdminRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/admin" element={<AdminOverviewPage />} />
+            <Route path="/admin/usuarios" element={<AdminUsersPage />} />
+            <Route path="/admin/assinaturas" element={<AdminSubscriptionsPage />} />
+            <Route path="/admin/exercicios" element={<AdminExercisesPage />} />
           </Route>
         </Route>
 

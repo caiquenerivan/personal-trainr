@@ -111,6 +111,10 @@ export const authService = {
       throw { status: 401, message: "Invalid email or password" };
     }
 
+    if (!user.isActive) {
+      throw { status: 403, message: "Conta desativada. Entre em contato com o suporte." };
+    }
+
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       JWT_SECRET,

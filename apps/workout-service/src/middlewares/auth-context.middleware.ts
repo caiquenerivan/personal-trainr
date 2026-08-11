@@ -17,7 +17,7 @@ export function requireInternalSecret(req: Request, res: Response, next: NextFun
 
 export interface UserContext {
   id: string;
-  role: "TRAINER" | "ALUNO";
+  role: "TRAINER" | "ALUNO" | "ADMIN";
 }
 
 declare global {
@@ -35,14 +35,14 @@ export function gatewayContextMiddleware(req: Request, res: Response, next: Next
   if (userId && userRole) {
     req.user = {
       id: userId,
-      role: userRole as "TRAINER" | "ALUNO",
+      role: userRole as "TRAINER" | "ALUNO" | "ADMIN",
     };
   }
 
   next();
 }
 
-export function requireRole(role: "TRAINER" | "ALUNO") {
+export function requireRole(role: "TRAINER" | "ALUNO" | "ADMIN") {
   return (req: Request, res: Response, next: NextFunction): any => {
     if (!req.user || req.user.role !== role) {
       return res.status(403).json({ message: "Forbidden: Access denied" });
@@ -51,7 +51,7 @@ export function requireRole(role: "TRAINER" | "ALUNO") {
   };
 }
 
-export function requireAnyRole(...roles: Array<"TRAINER" | "ALUNO">) {
+export function requireAnyRole(...roles: Array<"TRAINER" | "ALUNO" | "ADMIN">) {
   return (req: Request, res: Response, next: NextFunction): any => {
     if (!req.user || !roles.includes(req.user.role)) {
       return res.status(403).json({ message: "Forbidden: Access denied" });
@@ -59,3 +59,5 @@ export function requireAnyRole(...roles: Array<"TRAINER" | "ALUNO">) {
     next();
   };
 }
+
+export const requireAdmin = requireRole("ADMIN");

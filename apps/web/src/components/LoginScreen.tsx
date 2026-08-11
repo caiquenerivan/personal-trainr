@@ -1,7 +1,13 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
-import { login } from '../api/auth';
+import { login, type UserData } from '../api/auth';
+
+function routeForRole(role: UserData['role']): string {
+  if (role === 'ALUNO') return '/aluno/painel';
+  if (role === 'ADMIN') return '/admin';
+  return '/painel';
+}
 
 export function LoginScreen() {
   const navigate = useNavigate();
@@ -15,7 +21,7 @@ export function LoginScreen() {
     if (!token || !userRaw) return;
     try {
       const user = JSON.parse(userRaw);
-      navigate(user.role === 'ALUNO' ? '/aluno/painel' : '/painel', { replace: true });
+      navigate(routeForRole(user.role), { replace: true });
     } catch {
       window.localStorage.removeItem('personaltrainr.token');
       window.localStorage.removeItem('personaltrainr.user');
@@ -31,11 +37,7 @@ export function LoginScreen() {
       window.localStorage.setItem('personaltrainr.token', session.token);
       window.localStorage.setItem('personaltrainr.user', JSON.stringify(session.user));
 
-      if (session.user.role === 'ALUNO') {
-        navigate('/aluno/painel', { replace: true });
-      } else {
-        navigate('/painel', { replace: true });
-      }
+      navigate(routeForRole(session.user.role), { replace: true });
     } catch (err: unknown) {
       const msg =
         err instanceof AxiosError
