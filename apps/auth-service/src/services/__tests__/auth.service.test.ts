@@ -51,6 +51,7 @@ const baseUser = {
   username: "alunoteste",
   passwordHash: "hashed",
   role: "ALUNO" as const,
+  isActive: true,
   avatarUrl: null,
   phone: null,
   instagram: null,
@@ -217,6 +218,16 @@ describe("authService.login", () => {
     expect(result.token).toBeTruthy();
     expect(result.user.email).toBe(baseUser.email);
     expect((result.user as any).passwordHash).toBeUndefined();
+  });
+
+  it("rejeita usuário desativado mesmo com senha correta", async () => {
+    const hash = await bcrypt.hash("senhacerta", 10);
+    vi.mocked(userRepository.findByEmail).mockResolvedValue({ ...baseUser, passwordHash: hash, isActive: false });
+
+    await expect(authService.login(baseUser.email, "senhacerta")).rejects.toMatchObject({
+      status: 403,
+      message: "Conta desativada. Entre em contato com o suporte.",
+    });
   });
 });
 
