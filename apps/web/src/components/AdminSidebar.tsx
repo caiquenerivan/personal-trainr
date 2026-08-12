@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { clearUserData } from '../utils/userStorage';
-import { LayoutDashboard, Users, CreditCard, Dumbbell, LogOut, X, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Users, CreditCard, Dumbbell, LogOut, X, ShieldCheck, UserCog } from 'lucide-react';
 import logoFitnessGoldRunner from '../assets/logo-fitness-gold-runner.png';
 import type { UserData } from '../api/auth';
 
@@ -9,6 +9,7 @@ const menuItems = [
   { label: 'Usuários', to: '/admin/usuarios', icon: Users, end: false },
   { label: 'Assinaturas', to: '/admin/assinaturas', icon: CreditCard, end: false },
   { label: 'Exercícios globais', to: '/admin/exercicios', icon: Dumbbell, end: false },
+  { label: 'Meu perfil', to: '/admin/perfil', icon: UserCog, end: false },
 ];
 
 type AdminSidebarProps = {

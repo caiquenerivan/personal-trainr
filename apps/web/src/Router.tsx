@@ -31,6 +31,7 @@ const AdminOverviewPage = lazy(() => import('./pages/admin/AdminOverviewPage').t
 const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage').then((m) => ({ default: m.AdminUsersPage })));
 const AdminSubscriptionsPage = lazy(() => import('./pages/admin/AdminSubscriptionsPage').then((m) => ({ default: m.AdminSubscriptionsPage })));
 const AdminExercisesPage = lazy(() => import('./pages/admin/AdminExercisesPage').then((m) => ({ default: m.AdminExercisesPage })));
+const AdminPerfilPage = lazy(() => import('./pages/admin/AdminPerfilPage').then((m) => ({ default: m.AdminPerfilPage })));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage })));
 const TermsPage = lazy(() => import('./pages/TermsPage').then((m) => ({ default: m.TermsPage })));
 
@@ -91,6 +92,7 @@ export function AppRouter() {
             <Route path="/admin/usuarios" element={<AdminUsersPage />} />
             <Route path="/admin/assinaturas" element={<AdminSubscriptionsPage />} />
             <Route path="/admin/exercicios" element={<AdminExercisesPage />} />
+            <Route path="/admin/perfil" element={<AdminPerfilPage />} />
           </Route>
         </Route>
 
