@@ -56,6 +56,11 @@ export const asaasProvider = {
     await asaas.delete(`/subscriptions/${subscriptionId}`);
   },
 
+  async getSubscription(subscriptionId: string): Promise<AsaasSubscription> {
+    const response = await asaas.get(`/subscriptions/${subscriptionId}`);
+    return response.data;
+  },
+
   async getSubscriptionPayments(subscriptionId: string): Promise<AsaasPayment[]> {
     const response = await asaas.get(`/payments`, { params: { subscription: subscriptionId } });
     return response.data.data;

@@ -2,6 +2,7 @@ import { userRepository } from "../repositories/user.repository";
 import { subscriptionRepository } from "../repositories/subscription.repository";
 import { asaasProvider } from "../providers/AsaasProvider";
 import { PLAN_PRICES } from "../config/plans";
+import { logger } from "../lib/logger";
 
 function todayPlusDays(days: number): string {
   const d = new Date();
@@ -68,9 +69,23 @@ export const billingService = {
     if (!subscription) return;
 
     if (event === "PAYMENT_CONFIRMED" || event === "PAYMENT_RECEIVED") {
+      // payment.dueDate is the due date of the payment that was JUST paid
+      // (effectively "now"), not when access should expire. The Asaas
+      // subscription's nextDueDate already reflects the next billing cycle,
+      // which is what access should actually be valid until.
+      let periodEnd = payment.dueDate ? new Date(payment.dueDate) : null;
+      try {
+        const asaasSubscription = await asaasProvider.getSubscription(payment.subscription);
+        if (asaasSubscription.nextDueDate) {
+          periodEnd = new Date(asaasSubscription.nextDueDate);
+        }
+      } catch (err) {
+        logger.error({ err, subscriptionId: payment.subscription }, "Failed to fetch Asaas subscription nextDueDate, falling back to payment.dueDate");
+      }
+
       await subscriptionRepository.updateByUserId(subscription.userId, {
         status: "ACTIVE",
-        currentPeriodEnd: payment.dueDate ? new Date(payment.dueDate) : null,
+        currentPeriodEnd: periodEnd,
       });
     } else if (event === "PAYMENT_OVERDUE") {
       await subscriptionRepository.updateByUserId(subscription.userId, { status: "PAST_DUE" });

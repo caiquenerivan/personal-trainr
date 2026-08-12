@@ -16,6 +16,7 @@ vi.mock("../../providers/AsaasProvider", () => ({
     createCustomer: vi.fn(),
     createSubscription: vi.fn(),
     getSubscriptionPayments: vi.fn(),
+    getSubscription: vi.fn(),
   },
 }));
 
@@ -161,10 +162,16 @@ describe("billingService.handleWebhook", () => {
     expect(subscriptionRepository.updateByUserId).not.toHaveBeenCalled();
   });
 
-  it("ativa a assinatura em PAYMENT_CONFIRMED", async () => {
+  it("ativa a assinatura em PAYMENT_CONFIRMED usando o nextDueDate da assinatura Asaas", async () => {
     vi.mocked(subscriptionRepository.findByAsaasSubscriptionId).mockResolvedValue({
       ...baseSubscription,
       asaasSubscriptionId: "sub_asaas_1",
+    });
+    vi.mocked(asaasProvider.getSubscription).mockResolvedValue({
+      id: "sub_asaas_1",
+      status: "ACTIVE",
+      value: 39.9,
+      nextDueDate: "2026-10-10",
     });
 
     await billingService.handleWebhook({
@@ -172,9 +179,28 @@ describe("billingService.handleWebhook", () => {
       payment: { subscription: "sub_asaas_1", dueDate: "2026-09-10" },
     });
 
+    expect(asaasProvider.getSubscription).toHaveBeenCalledWith("sub_asaas_1");
     expect(subscriptionRepository.updateByUserId).toHaveBeenCalledWith(
       "trainer-1",
-      expect.objectContaining({ status: "ACTIVE" }),
+      expect.objectContaining({ status: "ACTIVE", currentPeriodEnd: new Date("2026-10-10") }),
+    );
+  });
+
+  it("recorre ao dueDate do pagamento se a busca do nextDueDate na Asaas falhar", async () => {
+    vi.mocked(subscriptionRepository.findByAsaasSubscriptionId).mockResolvedValue({
+      ...baseSubscription,
+      asaasSubscriptionId: "sub_asaas_1",
+    });
+    vi.mocked(asaasProvider.getSubscription).mockRejectedValue(new Error("Asaas down"));
+
+    await billingService.handleWebhook({
+      event: "PAYMENT_RECEIVED",
+      payment: { subscription: "sub_asaas_1", dueDate: "2026-09-10" },
+    });
+
+    expect(subscriptionRepository.updateByUserId).toHaveBeenCalledWith(
+      "trainer-1",
+      expect.objectContaining({ status: "ACTIVE", currentPeriodEnd: new Date("2026-09-10") }),
     );
   });
 
