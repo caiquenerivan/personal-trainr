@@ -62,6 +62,13 @@ export async function updateUser(req: Request, res: Response): Promise<any> {
     if (!validation.success) {
       return res.status(400).json({ message: "Validation error", errors: validation.error.format() });
     }
+    if (
+      (req.params.id as string) === (req.headers["x-user-id"] as string) &&
+      validation.data.role !== undefined &&
+      validation.data.role !== "ADMIN"
+    ) {
+      return res.status(400).json({ message: "Você não pode remover seu próprio acesso de administrador" });
+    }
     const result = await adminService.updateUser(req.params.id as string, validation.data);
     return res.status(200).json(result);
   } catch (error: any) {
