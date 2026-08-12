@@ -1,7 +1,16 @@
 import { Request, Response } from "express";
+import { timingSafeEqual } from "crypto";
 import { z } from "zod";
 import { billingService } from "../services/billing.service";
 import { logger } from "../lib/logger";
+
+function isValidWebhookToken(expected: string, received: unknown): boolean {
+  if (typeof received !== "string") return false;
+  const expectedBuf = Buffer.from(expected);
+  const receivedBuf = Buffer.from(received);
+  if (expectedBuf.length !== receivedBuf.length) return false;
+  return timingSafeEqual(expectedBuf, receivedBuf);
+}
 
 const checkoutSchema = z.object({
   plan: z.enum(["PRO", "UNLIMITED"]),
@@ -39,7 +48,7 @@ export async function webhook(req: Request, res: Response): Promise<any> {
   try {
     const expectedToken = process.env.ASAAS_WEBHOOK_TOKEN;
     const receivedToken = req.headers["asaas-access-token"];
-    if (!expectedToken || receivedToken !== expectedToken) {
+    if (!expectedToken || !isValidWebhookToken(expectedToken, receivedToken)) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
