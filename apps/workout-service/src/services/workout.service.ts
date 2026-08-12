@@ -11,6 +11,18 @@ export const workoutService = {
       throw { status: 404, message: "Routine exercise not found" };
     }
 
+    const assignment = await prisma.routineAssignment.findFirst({
+      where: {
+        routineId: routineExercise.routineId,
+        alunoId,
+        isActive: true,
+      },
+    });
+
+    if (!assignment) {
+      throw { status: 403, message: "Este exercício não pertence a uma rotina atribuída a você" };
+    }
+
     const log = await workoutLogRepository.create({
       alunoId,
       routineExerciseId,

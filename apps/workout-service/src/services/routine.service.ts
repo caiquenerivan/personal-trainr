@@ -1,6 +1,7 @@
 import { routineRepository } from "../repositories/routine.repository";
 import { routineAssignmentRepository } from "../repositories/routine-assignment.repository";
 import { exerciseRepository } from "../repositories/exercise.repository";
+import { prisma } from "../lib/prisma";
 import type { Day, RoutineType } from "../generated/prisma/client";
 
 export const routineService = {
@@ -50,6 +51,19 @@ export const routineService = {
       }>;
     }>;
   }) {
+    const connection = await prisma.trainerStudentConnection.findUnique({
+      where: {
+        trainerId_studentId: {
+          trainerId: data.trainerId,
+          studentId: data.alunoId,
+        },
+      },
+    });
+
+    if (!connection || connection.status !== "ACTIVE") {
+      throw { status: 403, message: "Você não tem permissão para atribuir treino a este aluno" };
+    }
+
     let routine = await routineRepository.findById(data.routineId);
     if (!routine) {
       if (!data.routineName) {
