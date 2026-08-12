@@ -65,6 +65,9 @@ export const routineService = {
     }
 
     let routine = await routineRepository.findById(data.routineId);
+    if (routine && routine.trainerId !== data.trainerId) {
+      throw { status: 403, message: "Você não tem permissão para atribuir esta rotina" };
+    }
     if (!routine) {
       if (!data.routineName) {
         throw { status: 404, message: "Routine not found" };
