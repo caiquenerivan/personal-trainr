@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { CreditCard } from 'lucide-react';
 import { listSubscriptions, updateSubscription, type AdminSubscription, type PlanTier, type SubscriptionStatus } from '../../api/admin';
 import { Modal } from '../../components/Modal';
+import { formatDateUTC } from '../../utils/date';
 
 const PLAN_LABELS: Record<PlanTier, string> = { FREE: 'Grátis', PRO: 'Pro', UNLIMITED: 'Ilimitado' };
 const STATUS_LABELS: Record<SubscriptionStatus, string> = {
@@ -109,7 +110,7 @@ export function AdminSubscriptionsPage() {
                     <span className={`rounded-full px-3 py-1 text-xs uppercase ${STATUS_STYLES[s.status]}`}>{STATUS_LABELS[s.status]}</span>
                   </td>
                   <td className="px-5 py-4 text-text-secondary">
-                    {s.currentPeriodEnd ? new Date(s.currentPeriodEnd).toLocaleDateString('pt-BR') : '—'}
+                    {s.currentPeriodEnd ? formatDateUTC(s.currentPeriodEnd) : '—'}
                   </td>
                   <td className="px-5 py-4 text-right">
                     <button

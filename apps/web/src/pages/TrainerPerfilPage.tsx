@@ -26,6 +26,7 @@ import { getTrainerRating } from '../api/connections';
 import { getSubscription, checkout, SubscriptionData, PlanTier } from '../api/billing';
 import { StarRating } from '../components/StarRating';
 import { formatPhone, unformatPhone } from '../utils/phone';
+import { formatDateUTC } from '../utils/date';
 
 const UF_OPTIONS = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
@@ -802,7 +803,7 @@ export function TrainerPerfilPage() {
               </p>
               {subscription.currentPeriodEnd && subscription.status === 'ACTIVE' && (
                 <p className="font-body text-xs text-text-secondary mt-1">
-                  Válido até {new Date(subscription.currentPeriodEnd).toLocaleDateString('pt-BR')}
+                  Válido até {formatDateUTC(subscription.currentPeriodEnd)}
                 </p>
               )}
             </div>
