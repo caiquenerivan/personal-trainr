@@ -9,7 +9,7 @@ export type UserData = {
   id: string;
   name: string;
   email: string;
-  role: 'TRAINER' | 'ALUNO';
+  role: 'TRAINER' | 'ALUNO' | 'ADMIN';
   avatarUrl?: string | null;
   phone?: string | null;
   weight?: number | null;

@@ -5,6 +5,7 @@ import cors from "cors";
 import pinoHttp from "pino-http";
 import "dotenv/config";
 import workoutRoutes from "./routes/workout.routes";
+import adminRoutes from "./routes/admin.routes";
 import { gatewayContextMiddleware, requireInternalSecret } from "./middlewares/auth-context.middleware";
 import { prisma } from "./lib/prisma";
 import { logger } from "./lib/logger";
@@ -54,6 +55,7 @@ app.use(gatewayContextMiddleware);
 
 // Mount the workout routes under /api
 app.use("/api", workoutRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Error handler (must be registered last)
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

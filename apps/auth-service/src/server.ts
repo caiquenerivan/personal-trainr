@@ -8,6 +8,7 @@ import "dotenv/config";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
 import billingRoutes from "./routes/billing.routes";
+import adminRoutes from "./routes/admin.routes";
 import { requireInternalSecret } from "./middlewares/internal-secret.middleware";
 import { prisma } from "./lib/prisma";
 import { logger } from "./lib/logger";
@@ -56,6 +57,7 @@ app.use(requireInternalSecret);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/billing", billingRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Error handler (must be registered last)
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

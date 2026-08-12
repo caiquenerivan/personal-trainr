@@ -72,7 +72,8 @@ model User {
   email        String    @unique
   passwordHash String
   role         Role      @default(ALUNO)
-  
+  isActive     Boolean   @default(true)
+
   // Dados Gerais Novos e Antigos
   avatarUrl    String?
   phone        String?

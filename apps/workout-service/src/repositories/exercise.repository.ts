@@ -2,7 +2,7 @@ import { prisma } from "../lib/prisma";
 import type { Exercise } from "../generated/prisma/client";
 
 export interface CreateExerciseData {
-  trainerId: string;
+  trainerId: string | null;
   name: string;
   videoUrl?: string | null;
   gifUrl?: string | null;

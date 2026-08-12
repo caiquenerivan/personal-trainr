@@ -19,6 +19,7 @@ export function PublicRoute() {
 
   if (token && user) {
     if (user.role === 'ALUNO') return <Navigate to="/aluno/painel" replace />;
+    if (user.role === 'ADMIN') return <Navigate to="/admin" replace />;
     return <Navigate to="/painel" replace />;
   }
 
@@ -41,6 +42,18 @@ export function StudentRoute() {
 
   if (!token || !user) return <Navigate to="/login" replace />;
   if (user.role !== 'ALUNO') return <Navigate to="/painel" replace />;
+
+  return <Outlet />;
+}
+
+export function AdminRoute() {
+  const token = getToken();
+  const user = getUser();
+
+  if (!token || !user) return <Navigate to="/login" replace />;
+  if (user.role !== 'ADMIN') {
+    return <Navigate to={user.role === 'ALUNO' ? '/aluno/painel' : '/painel'} replace />;
+  }
 
   return <Outlet />;
 }
