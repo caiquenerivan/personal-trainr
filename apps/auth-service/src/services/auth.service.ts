@@ -35,6 +35,50 @@ function generateBackupCodes(): { plain: string[]; hashed: string[] } {
   return { plain, hashed };
 }
 
+// Emite a sessão pós-autenticação: tempToken se 2FA estiver ativo, ou o JWT
+// final direto. Compartilhado entre login por senha e login via OAuth, já
+// que a partir daqui a lógica é idêntica (a diferença está em como cada um
+// chegou a um `user` confiável).
+export function issueSession(user: {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  username: string;
+  avatarUrl: string | null;
+  phone: string | null;
+  bio: string | null;
+  instagram: string | null;
+  weight: number | null;
+  height: number | null;
+  birthDate: Date | null;
+  emailVerified: boolean;
+  twoFactorEnabled: boolean;
+}) {
+  if (user.twoFactorEnabled) {
+    const tempToken = jwt.sign(
+      { userId: user.id, scope: TWO_FACTOR_PENDING_SCOPE },
+      JWT_SECRET,
+      { expiresIn: "5m" },
+    );
+    return { requiresTwoFactor: true as const, tempToken };
+  }
+
+  const token = jwt.sign(
+    { userId: user.id, role: user.role },
+    JWT_SECRET,
+    { expiresIn: "1d" },
+  );
+
+  return {
+    token,
+    user: {
+      ...toPublicUserFields(user),
+      requiresTwoFactorSetup: user.role === "ADMIN" && !user.twoFactorEnabled,
+    },
+  };
+}
+
 function toPublicUserFields(user: {
   id: string;
   name: string;
@@ -185,31 +229,7 @@ export const authService = {
       throw { status: 403, message: "Confirme seu e-mail antes de fazer login. Verifique sua caixa de entrada." };
     }
 
-    if (user.twoFactorEnabled) {
-      const tempToken = jwt.sign(
-        { userId: user.id, scope: TWO_FACTOR_PENDING_SCOPE },
-        JWT_SECRET,
-        { expiresIn: "5m" },
-      );
-      return { requiresTwoFactor: true, tempToken };
-    }
-
-    const token = jwt.sign(
-      { userId: user.id, role: user.role },
-      JWT_SECRET,
-      { expiresIn: "1d" },
-    );
-
-    return {
-      token,
-      user: {
-        ...toPublicUserFields(user),
-        // ADMIN sem 2FA ainda recebe o JWT (a senha já foi provada), mas o
-        // frontend deve forçar o setup antes de liberar navegação — reforçado
-        // no backend por requireTwoFactorForAdmin nas rotas de admin.
-        requiresTwoFactorSetup: user.role === "ADMIN" && !user.twoFactorEnabled,
-      },
-    };
+    return issueSession(user);
   },
 
   async getProfile(userId: string) {

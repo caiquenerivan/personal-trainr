@@ -4,12 +4,13 @@ import type { Prisma, Role, User } from "../generated/prisma/client";
 export interface CreateUserData {
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string | null;
   role: "TRAINER" | "ALUNO";
   username: string;
   avatarUrl?: string | null;
   phone?: string | null;
   birthDate?: Date | null;
+  emailVerified?: boolean;
 }
 
 export type PublicUser = Omit<User, "passwordHash" | "twoFactorSecret" | "twoFactorBackupCodes">;

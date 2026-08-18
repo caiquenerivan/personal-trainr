@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { login, resendVerification, verifyTwoFactor, type UserData } from '../api/auth';
 import { api } from '../api/client';
@@ -9,6 +9,12 @@ function routeForRole(role: UserData['role']): string {
   if (role === 'ALUNO') return '/aluno/painel';
   if (role === 'ADMIN') return '/admin';
   return '/painel';
+}
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+function handleGoogleLogin() {
+  window.location.href = `${API_URL}/api/auth/google`;
 }
 
 // Completa a conexão trainer<->aluno de um convite pendente (armazenado no
@@ -30,12 +36,18 @@ async function completePendingInvite() {
 
 export function LoginScreen() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'error' | 'unverified'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'error' | 'unverified'>(
+    searchParams.get('oauth_error') ? 'error' : 'idle',
+  );
   const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'sent'>('idle');
 
-  const [tempToken, setTempToken] = useState<string | null>(null);
+  const [tempToken, setTempToken] = useState<string | null>(
+    (location.state as { tempToken?: string } | null)?.tempToken ?? null,
+  );
   const [twoFactorCode, setTwoFactorCode] = useState('');
   const [twoFactorStatus, setTwoFactorStatus] = useState<'idle' | 'loading' | 'error'>('idle');
 
@@ -247,6 +259,26 @@ export function LoginScreen() {
             className="mt-6 block min-h-12 w-full rounded-lg bg-accent px-5 font-bold uppercase text-black transition hover:opacity-90 disabled:cursor-wait disabled:opacity-70"
           >
             {status === 'loading' ? 'Entrando...' : 'Entrar'}
+          </button>
+
+          <div className="mt-5 flex items-center gap-3">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-[10px] uppercase text-text-secondary">ou</span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-lg border border-border bg-base px-5 font-bold uppercase text-text-primary transition hover:border-accent active:scale-98"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z" />
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z" />
+              <path fill="#FBBC05" d="M5.27 14.28A7.2 7.2 0 0 1 4.9 12c0-.79.14-1.56.37-2.28V6.63H1.29A11.99 11.99 0 0 0 0 12c0 1.94.46 3.77 1.29 5.37l3.98-3.09z" />
+              <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.61 4.59 1.8l3.42-3.42C17.94 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.63l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z" />
+            </svg>
+            Continuar com Google
           </button>
 
           <p className="mt-6 text-center text-sm text-text-secondary">

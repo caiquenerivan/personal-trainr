@@ -14,6 +14,7 @@ const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage').then((m
 const CheckEmailPage = lazy(() => import('./pages/CheckEmailPage').then((m) => ({ default: m.CheckEmailPage })));
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage').then((m) => ({ default: m.VerifyEmailPage })));
 const TwoFactorSetupPage = lazy(() => import('./pages/TwoFactorSetupPage').then((m) => ({ default: m.TwoFactorSetupPage })));
+const OAuthCallbackPage = lazy(() => import('./pages/OAuthCallbackPage').then((m) => ({ default: m.OAuthCallbackPage })));
 const StudentsPage = lazy(() => import('./pages/StudentsPage').then((m) => ({ default: m.StudentsPage })));
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage })));
 const ExercisesPage = lazy(() => import('./pages/ExercisesPage').then((m) => ({ default: m.ExercisesPage })));
@@ -106,6 +107,7 @@ export function AppRouter() {
         </Route>
 
         {/* ─── Public (no guard) ─────────────────────────── */}
+        <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
         <Route path="/convite/:username" element={<ConvitePage />} />
         <Route path="/verificar-email" element={<VerifyEmailPage />} />
         <Route path="/privacidade" element={<PrivacyPolicyPage />} />

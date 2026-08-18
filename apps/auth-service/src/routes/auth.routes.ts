@@ -1,6 +1,7 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
 import { register, login, forgotPassword, resetPassword, verifyEmail, resendVerification, verifyTwoFactor } from "../controllers/auth.controller";
+import { googleRedirect, googleCallback } from "../controllers/oauth.controller";
 
 const router = Router();
 
@@ -32,5 +33,7 @@ router.post("/reset-password", authAttemptLimiter, resetPassword);
 router.post("/verify-email", authAttemptLimiter, verifyEmail);
 router.post("/resend-verification", authAttemptLimiter, resendVerification);
 router.post("/2fa/verify", twoFactorAttemptLimiter, verifyTwoFactor);
+router.get("/google", googleRedirect);
+router.get("/google/callback", googleCallback);
 
 export default router;
