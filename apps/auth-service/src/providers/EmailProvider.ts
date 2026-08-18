@@ -26,3 +26,20 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
     `,
   });
 }
+
+export async function sendVerificationEmail(to: string, verifyUrl: string): Promise<void> {
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM || process.env.SMTP_USER,
+    to,
+    subject: "Confirme seu e-mail — Personal Trainr",
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2>Confirme seu e-mail</h2>
+        <p>Falta pouco para começar a usar a Personal Trainr.</p>
+        <p>Clique no link abaixo para confirmar seu e-mail. Este link expira em 24 horas.</p>
+        <p><a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#af9150;color:#000;text-decoration:none;border-radius:8px;font-weight:bold;">Confirmar e-mail</a></p>
+        <p>Se você não criou uma conta, pode ignorar este email com segurança.</p>
+      </div>
+    `,
+  });
+}

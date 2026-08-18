@@ -4,11 +4,12 @@ import crypto from "crypto";
 import { userRepository } from "../repositories/user.repository";
 import type { CreateUserData } from "../repositories/user.repository";
 import { passwordResetTokenRepository } from "../repositories/passwordResetToken.repository";
+import { emailVerificationTokenRepository } from "../repositories/emailVerificationToken.repository";
 import { trainerProfileRepository } from "../repositories/trainerProfile.repository";
 import type { TrainerProfileData } from "../repositories/trainerProfile.repository";
 import { subscriptionRepository } from "../repositories/subscription.repository";
 import { PLAN_STUDENT_LIMITS } from "../config/plans";
-import { sendPasswordResetEmail } from "../providers/EmailProvider";
+import { sendPasswordResetEmail, sendVerificationEmail } from "../providers/EmailProvider";
 import { logger } from "../lib/logger";
 
 if (!process.env.JWT_SECRET) {
@@ -16,9 +17,26 @@ if (!process.env.JWT_SECRET) {
 }
 const JWT_SECRET = process.env.JWT_SECRET;
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
+const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 
 function hashToken(token: string): string {
   return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+async function issueEmailVerification(userId: string, email: string): Promise<void> {
+  const rawToken = crypto.randomBytes(32).toString("hex");
+  const tokenHash = hashToken(rawToken);
+  const expiresAt = new Date(Date.now() + EMAIL_VERIFICATION_TTL_MS);
+
+  await emailVerificationTokenRepository.create({ userId, tokenHash, expiresAt });
+
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+  const verifyUrl = `${frontendUrl}/verificar-email?token=${rawToken}`;
+  try {
+    await sendVerificationEmail(email, verifyUrl);
+  } catch (err) {
+    logger.error({ err }, "Failed to send verification email");
+  }
 }
 
 export const authService = {
@@ -79,6 +97,8 @@ export const authService = {
       await subscriptionRepository.createDefault(user.id);
     }
 
+    await issueEmailVerification(user.id, user.email);
+
     return { user };
   },
 
@@ -102,7 +122,7 @@ export const authService = {
 
   async login(email: string, password: string) {
     const user = await userRepository.findByEmail(email);
-    if (!user) {
+    if (!user || !user.passwordHash) {
       throw { status: 401, message: "Invalid email or password" };
     }
 
@@ -113,6 +133,10 @@ export const authService = {
 
     if (!user.isActive) {
       throw { status: 403, message: "Conta desativada. Entre em contato com o suporte." };
+    }
+
+    if (!user.emailVerified) {
+      throw { status: 403, message: "Confirme seu e-mail antes de fazer login. Verifique sua caixa de entrada." };
     }
 
     const token = jwt.sign(
@@ -136,6 +160,8 @@ export const authService = {
         weight: user.weight,
         height: user.height,
         birthDate: user.birthDate,
+        emailVerified: user.emailVerified,
+        twoFactorEnabled: user.twoFactorEnabled,
       },
     };
   },
@@ -190,6 +216,10 @@ export const authService = {
       throw { status: 404, message: "User not found" };
     }
 
+    if (!user.passwordHash) {
+      throw { status: 400, message: "Esta conta usa login social. Defina uma senha em Configurações." };
+    }
+
     const passwordMatch = await bcrypt.compare(currentPassword, user.passwordHash);
     if (!passwordMatch) {
       throw { status: 401, message: "Current password is incorrect" };
@@ -234,6 +264,29 @@ export const authService = {
     await passwordResetTokenRepository.markUsed(resetToken.id);
 
     return { message: "Senha redefinida com sucesso" };
+  },
+
+  async verifyEmail(token: string) {
+    const tokenHash = hashToken(token);
+    const verificationToken = await emailVerificationTokenRepository.findValidByHash(tokenHash);
+    if (!verificationToken) {
+      throw { status: 400, message: "Token inválido ou expirado" };
+    }
+
+    await userRepository.updateEmailVerified(verificationToken.userId, true);
+    await emailVerificationTokenRepository.markUsed(verificationToken.id);
+
+    return { message: "E-mail confirmado com sucesso" };
+  },
+
+  async resendVerification(email: string) {
+    const user = await userRepository.findByEmail(email);
+    if (user && !user.emailVerified) {
+      await emailVerificationTokenRepository.deleteAllForUser(user.id);
+      await issueEmailVerification(user.id, user.email);
+    }
+
+    return { message: "Se o email existir em nossa base e ainda não tiver sido confirmado, enviaremos um novo link." };
   },
 
   async getTrainerProfile(userId: string, role: string) {

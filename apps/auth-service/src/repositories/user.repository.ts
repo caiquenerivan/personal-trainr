@@ -12,10 +12,10 @@ export interface CreateUserData {
   birthDate?: Date | null;
 }
 
-export type PublicUser = Omit<User, "passwordHash">;
+export type PublicUser = Omit<User, "passwordHash" | "twoFactorSecret" | "twoFactorBackupCodes">;
 
 function toPublic(user: User): PublicUser {
-  const { passwordHash, ...publicUser } = user;
+  const { passwordHash, twoFactorSecret, twoFactorBackupCodes, ...publicUser } = user;
   return publicUser;
 }
 
@@ -51,6 +51,14 @@ export const userRepository = {
     const user = await prisma.user.update({
       where: { id },
       data: { passwordHash },
+    });
+    return toPublic(user);
+  },
+
+  async updateEmailVerified(id: string, emailVerified: boolean): Promise<PublicUser | null> {
+    const user = await prisma.user.update({
+      where: { id },
+      data: { emailVerified },
     });
     return toPublic(user);
   },

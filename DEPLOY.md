@@ -31,6 +31,23 @@ Configure `VITE_API_URL` apontando para a URL pública do `api-gateway` antes de
 - Configure a URL do webhook (`https://SEU_DOMINIO/api/billing/webhook`) no painel da Asaas, usando o mesmo
   valor de `ASAAS_WEBHOOK_TOKEN` do `.env` do `auth-service`.
 
+## Confirmação de e-mail obrigatória
+A partir da migration `add_email_verification_2fa_oauth`, login passa a exigir `emailVerified=true`
+— inclusive para usuários cadastrados **antes** dessa mudança (todos nascem com
+`emailVerified=false` por padrão). Sem o passo abaixo, ninguém que já usa o app consegue logar no
+dia do deploy.
+
+Rode uma única vez, logo após aplicar a migration em produção:
+
+```bash
+cd apps/auth-service && npm run send-verification-to-existing-users -- --dry-run  # lista quem vai receber, sem enviar
+cd apps/auth-service && npm run send-verification-to-existing-users               # envia de fato
+```
+
+Isso dispara e-mail em massa (batches de 20 com 2s de intervalo) — se o provedor SMTP tiver um
+limite de envio mais restritivo, ajuste `BATCH_SIZE`/`BATCH_DELAY_MS` em
+`apps/auth-service/src/scripts/send-verification-to-existing-users.ts` antes de rodar.
+
 ## Depois do primeiro deploy
 - Confirme que `/health` responde em todos os serviços.
 - Teste cadastro, login e o fluxo de assinatura ponta a ponta em produção antes de divulgar.

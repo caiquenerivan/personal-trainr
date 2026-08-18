@@ -10,6 +10,7 @@ vi.mock("../../repositories/user.repository", () => ({
     create: vi.fn(),
     update: vi.fn(),
     updatePasswordHash: vi.fn(),
+    updateEmailVerified: vi.fn(),
   },
 }));
 vi.mock("../../repositories/passwordResetToken.repository", () => ({
@@ -17,6 +18,14 @@ vi.mock("../../repositories/passwordResetToken.repository", () => ({
     create: vi.fn(),
     findValidByHash: vi.fn(),
     markUsed: vi.fn(),
+  },
+}));
+vi.mock("../../repositories/emailVerificationToken.repository", () => ({
+  emailVerificationTokenRepository: {
+    create: vi.fn(),
+    findValidByHash: vi.fn(),
+    markUsed: vi.fn(),
+    deleteAllForUser: vi.fn(),
   },
 }));
 vi.mock("../../repositories/trainerProfile.repository", () => ({
@@ -35,14 +44,16 @@ vi.mock("../../repositories/subscription.repository", () => ({
 }));
 vi.mock("../../providers/EmailProvider", () => ({
   sendPasswordResetEmail: vi.fn(),
+  sendVerificationEmail: vi.fn(),
 }));
 
 import { authService } from "../auth.service";
 import { userRepository } from "../../repositories/user.repository";
 import { passwordResetTokenRepository } from "../../repositories/passwordResetToken.repository";
+import { emailVerificationTokenRepository } from "../../repositories/emailVerificationToken.repository";
 import { trainerProfileRepository } from "../../repositories/trainerProfile.repository";
 import { subscriptionRepository } from "../../repositories/subscription.repository";
-import { sendPasswordResetEmail } from "../../providers/EmailProvider";
+import { sendPasswordResetEmail, sendVerificationEmail } from "../../providers/EmailProvider";
 
 const baseUser = {
   id: "user-1",
@@ -52,6 +63,7 @@ const baseUser = {
   passwordHash: "hashed",
   role: "ALUNO" as const,
   isActive: true,
+  emailVerified: true,
   avatarUrl: null,
   phone: null,
   instagram: null,
@@ -60,6 +72,9 @@ const baseUser = {
   height: null,
   birthDate: null,
   createdAt: new Date(),
+  twoFactorSecret: null,
+  twoFactorEnabled: false,
+  twoFactorBackupCodes: [] as string[],
 };
 
 beforeEach(() => {
@@ -158,6 +173,10 @@ describe("authService.register", () => {
     expect(result.user.id).toBe("user-1");
     expect(trainerProfileRepository.upsert).not.toHaveBeenCalled();
     expect(subscriptionRepository.createDefault).not.toHaveBeenCalled();
+    expect(emailVerificationTokenRepository.create).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: "user-1" }),
+    );
+    expect(sendVerificationEmail).toHaveBeenCalled();
   });
 
   it("cadastra TRAINER com sucesso criando TrainerProfile e Subscription (plano Grátis)", async () => {
@@ -228,6 +247,86 @@ describe("authService.login", () => {
       status: 403,
       message: "Conta desativada. Entre em contato com o suporte.",
     });
+  });
+
+  it("rejeita login com e-mail não confirmado mesmo com senha correta", async () => {
+    const hash = await bcrypt.hash("senhacerta", 10);
+    vi.mocked(userRepository.findByEmail).mockResolvedValue({ ...baseUser, passwordHash: hash, emailVerified: false });
+
+    await expect(authService.login(baseUser.email, "senhacerta")).rejects.toMatchObject({
+      status: 403,
+      message: "Confirme seu e-mail antes de fazer login. Verifique sua caixa de entrada.",
+    });
+  });
+
+  it("rejeita login de conta OAuth-only (sem senha definida)", async () => {
+    vi.mocked(userRepository.findByEmail).mockResolvedValue({ ...baseUser, passwordHash: null });
+
+    await expect(authService.login(baseUser.email, "qualquersenha")).rejects.toMatchObject({
+      status: 401,
+      message: "Invalid email or password",
+    });
+  });
+});
+
+describe("authService.verifyEmail", () => {
+  it("rejeita token inválido ou expirado", async () => {
+    vi.mocked(emailVerificationTokenRepository.findValidByHash).mockResolvedValue(null);
+
+    await expect(authService.verifyEmail("token-invalido")).rejects.toMatchObject({
+      status: 400,
+      message: "Token inválido ou expirado",
+    });
+  });
+
+  it("confirma o email e marca o token como usado", async () => {
+    vi.mocked(emailVerificationTokenRepository.findValidByHash).mockResolvedValue({
+      id: "verify-1",
+      userId: baseUser.id,
+      tokenHash: "hash",
+      expiresAt: new Date(Date.now() + 10000),
+      usedAt: null,
+      createdAt: new Date(),
+    });
+
+    const result = await authService.verifyEmail("token-valido");
+
+    expect(userRepository.updateEmailVerified).toHaveBeenCalledWith(baseUser.id, true);
+    expect(emailVerificationTokenRepository.markUsed).toHaveBeenCalledWith("verify-1");
+    expect(result.message).toBe("E-mail confirmado com sucesso");
+  });
+});
+
+describe("authService.resendVerification", () => {
+  it("responde mensagem genérica quando o usuário não existe (anti-enumeração)", async () => {
+    vi.mocked(userRepository.findByEmail).mockResolvedValue(null);
+
+    const result = await authService.resendVerification("naoexiste@example.com");
+
+    expect(emailVerificationTokenRepository.deleteAllForUser).not.toHaveBeenCalled();
+    expect(result.message).toContain("Se o email existir em nossa base");
+  });
+
+  it("responde a mesma mensagem genérica quando o usuário já confirmou o email (não reenvia)", async () => {
+    vi.mocked(userRepository.findByEmail).mockResolvedValue({ ...baseUser, emailVerified: true });
+
+    const result = await authService.resendVerification(baseUser.email);
+
+    expect(emailVerificationTokenRepository.deleteAllForUser).not.toHaveBeenCalled();
+    expect(result.message).toContain("Se o email existir em nossa base");
+  });
+
+  it("invalida tokens antigos e envia um novo quando o usuário existe e não confirmou", async () => {
+    vi.mocked(userRepository.findByEmail).mockResolvedValue({ ...baseUser, emailVerified: false });
+
+    const result = await authService.resendVerification(baseUser.email);
+
+    expect(emailVerificationTokenRepository.deleteAllForUser).toHaveBeenCalledWith(baseUser.id);
+    expect(emailVerificationTokenRepository.create).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: baseUser.id }),
+    );
+    expect(sendVerificationEmail).toHaveBeenCalled();
+    expect(result.message).toContain("Se o email existir em nossa base");
   });
 });
 

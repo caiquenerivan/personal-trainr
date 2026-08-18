@@ -15,6 +15,8 @@ export type UserData = {
   weight?: number | null;
   height?: number | null;
   birthDate?: string | null;
+  emailVerified: boolean;
+  twoFactorEnabled: boolean;
 };
 
 export type LoginResponse = {
@@ -54,5 +56,15 @@ export async function forgotPassword(email: string) {
 
 export async function resetPassword(token: string, newPassword: string) {
   const response = await api.post<{ message: string }>('/api/auth/reset-password', { token, newPassword });
+  return response.data;
+}
+
+export async function verifyEmail(token: string) {
+  const response = await api.post<{ message: string }>('/api/auth/verify-email', { token });
+  return response.data;
+}
+
+export async function resendVerification(email: string) {
+  const response = await api.post<{ message: string }>('/api/auth/resend-verification', { email });
   return response.data;
 }

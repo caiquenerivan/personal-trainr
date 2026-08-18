@@ -70,9 +70,10 @@ model User {
   name         String
   username     String    @unique // Novo: Único geral
   email        String    @unique
-  passwordHash String
+  passwordHash String?   // opcional: contas OAuth-only não têm senha
   role         Role      @default(ALUNO)
   isActive     Boolean   @default(true)
+  emailVerified Boolean  @default(false)
 
   // Dados Gerais Novos e Antigos
   avatarUrl    String?
@@ -84,6 +85,11 @@ model User {
   birthDate    DateTime?
   createdAt    DateTime  @default(now())
 
+  // 2FA (TOTP)
+  twoFactorSecret      String?   // cifrado (AES-256-GCM), nunca texto plano
+  twoFactorEnabled     Boolean   @default(false)
+  twoFactorBackupCodes String[]  @default([]) // hashes SHA-256 dos códigos, não os códigos em si
+
   // Relação 1-para-1 com o perfil de treinador
   trainerProfile TrainerProfile?
 
@@ -91,8 +97,10 @@ model User {
   students TrainerStudentConnection[] @relation("TrainerToConnection")
   trainers TrainerStudentConnection[] @relation("StudentToConnection")
 
-  passwordResetTokens PasswordResetToken[]
-  subscription        Subscription?
+  passwordResetTokens     PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+  oauthAccounts           OAuthAccount[]
+  subscription            Subscription?
 }
 
 // 5. Tokens de redefinição de senha
@@ -105,6 +113,39 @@ model PasswordResetToken {
   createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Tokens de confirmação de e-mail
+model EmailVerificationToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Contas de login social vinculadas (Fase 3 usa este model; já criado
+// agora para evitar múltiplas migrations)
+enum OAuthProvider {
+  GOOGLE
+  APPLE
+}
+
+model OAuthAccount {
+  id             String        @id @default(uuid())
+  userId         String
+  provider       OAuthProvider
+  providerUserId String
+  email          String?
+  createdAt      DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@index([userId])
 }
 
 // 3. Tabela exclusiva para dados profissionais do Personal

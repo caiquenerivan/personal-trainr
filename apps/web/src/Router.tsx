@@ -11,6 +11,8 @@ const LandingPage = lazy(() => import('./pages/LandingPage').then((m) => ({ defa
 const RegisterPage = lazy(() => import('./pages/RegisterPage').then((m) => ({ default: m.RegisterPage })));
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage })));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage })));
+const CheckEmailPage = lazy(() => import('./pages/CheckEmailPage').then((m) => ({ default: m.CheckEmailPage })));
+const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage').then((m) => ({ default: m.VerifyEmailPage })));
 const StudentsPage = lazy(() => import('./pages/StudentsPage').then((m) => ({ default: m.StudentsPage })));
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage })));
 const ExercisesPage = lazy(() => import('./pages/ExercisesPage').then((m) => ({ default: m.ExercisesPage })));
@@ -56,6 +58,7 @@ export function AppRouter() {
           <Route path="/cadastro" element={<RegisterPage />} />
           <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
           <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
+          <Route path="/verifique-seu-email" element={<CheckEmailPage />} />
         </Route>
 
         {/* ─── Trainer Routes ────────────────────────────── */}
@@ -98,6 +101,7 @@ export function AppRouter() {
 
         {/* ─── Public (no guard) ─────────────────────────── */}
         <Route path="/convite/:username" element={<ConvitePage />} />
+        <Route path="/verificar-email" element={<VerifyEmailPage />} />
         <Route path="/privacidade" element={<PrivacyPolicyPage />} />
         <Route path="/termos" element={<TermsPage />} />
 

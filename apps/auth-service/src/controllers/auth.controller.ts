@@ -206,6 +206,53 @@ export async function resetPassword(req: Request, res: Response): Promise<any> {
   }
 }
 
+const verifyEmailSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+});
+
+const resendVerificationSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+export async function verifyEmail(req: Request, res: Response): Promise<any> {
+  try {
+    const validation = verifyEmailSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await authService.verifyEmail(validation.data.token);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    logger.error({ err: error }, "Verify email error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function resendVerification(req: Request, res: Response): Promise<any> {
+  try {
+    const validation = resendVerificationSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await authService.resendVerification(validation.data.email);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    logger.error({ err: error }, "Resend verification error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export async function getSubscription(req: Request, res: Response): Promise<any> {
   try {
     const userId = req.headers["x-user-id"] as string;

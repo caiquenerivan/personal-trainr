@@ -1,9 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
-import { register, login } from '../api/auth';
-import { api } from '../api/client';
-import { createConnection } from '../api/connections';
+import { register } from '../api/auth';
 
 const UF_OPTIONS = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
@@ -62,22 +60,10 @@ export function RegisterPage() {
         ...(role === 'TRAINER' ? { cref, crefState, crefCity } : {}),
       });
 
-      const storedInvite = localStorage.getItem('@ptrainr:invite');
-
-      if (storedInvite && role === 'ALUNO') {
-        const session = await login({ email, password });
-        localStorage.setItem('personaltrainr.token', session.token);
-        localStorage.setItem('personaltrainr.user', JSON.stringify(session.user));
-
-        const inviteRes = await api.get(`/api/trainers/invite/${storedInvite}`);
-        const trainerId = inviteRes.data.trainer.id;
-        await createConnection(trainerId);
-
-        localStorage.removeItem('@ptrainr:invite');
-        navigate('/aluno/painel', { replace: true });
-      } else {
-        navigate('/login', { replace: true });
-      }
+      // O convite pendente (se houver) continua em localStorage['@ptrainr:invite']
+      // e é resolvido no primeiro login bem-sucedido (LoginScreen.tsx), já que
+      // agora o login só funciona depois da confirmação de e-mail.
+      navigate('/verifique-seu-email', { state: { email }, replace: true });
     } catch (err: unknown) {
       const msg =
         err instanceof AxiosError

@@ -1,7 +1,9 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
-import { login, type UserData } from '../api/auth';
+import { login, resendVerification, type UserData } from '../api/auth';
+import { api } from '../api/client';
+import { createConnection } from '../api/connections';
 
 function routeForRole(role: UserData['role']): string {
   if (role === 'ALUNO') return '/aluno/painel';
@@ -9,11 +11,29 @@ function routeForRole(role: UserData['role']): string {
   return '/painel';
 }
 
+// Completa a conexão trainer<->aluno de um convite pendente (armazenado no
+// cadastro) assim que o primeiro login pós-verificação de email acontece.
+// Falha silenciosamente: o aluno ainda pode se conectar manualmente depois.
+async function completePendingInvite() {
+  const storedInvite = localStorage.getItem('@ptrainr:invite');
+  if (!storedInvite) return;
+  try {
+    const inviteRes = await api.get(`/api/trainers/invite/${storedInvite}`);
+    const trainerId = inviteRes.data.trainer.id;
+    await createConnection(trainerId);
+  } catch {
+    // convite pode ter expirado ou já ter sido usado — ignora
+  } finally {
+    localStorage.removeItem('@ptrainr:invite');
+  }
+}
+
 export function LoginScreen() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'error' | 'unverified'>('idle');
+  const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'sent'>('idle');
 
   useEffect(() => {
     const token = window.localStorage.getItem('personaltrainr.token');
@@ -37,13 +57,28 @@ export function LoginScreen() {
       window.localStorage.setItem('personaltrainr.token', session.token);
       window.localStorage.setItem('personaltrainr.user', JSON.stringify(session.user));
 
+      if (session.user.role === 'ALUNO') {
+        await completePendingInvite();
+      }
+
       navigate(routeForRole(session.user.role), { replace: true });
     } catch (err: unknown) {
-      const msg =
-        err instanceof AxiosError
-          ? String(err.response?.data?.message ?? '')
-          : '';
+      const status = err instanceof AxiosError ? err.response?.status : undefined;
+      if (status === 403 && err instanceof AxiosError && String(err.response?.data?.message ?? '').includes('Confirme seu e-mail')) {
+        setStatus('unverified');
+        return;
+      }
       setStatus('error');
+    }
+  }
+
+  async function handleResendVerification() {
+    setResendStatus('loading');
+    try {
+      await resendVerification(email);
+      setResendStatus('sent');
+    } catch {
+      setResendStatus('idle');
     }
   }
 
@@ -100,6 +135,24 @@ export function LoginScreen() {
             <p role="alert" className="mt-5 rounded-lg border border-border px-4 py-3 text-sm text-accent">
               Não foi possível autenticar com essas credenciais.
             </p>
+          )}
+
+          {status === 'unverified' && (
+            <div role="alert" className="mt-5 space-y-3 rounded-lg border border-border px-4 py-3 text-sm text-accent">
+              <p>Confirme seu e-mail antes de fazer login. Verifique sua caixa de entrada.</p>
+              {resendStatus === 'sent' ? (
+                <p className="text-text-secondary">Email reenviado. Verifique sua caixa de entrada (e spam).</p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResendVerification}
+                  disabled={resendStatus === 'loading'}
+                  className="text-xs uppercase underline transition hover:opacity-80 disabled:opacity-70"
+                >
+                  {resendStatus === 'loading' ? 'Enviando...' : 'Reenviar e-mail de confirmação'}
+                </button>
+              )}
+            </div>
           )}
 
           <button

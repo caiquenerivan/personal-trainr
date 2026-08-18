@@ -6,7 +6,8 @@
     "dev": "ts-node-dev src/server.ts",
     "build": "tsc",
     "test": "vitest run",
-    "seed:admin": "ts-node src/scripts/promote-admin.ts"
+    "seed:admin": "ts-node src/scripts/promote-admin.ts",
+    "send-verification-to-existing-users": "ts-node src/scripts/send-verification-to-existing-users.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

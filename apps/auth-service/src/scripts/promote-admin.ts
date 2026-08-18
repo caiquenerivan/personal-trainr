@@ -53,6 +53,7 @@ async function main() {
       username,
       passwordHash,
       role: "ADMIN",
+      emailVerified: true,
     },
   });
 

@@ -26,7 +26,7 @@ export const adminService = {
     if (!user) {
       throw { status: 404, message: "Usuário não encontrado" };
     }
-    const { passwordHash, ...publicUser } = user;
+    const { passwordHash, twoFactorSecret, twoFactorBackupCodes, ...publicUser } = user;
     return { user: publicUser };
   },
 
