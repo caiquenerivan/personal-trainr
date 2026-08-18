@@ -332,6 +332,107 @@ const changePasswordSchema = z.object({
   newPassword: passwordSchema,
 });
 
+export async function setupTwoFactor(req: Request, res: Response): Promise<any> {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const result = await authService.setupTwoFactor(userId);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    logger.error({ err: error }, "Setup 2FA error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const twoFactorCodeSchema = z.object({
+  code: z.string().min(6, "Código inválido").max(10, "Código inválido"),
+});
+
+export async function confirmTwoFactor(req: Request, res: Response): Promise<any> {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const validation = twoFactorCodeSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await authService.confirmTwoFactor(userId, validation.data.code);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    logger.error({ err: error }, "Confirm 2FA error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function disableTwoFactor(req: Request, res: Response): Promise<any> {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    const role = req.headers["x-user-role"] as string;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const validation = twoFactorCodeSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await authService.disableTwoFactor(userId, role, validation.data.code);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    logger.error({ err: error }, "Disable 2FA error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const verifyTwoFactorSchema = z.object({
+  tempToken: z.string().min(1, "Token is required"),
+  code: z.string().min(6, "Código inválido").max(10, "Código inválido"),
+});
+
+export async function verifyTwoFactor(req: Request, res: Response): Promise<any> {
+  try {
+    const validation = verifyTwoFactorSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await authService.verifyTwoFactor(validation.data.tempToken, validation.data.code);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    logger.error({ err: error }, "Verify 2FA error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export async function changePassword(req: Request, res: Response): Promise<any> {
   try {
     const userId = req.headers["x-user-id"] as string;

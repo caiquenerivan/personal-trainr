@@ -63,6 +63,28 @@ export const userRepository = {
     return toPublic(user);
   },
 
+  async setTwoFactorSecret(id: string, twoFactorSecret: string): Promise<void> {
+    await prisma.user.update({ where: { id }, data: { twoFactorSecret } });
+  },
+
+  async enableTwoFactor(id: string, twoFactorBackupCodes: string[]): Promise<void> {
+    await prisma.user.update({
+      where: { id },
+      data: { twoFactorEnabled: true, twoFactorBackupCodes },
+    });
+  },
+
+  async disableTwoFactor(id: string): Promise<void> {
+    await prisma.user.update({
+      where: { id },
+      data: { twoFactorEnabled: false, twoFactorSecret: null, twoFactorBackupCodes: [] },
+    });
+  },
+
+  async updateTwoFactorBackupCodes(id: string, twoFactorBackupCodes: string[]): Promise<void> {
+    await prisma.user.update({ where: { id }, data: { twoFactorBackupCodes } });
+  },
+
   async findMany(params: {
     role?: Role;
     isActive?: boolean;

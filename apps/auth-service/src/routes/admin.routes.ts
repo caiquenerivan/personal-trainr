@@ -11,10 +11,12 @@ import {
   overview,
 } from "../controllers/admin.controller";
 import { requireAdmin } from "../middlewares/require-admin.middleware";
+import { require2FAForAdmin } from "../middlewares/require-2fa-admin.middleware";
 
 const router = Router();
 
 router.use(requireAdmin);
+router.use(require2FAForAdmin);
 
 router.get("/overview", overview);
 

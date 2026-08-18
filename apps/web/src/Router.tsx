@@ -4,7 +4,7 @@ import { LoginScreen } from './components/LoginScreen';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { StudentLayout } from './layouts/StudentLayout';
 import { AdminLayout } from './layouts/AdminLayout';
-import { PublicRoute, TrainerRoute, StudentRoute, AdminRoute } from './components/ProtectedRoute';
+import { PublicRoute, TrainerRoute, StudentRoute, AdminRoute, AuthenticatedRoute } from './components/ProtectedRoute';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 const LandingPage = lazy(() => import('./pages/LandingPage').then((m) => ({ default: m.LandingPage })));
@@ -13,6 +13,7 @@ const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage').then(
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage })));
 const CheckEmailPage = lazy(() => import('./pages/CheckEmailPage').then((m) => ({ default: m.CheckEmailPage })));
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage').then((m) => ({ default: m.VerifyEmailPage })));
+const TwoFactorSetupPage = lazy(() => import('./pages/TwoFactorSetupPage').then((m) => ({ default: m.TwoFactorSetupPage })));
 const StudentsPage = lazy(() => import('./pages/StudentsPage').then((m) => ({ default: m.StudentsPage })));
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage })));
 const ExercisesPage = lazy(() => import('./pages/ExercisesPage').then((m) => ({ default: m.ExercisesPage })));
@@ -97,6 +98,11 @@ export function AppRouter() {
             <Route path="/admin/exercicios" element={<AdminExercisesPage />} />
             <Route path="/admin/perfil" element={<AdminPerfilPage />} />
           </Route>
+        </Route>
+
+        {/* ─── Qualquer usuário autenticado ──────────────── */}
+        <Route element={<AuthenticatedRoute />}>
+          <Route path="/configurar-2fa" element={<TwoFactorSetupPage />} />
         </Route>
 
         {/* ─── Public (no guard) ─────────────────────────── */}

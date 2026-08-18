@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
-import { login, resendVerification, type UserData } from '../api/auth';
+import { login, resendVerification, verifyTwoFactor, type UserData } from '../api/auth';
 import { api } from '../api/client';
 import { createConnection } from '../api/connections';
 
@@ -35,6 +35,10 @@ export function LoginScreen() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'error' | 'unverified'>('idle');
   const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'sent'>('idle');
 
+  const [tempToken, setTempToken] = useState<string | null>(null);
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [twoFactorStatus, setTwoFactorStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+
   useEffect(() => {
     const token = window.localStorage.getItem('personaltrainr.token');
     const userRaw = window.localStorage.getItem('personaltrainr.user');
@@ -48,20 +52,36 @@ export function LoginScreen() {
     }
   }, [navigate]);
 
+  async function finishLogin(session: { token: string; user: UserData }) {
+    window.localStorage.setItem('personaltrainr.token', session.token);
+    window.localStorage.setItem('personaltrainr.user', JSON.stringify(session.user));
+
+    if (session.user.role === 'ALUNO') {
+      await completePendingInvite();
+    }
+
+    if (session.user.requiresTwoFactorSetup) {
+      navigate('/configurar-2fa', { replace: true, state: { forced: true } });
+      return;
+    }
+
+    navigate(routeForRole(session.user.role), { replace: true });
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus('loading');
 
     try {
       const session = await login({ email, password });
-      window.localStorage.setItem('personaltrainr.token', session.token);
-      window.localStorage.setItem('personaltrainr.user', JSON.stringify(session.user));
 
-      if (session.user.role === 'ALUNO') {
-        await completePendingInvite();
+      if ('requiresTwoFactor' in session) {
+        setTempToken(session.tempToken);
+        setStatus('idle');
+        return;
       }
 
-      navigate(routeForRole(session.user.role), { replace: true });
+      await finishLogin(session);
     } catch (err: unknown) {
       const status = err instanceof AxiosError ? err.response?.status : undefined;
       if (status === 403 && err instanceof AxiosError && String(err.response?.data?.message ?? '').includes('Confirme seu e-mail')) {
@@ -69,6 +89,19 @@ export function LoginScreen() {
         return;
       }
       setStatus('error');
+    }
+  }
+
+  async function handleVerifyTwoFactor(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!tempToken) return;
+    setTwoFactorStatus('loading');
+
+    try {
+      const session = await verifyTwoFactor(tempToken, twoFactorCode);
+      await finishLogin(session);
+    } catch {
+      setTwoFactorStatus('error');
     }
   }
 
@@ -80,6 +113,59 @@ export function LoginScreen() {
     } catch {
       setResendStatus('idle');
     }
+  }
+
+  if (tempToken) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-base px-5 font-body">
+        <div className="w-full max-w-md">
+          <form onSubmit={handleVerifyTwoFactor} className="rounded-2xl bg-card p-8">
+            <h1 className="font-title text-2xl uppercase tracking-wider text-text-primary">
+              Verificação em duas etapas
+            </h1>
+
+            <p className="mt-4 text-sm text-text-secondary">
+              Digite o código de 6 dígitos do seu app autenticador, ou um código de backup.
+            </p>
+
+            <label className="mt-6 block space-y-2">
+              <span className="text-xs uppercase text-text-secondary">Código</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoFocus
+                value={twoFactorCode}
+                onChange={(e) => setTwoFactorCode(e.target.value.trim())}
+                className="h-12 w-full rounded-lg border border-border bg-base px-3 text-center text-lg tracking-widest text-text-primary outline-none focus:border-accent"
+                required
+              />
+            </label>
+
+            {twoFactorStatus === 'error' && (
+              <p role="alert" className="mt-5 rounded-lg border border-border px-4 py-3 text-sm text-accent">
+                Código inválido. Tente novamente.
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={twoFactorStatus === 'loading'}
+              className="mt-6 block min-h-12 w-full rounded-lg bg-accent px-5 font-bold uppercase text-black transition hover:opacity-90 disabled:cursor-wait disabled:opacity-70"
+            >
+              {twoFactorStatus === 'loading' ? 'Verificando...' : 'Confirmar'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTempToken(null)}
+              className="mt-4 block w-full text-center text-xs uppercase text-text-secondary underline transition hover:opacity-80"
+            >
+              Voltar para o login
+            </button>
+          </form>
+        </div>
+      </main>
+    );
   }
 
   return (

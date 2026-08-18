@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { authenticator } from "otplib";
+import qrcode from "qrcode";
 import { userRepository } from "../repositories/user.repository";
 import type { CreateUserData } from "../repositories/user.repository";
 import { passwordResetTokenRepository } from "../repositories/passwordResetToken.repository";
@@ -10,6 +12,7 @@ import type { TrainerProfileData } from "../repositories/trainerProfile.reposito
 import { subscriptionRepository } from "../repositories/subscription.repository";
 import { PLAN_STUDENT_LIMITS } from "../config/plans";
 import { sendPasswordResetEmail, sendVerificationEmail } from "../providers/EmailProvider";
+import { encryptSecret, decryptSecret } from "../lib/totpCrypto";
 import { logger } from "../lib/logger";
 
 if (!process.env.JWT_SECRET) {
@@ -18,9 +21,52 @@ if (!process.env.JWT_SECRET) {
 const JWT_SECRET = process.env.JWT_SECRET;
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
+const TOTP_ISSUER = "Personal Trainr";
+const TWO_FACTOR_PENDING_SCOPE = "2fa-pending";
+const BACKUP_CODE_COUNT = 8;
 
 function hashToken(token: string): string {
   return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+function generateBackupCodes(): { plain: string[]; hashed: string[] } {
+  const plain = Array.from({ length: BACKUP_CODE_COUNT }, () => crypto.randomBytes(5).toString("hex"));
+  const hashed = plain.map(hashToken);
+  return { plain, hashed };
+}
+
+function toPublicUserFields(user: {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  username: string;
+  avatarUrl: string | null;
+  phone: string | null;
+  bio: string | null;
+  instagram: string | null;
+  weight: number | null;
+  height: number | null;
+  birthDate: Date | null;
+  emailVerified: boolean;
+  twoFactorEnabled: boolean;
+}) {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    username: user.username,
+    avatarUrl: user.avatarUrl,
+    phone: user.phone,
+    bio: user.bio,
+    instagram: user.instagram,
+    weight: user.weight,
+    height: user.height,
+    birthDate: user.birthDate,
+    emailVerified: user.emailVerified,
+    twoFactorEnabled: user.twoFactorEnabled,
+  };
 }
 
 async function issueEmailVerification(userId: string, email: string): Promise<void> {
@@ -139,6 +185,15 @@ export const authService = {
       throw { status: 403, message: "Confirme seu e-mail antes de fazer login. Verifique sua caixa de entrada." };
     }
 
+    if (user.twoFactorEnabled) {
+      const tempToken = jwt.sign(
+        { userId: user.id, scope: TWO_FACTOR_PENDING_SCOPE },
+        JWT_SECRET,
+        { expiresIn: "5m" },
+      );
+      return { requiresTwoFactor: true, tempToken };
+    }
+
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       JWT_SECRET,
@@ -148,20 +203,11 @@ export const authService = {
     return {
       token,
       user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        username: user.username,
-        avatarUrl: user.avatarUrl,
-        phone: user.phone,
-        bio: user.bio,
-        instagram: user.instagram,
-        weight: user.weight,
-        height: user.height,
-        birthDate: user.birthDate,
-        emailVerified: user.emailVerified,
-        twoFactorEnabled: user.twoFactorEnabled,
+        ...toPublicUserFields(user),
+        // ADMIN sem 2FA ainda recebe o JWT (a senha já foi provada), mas o
+        // frontend deve forçar o setup antes de liberar navegação — reforçado
+        // no backend por requireTwoFactorForAdmin nas rotas de admin.
+        requiresTwoFactorSetup: user.role === "ADMIN" && !user.twoFactorEnabled,
       },
     };
   },
@@ -309,5 +355,108 @@ export const authService = {
 
     const trainerProfile = await trainerProfileRepository.upsert(userId, data);
     return { trainerProfile };
+  },
+
+  async setupTwoFactor(userId: string) {
+    const user = await userRepository.findByIdWithHash(userId);
+    if (!user) {
+      throw { status: 404, message: "User not found" };
+    }
+
+    const secret = authenticator.generateSecret();
+    await userRepository.setTwoFactorSecret(userId, encryptSecret(secret));
+
+    const otpauthUrl = authenticator.keyuri(user.email, TOTP_ISSUER, secret);
+    const qrCodeDataUrl = await qrcode.toDataURL(otpauthUrl);
+
+    return { secret, qrCodeDataUrl };
+  },
+
+  async confirmTwoFactor(userId: string, code: string) {
+    const user = await userRepository.findByIdWithHash(userId);
+    if (!user || !user.twoFactorSecret) {
+      throw { status: 400, message: "Configure o 2FA antes de confirmar" };
+    }
+
+    const secret = decryptSecret(user.twoFactorSecret);
+    if (!authenticator.verify({ token: code, secret })) {
+      throw { status: 400, message: "Código inválido" };
+    }
+
+    const { plain, hashed } = generateBackupCodes();
+    await userRepository.enableTwoFactor(userId, hashed);
+
+    return { message: "2FA ativado com sucesso", backupCodes: plain };
+  },
+
+  async disableTwoFactor(userId: string, role: string, code: string) {
+    if (role === "ADMIN") {
+      throw { status: 400, message: "Administradores não podem desabilitar a verificação em duas etapas" };
+    }
+
+    const user = await userRepository.findByIdWithHash(userId);
+    if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
+      throw { status: 400, message: "2FA não está ativado" };
+    }
+
+    const secret = decryptSecret(user.twoFactorSecret);
+    if (!authenticator.verify({ token: code, secret })) {
+      throw { status: 400, message: "Código inválido" };
+    }
+
+    await userRepository.disableTwoFactor(userId);
+
+    return { message: "2FA desativado com sucesso" };
+  },
+
+  async verifyTwoFactor(tempToken: string, code: string) {
+    let payload: { userId: string; scope: string };
+    try {
+      payload = jwt.verify(tempToken, JWT_SECRET) as { userId: string; scope: string };
+    } catch {
+      throw { status: 401, message: "Sessão de verificação expirada. Faça login novamente." };
+    }
+
+    if (payload.scope !== TWO_FACTOR_PENDING_SCOPE) {
+      throw { status: 401, message: "Token inválido" };
+    }
+
+    const user = await userRepository.findByIdWithHash(payload.userId);
+    if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
+      throw { status: 401, message: "Token inválido" };
+    }
+
+    const secret = decryptSecret(user.twoFactorSecret);
+    const validTotp = authenticator.verify({ token: code, secret });
+
+    let validBackupCode = false;
+    if (!validTotp) {
+      const hashedCode = hashToken(code);
+      if (user.twoFactorBackupCodes.includes(hashedCode)) {
+        validBackupCode = true;
+        await userRepository.updateTwoFactorBackupCodes(
+          user.id,
+          user.twoFactorBackupCodes.filter((c) => c !== hashedCode),
+        );
+      }
+    }
+
+    if (!validTotp && !validBackupCode) {
+      throw { status: 401, message: "Código inválido" };
+    }
+
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "1d" },
+    );
+
+    return {
+      token,
+      user: {
+        ...toPublicUserFields(user),
+        requiresTwoFactorSetup: false,
+      },
+    };
   },
 };

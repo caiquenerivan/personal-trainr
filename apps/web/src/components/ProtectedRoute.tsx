@@ -46,6 +46,18 @@ export function StudentRoute() {
   return <Outlet />;
 }
 
+// Qualquer usuário autenticado, independente de role — usado pela página de
+// configuração de 2FA, que TRAINER/ALUNO acessam opcionalmente e ADMIN é
+// forçado a completar.
+export function AuthenticatedRoute() {
+  const token = getToken();
+  const user = getUser();
+
+  if (!token || !user) return <Navigate to="/login" replace />;
+
+  return <Outlet />;
+}
+
 export function AdminRoute() {
   const token = getToken();
   const user = getUser();

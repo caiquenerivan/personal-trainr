@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import {
   Camera,
@@ -15,6 +16,7 @@ import {
   EyeOff,
   AtSign,
   Quote,
+  ShieldCheck,
 } from 'lucide-react';
 import { updateProfile, changePassword } from '../api/student';
 import { formatPhone, unformatPhone } from '../utils/phone';
@@ -572,6 +574,7 @@ export function StudentPerfilPage() {
       )}
 
       {activeTab === 'conta' && (
+        <>
         <form
           onSubmit={handleAccountSubmit}
           className="rounded-2xl border border-border/60 bg-card p-6 md:p-8 max-w-2xl animate-fade-in shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-accent/50 hover:shadow-[0_0_28px_rgba(175,145,80,0.3)]"
@@ -707,6 +710,23 @@ export function StudentPerfilPage() {
             </button>
           </div>
         </form>
+
+        <div className="mt-6 rounded-2xl border border-border/60 bg-card p-6 md:p-8 max-w-2xl animate-fade-in shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+          <h3 className="font-title text-lg uppercase tracking-wide text-text-primary mb-1 flex items-center gap-2">
+            <ShieldCheck size={18} />
+            VERIFICAÇÃO EM DUAS ETAPAS
+          </h3>
+          <p className="text-xs text-text-secondary mb-4">
+            Adicione uma camada extra de segurança exigindo um código do seu app autenticador a cada login.
+          </p>
+          <Link
+            to="/configurar-2fa"
+            className="inline-block rounded-lg bg-accent px-5 py-3 font-body text-xs font-bold uppercase text-black transition hover:opacity-90 active:scale-98"
+          >
+            Configurar 2FA
+          </Link>
+        </div>
+        </>
       )}
     </section>
   );

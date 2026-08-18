@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import bcrypt from "bcrypt";
+import { authenticator } from "otplib";
+import { encryptSecret } from "../../lib/totpCrypto";
 
 vi.mock("../../repositories/user.repository", () => ({
   userRepository: {
@@ -11,6 +13,10 @@ vi.mock("../../repositories/user.repository", () => ({
     update: vi.fn(),
     updatePasswordHash: vi.fn(),
     updateEmailVerified: vi.fn(),
+    setTwoFactorSecret: vi.fn(),
+    enableTwoFactor: vi.fn(),
+    disableTwoFactor: vi.fn(),
+    updateTwoFactorBackupCodes: vi.fn(),
   },
 }));
 vi.mock("../../repositories/passwordResetToken.repository", () => ({
@@ -265,6 +271,188 @@ describe("authService.login", () => {
     await expect(authService.login(baseUser.email, "qualquersenha")).rejects.toMatchObject({
       status: 401,
       message: "Invalid email or password",
+    });
+  });
+
+  it("retorna tempToken em vez do JWT final quando 2FA está ativo", async () => {
+    const hash = await bcrypt.hash("senhacerta", 10);
+    vi.mocked(userRepository.findByEmail).mockResolvedValue({
+      ...baseUser,
+      passwordHash: hash,
+      twoFactorEnabled: true,
+      twoFactorSecret: encryptSecret(authenticator.generateSecret()),
+    });
+
+    const result = await authService.login(baseUser.email, "senhacerta");
+
+    expect(result).toMatchObject({ requiresTwoFactor: true });
+    expect((result as any).tempToken).toBeTruthy();
+    expect((result as any).token).toBeUndefined();
+  });
+
+  it("sinaliza requiresTwoFactorSetup para ADMIN sem 2FA, mas ainda emite o token", async () => {
+    const hash = await bcrypt.hash("senhacerta", 10);
+    vi.mocked(userRepository.findByEmail).mockResolvedValue({
+      ...baseUser,
+      passwordHash: hash,
+      role: "ADMIN" as any,
+    });
+
+    const result = await authService.login(baseUser.email, "senhacerta");
+
+    expect((result as any).token).toBeTruthy();
+    expect((result as any).user.requiresTwoFactorSetup).toBe(true);
+  });
+});
+
+describe("authService.setupTwoFactor", () => {
+  it("gera e cifra um novo secret, retornando QR code e secret em texto", async () => {
+    vi.mocked(userRepository.findByIdWithHash).mockResolvedValue({ ...baseUser });
+
+    const result = await authService.setupTwoFactor(baseUser.id);
+
+    expect(result.secret).toBeTruthy();
+    expect(result.qrCodeDataUrl).toMatch(/^data:image\/png;base64,/);
+    expect(userRepository.setTwoFactorSecret).toHaveBeenCalledWith(baseUser.id, expect.any(String));
+    // o secret salvo no banco deve estar cifrado, não em texto plano
+    const savedSecret = vi.mocked(userRepository.setTwoFactorSecret).mock.calls[0][1];
+    expect(savedSecret).not.toBe(result.secret);
+  });
+});
+
+describe("authService.confirmTwoFactor", () => {
+  it("rejeita código inválido", async () => {
+    const secret = authenticator.generateSecret();
+    vi.mocked(userRepository.findByIdWithHash).mockResolvedValue({
+      ...baseUser,
+      twoFactorSecret: encryptSecret(secret),
+    });
+
+    await expect(authService.confirmTwoFactor(baseUser.id, "000000")).rejects.toMatchObject({
+      status: 400,
+      message: "Código inválido",
+    });
+    expect(userRepository.enableTwoFactor).not.toHaveBeenCalled();
+  });
+
+  it("habilita 2FA e retorna 8 backup codes com código válido", async () => {
+    const secret = authenticator.generateSecret();
+    vi.mocked(userRepository.findByIdWithHash).mockResolvedValue({
+      ...baseUser,
+      twoFactorSecret: encryptSecret(secret),
+    });
+
+    const code = authenticator.generate(secret);
+    const result = await authService.confirmTwoFactor(baseUser.id, code);
+
+    expect(result.backupCodes).toHaveLength(8);
+    expect(userRepository.enableTwoFactor).toHaveBeenCalledWith(
+      baseUser.id,
+      expect.arrayContaining([expect.any(String)]),
+    );
+  });
+});
+
+describe("authService.disableTwoFactor", () => {
+  it("bloqueia ADMIN de desabilitar 2FA", async () => {
+    await expect(authService.disableTwoFactor(baseUser.id, "ADMIN", "123456")).rejects.toMatchObject({
+      status: 400,
+      message: "Administradores não podem desabilitar a verificação em duas etapas",
+    });
+    expect(userRepository.disableTwoFactor).not.toHaveBeenCalled();
+  });
+
+  it("desabilita 2FA para TRAINER/ALUNO com código válido", async () => {
+    const secret = authenticator.generateSecret();
+    vi.mocked(userRepository.findByIdWithHash).mockResolvedValue({
+      ...baseUser,
+      twoFactorEnabled: true,
+      twoFactorSecret: encryptSecret(secret),
+    });
+
+    const code = authenticator.generate(secret);
+    const result = await authService.disableTwoFactor(baseUser.id, "ALUNO", code);
+
+    expect(userRepository.disableTwoFactor).toHaveBeenCalledWith(baseUser.id);
+    expect(result.message).toBe("2FA desativado com sucesso");
+  });
+});
+
+describe("authService.verifyTwoFactor", () => {
+  async function issueTempToken(secret: string) {
+    const hash = await bcrypt.hash("senhacerta", 10);
+    vi.mocked(userRepository.findByEmail).mockResolvedValue({
+      ...baseUser,
+      passwordHash: hash,
+      twoFactorEnabled: true,
+      twoFactorSecret: encryptSecret(secret),
+    });
+    const loginResult = await authService.login(baseUser.email, "senhacerta");
+    return (loginResult as any).tempToken as string;
+  }
+
+  it("rejeita tempToken inválido/malformado", async () => {
+    await expect(authService.verifyTwoFactor("token-invalido", "123456")).rejects.toMatchObject({
+      status: 401,
+    });
+  });
+
+  it("rejeita um JWT de sessão normal (sem scope 2fa-pending) usado como tempToken", async () => {
+    const jwt = await import("jsonwebtoken");
+    const normalToken = jwt.default.sign({ userId: baseUser.id, role: "ALUNO" }, "test-jwt-secret", { expiresIn: "1d" });
+
+    await expect(authService.verifyTwoFactor(normalToken, "123456")).rejects.toMatchObject({
+      status: 401,
+      message: "Token inválido",
+    });
+  });
+
+  it("emite o JWT final com código TOTP válido", async () => {
+    const secret = authenticator.generateSecret();
+    const tempToken = await issueTempToken(secret);
+    vi.mocked(userRepository.findByIdWithHash).mockResolvedValue({
+      ...baseUser,
+      twoFactorEnabled: true,
+      twoFactorSecret: encryptSecret(secret),
+    });
+
+    const code = authenticator.generate(secret);
+    const result = await authService.verifyTwoFactor(tempToken, code);
+
+    expect(result.token).toBeTruthy();
+    expect(result.user.id).toBe(baseUser.id);
+  });
+
+  it("aceita um backup code válido e o consome (uso único)", async () => {
+    const secret = authenticator.generateSecret();
+    const tempToken = await issueTempToken(secret);
+    const backupCode = "abc1234567";
+    const backupHash = require("crypto").createHash("sha256").update(backupCode).digest("hex");
+    vi.mocked(userRepository.findByIdWithHash).mockResolvedValue({
+      ...baseUser,
+      twoFactorEnabled: true,
+      twoFactorSecret: encryptSecret(secret),
+      twoFactorBackupCodes: [backupHash],
+    });
+
+    const result = await authService.verifyTwoFactor(tempToken, backupCode);
+
+    expect(result.token).toBeTruthy();
+    expect(userRepository.updateTwoFactorBackupCodes).toHaveBeenCalledWith(baseUser.id, []);
+  });
+
+  it("rejeita código TOTP e backup code inválidos", async () => {
+    const secret = authenticator.generateSecret();
+    const tempToken = await issueTempToken(secret);
+    vi.mocked(userRepository.findByIdWithHash).mockResolvedValue({
+      ...baseUser,
+      twoFactorEnabled: true,
+      twoFactorSecret: encryptSecret(secret),
+    });
+
+    await expect(authService.verifyTwoFactor(tempToken, "000000")).rejects.toMatchObject({
+      status: 401,
+      message: "Código inválido",
     });
   });
 });

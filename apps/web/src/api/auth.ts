@@ -17,11 +17,21 @@ export type UserData = {
   birthDate?: string | null;
   emailVerified: boolean;
   twoFactorEnabled: boolean;
+  requiresTwoFactorSetup?: boolean;
 };
 
-export type LoginResponse = {
-  token: string;
-  user: UserData;
+export type LoginResponse =
+  | { token: string; user: UserData }
+  | { requiresTwoFactor: true; tempToken: string };
+
+export type TwoFactorSetupResponse = {
+  secret: string;
+  qrCodeDataUrl: string;
+};
+
+export type TwoFactorConfirmResponse = {
+  message: string;
+  backupCodes: string[];
 };
 
 export type RegisterPayload = {
@@ -66,5 +76,25 @@ export async function verifyEmail(token: string) {
 
 export async function resendVerification(email: string) {
   const response = await api.post<{ message: string }>('/api/auth/resend-verification', { email });
+  return response.data;
+}
+
+export async function verifyTwoFactor(tempToken: string, code: string) {
+  const response = await api.post<{ token: string; user: UserData }>('/api/auth/2fa/verify', { tempToken, code });
+  return response.data;
+}
+
+export async function setupTwoFactor() {
+  const response = await api.post<TwoFactorSetupResponse>('/api/users/2fa/setup');
+  return response.data;
+}
+
+export async function confirmTwoFactor(code: string) {
+  const response = await api.post<TwoFactorConfirmResponse>('/api/users/2fa/confirm', { code });
+  return response.data;
+}
+
+export async function disableTwoFactor(code: string) {
+  const response = await api.post<{ message: string }>('/api/users/2fa/disable', { code });
   return response.data;
 }
