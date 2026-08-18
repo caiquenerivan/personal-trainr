@@ -262,6 +262,16 @@ export function RegisterPage() {
                 </label>
               </div>
             </label>
+
+            {role === 'TRAINER' && (
+              <p className="rounded-lg border border-border/60 bg-base/40 px-4 py-3 text-xs text-text-secondary">
+                Personal trainers precisam se cadastrar com CREF, então o botão "Continuar com
+                Google" ainda não cria conta de personal automaticamente. Cadastre-se aqui
+                normalmente e, depois de confirmar seu e-mail, use "Continuar com Google" com este
+                mesmo e-mail sempre que quiser — sua conta de personal é vinculada automaticamente,
+                sem precisar de senha nas próximas vezes.
+              </p>
+            )}
           </div>
 
           <label className="mt-5 flex items-start gap-2.5">
