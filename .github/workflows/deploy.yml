@@ -1,0 +1,38 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/auth-service/**"
+      - "apps/workout-service/**"
+      - "apps/api-gateway/**"
+      - "deploy/oracle-vm/**"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-oracle-vm
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.ORACLE_VM_HOST }}
+          username: ${{ secrets.ORACLE_VM_USER }}
+          key: ${{ secrets.ORACLE_VM_SSH_KEY }}
+          script_stop: true
+          command_timeout: 20m
+          script: |
+            cd ~/personal-trainr
+            git fetch origin main
+            git reset --hard origin/main
+            cd deploy/oracle-vm
+            docker compose build --progress=plain auth-service
+            docker compose build --progress=plain workout-service
+            docker compose build --progress=plain api-gateway
+            docker compose up -d
+            docker image prune -f
