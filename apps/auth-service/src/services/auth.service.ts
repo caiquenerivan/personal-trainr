@@ -383,6 +383,10 @@ export const authService = {
       throw { status: 404, message: "User not found" };
     }
 
+    if (user.twoFactorEnabled) {
+      throw { status: 400, message: "2FA já está ativado nesta conta" };
+    }
+
     const secret = authenticator.generateSecret();
     await userRepository.setTwoFactorSecret(userId, encryptSecret(secret));
 
@@ -398,7 +402,13 @@ export const authService = {
       throw { status: 400, message: "Configure o 2FA antes de confirmar" };
     }
 
-    const secret = decryptSecret(user.twoFactorSecret);
+    let secret: string;
+    try {
+      secret = decryptSecret(user.twoFactorSecret);
+    } catch (err) {
+      logger.error({ err, userId }, "Failed to decrypt TOTP secret — check TOTP_ENCRYPTION_KEY");
+      throw { status: 500, message: "Erro ao validar o código. Tente configurar o 2FA novamente." };
+    }
     if (!authenticator.verify({ token: code, secret })) {
       throw { status: 400, message: "Código inválido" };
     }
@@ -419,7 +429,13 @@ export const authService = {
       throw { status: 400, message: "2FA não está ativado" };
     }
 
-    const secret = decryptSecret(user.twoFactorSecret);
+    let secret: string;
+    try {
+      secret = decryptSecret(user.twoFactorSecret);
+    } catch (err) {
+      logger.error({ err, userId }, "Failed to decrypt TOTP secret — check TOTP_ENCRYPTION_KEY");
+      throw { status: 500, message: "Erro ao validar o código. Tente novamente mais tarde." };
+    }
     if (!authenticator.verify({ token: code, secret })) {
       throw { status: 400, message: "Código inválido" };
     }
@@ -446,8 +462,16 @@ export const authService = {
       throw { status: 401, message: "Token inválido" };
     }
 
-    const secret = decryptSecret(user.twoFactorSecret);
-    const validTotp = authenticator.verify({ token: code, secret });
+    let secret: string | null = null;
+    try {
+      secret = decryptSecret(user.twoFactorSecret);
+    } catch (err) {
+      // Falha ao decriptar geralmente indica TOTP_ENCRYPTION_KEY diferente da
+      // usada quando o secret foi salvo (ex.: chave divergente entre
+      // ambientes/deploys) — não é um código incorreto do usuário.
+      logger.error({ err, userId: user.id }, "Failed to decrypt TOTP secret — check TOTP_ENCRYPTION_KEY");
+    }
+    const validTotp = secret !== null && authenticator.verify({ token: code, secret });
 
     let validBackupCode = false;
     if (!validTotp) {

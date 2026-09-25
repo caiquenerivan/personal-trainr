@@ -7,6 +7,7 @@
     "build": "tsc",
     "test": "vitest run",
     "seed:admin": "ts-node src/scripts/promote-admin.ts",
+    "reset:2fa": "ts-node src/scripts/reset-2fa.ts",
     "send-verification-to-existing-users": "ts-node src/scripts/send-verification-to-existing-users.ts"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { setupTwoFactor, confirmTwoFactor, type UserData } from '../api/auth';
@@ -21,8 +21,15 @@ export function TwoFactorSetupPage() {
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [confirming, setConfirming] = useState(false);
+  const setupStarted = useRef(false);
 
   useEffect(() => {
+    // Guarda contra o double-invoke de efeitos do React.StrictMode em dev e
+    // contra remounts (voltar/avançar, re-render) disparando um novo setup e
+    // sobrescrevendo o secret que o usuário já escaneou.
+    if (setupStarted.current) return;
+    setupStarted.current = true;
+
     setupTwoFactor()
       .then((result) => {
         setSecret(result.secret);
