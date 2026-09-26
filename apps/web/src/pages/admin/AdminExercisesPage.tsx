@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { AxiosError } from 'axios';
-import { Plus, Search, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, Eye } from 'lucide-react';
 import {
   listGlobalExercises,
   createGlobalExercise,
@@ -27,9 +27,11 @@ export function AdminExercisesPage() {
   const [exercises, setExercises] = useState<AdminExercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [muscleFilter, setMuscleFilter] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [editTarget, setEditTarget] = useState<AdminExercise | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminExercise | null>(null);
+  const [detailTarget, setDetailTarget] = useState<AdminExercise | null>(null);
   const [form, setForm] = useState<ExerciseForm>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -54,9 +56,16 @@ export function AdminExercisesPage() {
     loadExercises();
   }, []);
 
-  const filtered = exercises.filter(
-    (e) => e.name.toLowerCase().includes(search.toLowerCase()) || (e.muscle ?? '').toLowerCase().includes(search.toLowerCase()),
+  const muscleGroups = Array.from(new Set(exercises.map((e) => e.muscle).filter((m): m is string => !!m))).sort(
+    (a, b) => a.localeCompare(b),
   );
+
+  const filtered = exercises.filter((e) => {
+    const matchesSearch =
+      e.name.toLowerCase().includes(search.toLowerCase()) || (e.muscle ?? '').toLowerCase().includes(search.toLowerCase());
+    const matchesMuscle = !muscleFilter || e.muscle === muscleFilter;
+    return matchesSearch && matchesMuscle;
+  });
 
   function openCreate() {
     setForm(EMPTY_FORM);
@@ -133,14 +142,28 @@ export function AdminExercisesPage() {
         </button>
       </div>
 
-      <div className="relative mt-8 max-w-xs">
-        <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar exercício ou grupo muscular"
-          className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-text-primary placeholder:text-text-secondary focus:border-accent focus:outline-none"
-        />
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative max-w-xs flex-1">
+          <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar exercício ou grupo muscular"
+            className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-text-primary placeholder:text-text-secondary focus:border-accent focus:outline-none"
+          />
+        </div>
+        <select
+          value={muscleFilter}
+          onChange={(e) => setMuscleFilter(e.target.value)}
+          className="rounded-lg border border-border bg-card py-2.5 px-3 text-sm text-text-primary focus:border-accent focus:outline-none sm:max-w-[220px]"
+        >
+          <option value="">Todos os grupos musculares</option>
+          {muscleGroups.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mt-6 overflow-x-auto rounded-xl bg-card">
@@ -168,6 +191,12 @@ export function AdminExercisesPage() {
                   <td className="px-5 py-4 text-text-secondary">{ex.muscle ?? '—'}</td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-1">
+                      <button
+                        onClick={() => setDetailTarget(ex)}
+                        className="flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary transition hover:bg-base hover:text-accent"
+                      >
+                        <Eye size={16} />
+                      </button>
                       <button
                         onClick={() => openEdit(ex)}
                         className="flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary transition hover:bg-base hover:text-accent"
@@ -262,6 +291,55 @@ export function AdminExercisesPage() {
             </button>
           </div>
         </form>
+      </Modal>
+
+      <Modal open={!!detailTarget} onClose={() => setDetailTarget(null)} title="Detalhes do exercício">
+        {detailTarget && (
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-title text-lg uppercase text-text-primary">{detailTarget.name}</h3>
+              <p className="text-sm text-text-secondary">{detailTarget.muscle ?? '—'}</p>
+            </div>
+
+            {detailTarget.gifUrl && (
+              <div className="overflow-hidden rounded-lg bg-base">
+                <img
+                  src={detailTarget.gifUrl}
+                  alt={detailTarget.name}
+                  className="w-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
+
+            {detailTarget.videoUrl && (
+              <div>
+                <span className="text-xs uppercase text-text-secondary">Vídeo</span>
+                <p className="mt-1 truncate">
+                  <a
+                    href={detailTarget.videoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm text-accent underline hover:opacity-80"
+                  >
+                    {detailTarget.videoUrl}
+                  </a>
+                </p>
+              </div>
+            )}
+
+            {detailTarget.observations && (
+              <div>
+                <span className="text-xs uppercase text-text-secondary">Observações</span>
+                <p className="mt-1 rounded-lg border border-border bg-base px-4 py-3 text-sm text-text-primary">
+                  {detailTarget.observations}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </Modal>
 
       <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Remover exercício">
