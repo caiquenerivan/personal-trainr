@@ -312,7 +312,7 @@ export function RoutineBuilder({ routineId }: Props) {
                         <option value="">Selecione</option>
                         {exerciseOptions.map((opt) => (
                           <option key={opt.id} value={opt.id}>
-                            {opt.name}{opt.muscle ? ` (${opt.muscle})` : ''}
+                            {opt.name}{opt.muscle ? ` — ${opt.muscle}` : ''}
                           </option>
                         ))}
                       </select>
