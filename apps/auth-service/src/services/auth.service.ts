@@ -237,7 +237,12 @@ export const authService = {
     if (!user) {
       throw { status: 404, message: "User not found" };
     }
-    return { user };
+    return {
+      user: {
+        ...user,
+        requiresTwoFactorSetup: user.role === "ADMIN" && !user.twoFactorEnabled,
+      },
+    };
   },
 
   async updateProfile(
