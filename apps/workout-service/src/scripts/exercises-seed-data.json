@@ -315,7 +315,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Supino Inclinado com Halteres em Pegada Neutra",
+    "name": "Supino Inclinado com Halteres em Pegada Martelo",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
@@ -1005,11 +1005,6 @@
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Puxada de Latíssimo Dorsal em Meio-Ajoelhamento com Cabo Unilateral",
-    "muscle": "Costas",
-    "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
-  },
-  {
     "name": "Remada Alta Unilateral com Alavanca",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
@@ -1335,11 +1330,6 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Elevação Lateral com Cabo Unilateral",
-    "muscle": "Ombros",
-    "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) ombros."
-  },
-  {
     "name": "Elevação Lateral com Faixa Elástica",
     "muscle": "Ombros",
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) ombros."
@@ -1380,7 +1370,7 @@
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Elevação Frontal com Anilha",
+    "name": "Elevação Frontal com Anilha (com Impulso)",
     "muscle": "Ombros",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) ombros."
   },
@@ -1665,7 +1655,7 @@
     "observations": "Exercício de força de caráter explosivo, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Bicicleta Ergométrica",
+    "name": "Bicicleta Ergométrica Estacionária",
     "muscle": "Pernas",
     "observations": "Exercício cardiovascular usado como aquecimento, que trabalha principalmente o(a) pernas."
   },
@@ -1745,7 +1735,7 @@
     "observations": "Exercício de mobilidade usado como aquecimento, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Agachamento Búlgaro com Halteres",
+    "name": "Agachamento Búlgaro com Halteres (Pé Atrás no Chão)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -1755,7 +1745,7 @@
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Agachamento Búlgaro com Pé Frontal Elevado",
+    "name": "Agachamento Búlgaro com Pé Frontal Elevado (Ênfase em Pernas)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -1815,7 +1805,7 @@
     "observations": "Exercício de reabilitação com foco em mobilidade, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Agachamento Búlgaro no Smith",
+    "name": "Agachamento Búlgaro no Smith (Pé Atrás Elevado)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -1935,7 +1925,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Agachamento Búlgaro no Smith",
+    "name": "Agachamento Búlgaro no Smith (Pé Atrás no Chão)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -2020,12 +2010,12 @@
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Agachamento Búlgaro com Barra",
+    "name": "Agachamento Búlgaro com Barra (Pé Atrás no Chão)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Agachamento Búlgaro",
+    "name": "Agachamento Búlgaro (Pé Atrás no Chão)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -2320,7 +2310,7 @@
     "observations": "Exercício pliométrico com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Agachamento Búlgaro com Halteres",
+    "name": "Agachamento Búlgaro com Halteres (Pé Atrás Elevado)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -2520,7 +2510,7 @@
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Agachamento Búlgaro com Barra",
+    "name": "Agachamento Búlgaro com Barra (Pé Atrás Elevado)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -2570,7 +2560,7 @@
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Agachamento Búlgaro com Pé Frontal Elevado",
+    "name": "Agachamento Búlgaro com Pé Frontal Elevado (Ênfase em Glúteos)",
     "muscle": "Glúteos",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
   },
@@ -2765,7 +2755,7 @@
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Agachamento Búlgaro",
+    "name": "Agachamento Búlgaro (Pé Atrás Elevado)",
     "muscle": "Glúteos",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
   },
@@ -2775,7 +2765,7 @@
     "observations": "Exercício de força, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Prancha Lateral com Abdução de Quadril",
+    "name": "Prancha Lateral com Concha (Clamshell)",
     "muscle": "Glúteos",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
   },
@@ -3315,7 +3305,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Empurradores de cabo",
+    "name": "Empurradores de Cabo (Barra Reta)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3348,11 +3338,6 @@
     "name": "Muscle-Up com Peso",
     "muscle": "Tríceps",
     "observations": "Exercício de força de caráter explosivo, que trabalha principalmente o(a) tríceps."
-  },
-  {
-    "name": "Extensão de Tríceps Sentado com Halteres",
-    "muscle": "Tríceps",
-    "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
     "name": "Elevação com Transição",
@@ -3415,7 +3400,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Extensão de Tríceps Unilateral no Cabo",
+    "name": "Extensão de Tríceps Unilateral no Cabo (Variação)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3430,7 +3415,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Empurradores de cabo",
+    "name": "Empurradores de Cabo (Corda)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3563,11 +3548,6 @@
     "name": "Flexão de Punho com Barra",
     "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
-  },
-  {
-    "name": "Caminhada do Fazendeiro Unilateral",
-    "muscle": "Antebraços",
-    "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Apertador de Mão",
@@ -3805,7 +3785,7 @@
     "observations": "Exercício de core de caráter isométrico, que trabalha principalmente o(a) abdominais."
   },
   {
-    "name": "Elevação de Joelhos aos Cotovelos Suspenso",
+    "name": "Elevação de Joelhos aos Cotovelos Suspenso (Cintura)",
     "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
@@ -3845,7 +3825,7 @@
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
-    "name": "Bicicleta Ergométrica",
+    "name": "Bicicleta Ergométrica (Air Bike)",
     "muscle": "Abdominais",
     "observations": "Exercício cardiovascular com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
