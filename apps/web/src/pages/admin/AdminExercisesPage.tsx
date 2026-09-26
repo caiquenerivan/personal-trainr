@@ -9,6 +9,7 @@ import {
   type AdminExercise,
 } from '../../api/admin';
 import { Modal } from '../../components/Modal';
+import { ExerciseMedia } from '../../components/ExerciseMedia';
 
 type ExerciseForm = { name: string; muscle: string; videoUrl: string; gifUrl: string; observations: string };
 const EMPTY_FORM: ExerciseForm = { name: '', muscle: '', videoUrl: '', gifUrl: '', observations: '' };
@@ -301,34 +302,7 @@ export function AdminExercisesPage() {
               <p className="text-sm text-text-secondary">{detailTarget.muscle ?? '—'}</p>
             </div>
 
-            {detailTarget.gifUrl && (
-              <div className="overflow-hidden rounded-lg bg-base">
-                <img
-                  src={detailTarget.gifUrl}
-                  alt={detailTarget.name}
-                  className="w-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-              </div>
-            )}
-
-            {detailTarget.videoUrl && (
-              <div>
-                <span className="text-xs uppercase text-text-secondary">Vídeo</span>
-                <p className="mt-1 truncate">
-                  <a
-                    href={detailTarget.videoUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sm text-accent underline hover:opacity-80"
-                  >
-                    {detailTarget.videoUrl}
-                  </a>
-                </p>
-              </div>
-            )}
+            <ExerciseMedia videoUrl={detailTarget.videoUrl} gifUrl={detailTarget.gifUrl} name={detailTarget.name} />
 
             {detailTarget.observations && (
               <div>

@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { Plus, Search, X } from 'lucide-react';
 import { listExercises, createExercise, updateExercise, deleteExercise, type ApiExercise } from '../api/exercises';
 import { Modal } from '../components/Modal';
+import { ExerciseMedia } from '../components/ExerciseMedia';
 
 function getCurrentUserId(): string | null {
   try {
@@ -325,18 +326,7 @@ export function ExercisesPage() {
               <p className="text-sm text-text-secondary">{detailTarget.muscle}</p>
             </div>
 
-            {detailTarget.gifUrl && (
-              <div className="overflow-hidden rounded-lg bg-base">
-                <img
-                  src={detailTarget.gifUrl}
-                  alt={detailTarget.name}
-                  className="w-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-              </div>
-            )}
+            <ExerciseMedia videoUrl={detailTarget.videoUrl} gifUrl={detailTarget.gifUrl} name={detailTarget.name} />
 
             {detailTarget.observations && (
               <div>
