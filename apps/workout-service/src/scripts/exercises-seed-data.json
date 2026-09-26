@@ -315,6 +315,11 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
   {
+    "name": "Supino Inclinado com Halteres em Pegada Neutra",
+    "muscle": "Peito",
+    "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
+  },
+  {
     "name": "Planche Inclinado",
     "muscle": "Peito",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) peito."
@@ -1000,6 +1005,11 @@
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) costas."
   },
   {
+    "name": "Puxada de Latíssimo Dorsal em Meio-Ajoelhamento com Cabo Unilateral",
+    "muscle": "Costas",
+    "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
+  },
+  {
     "name": "Remada Alta Unilateral com Alavanca",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
@@ -1325,6 +1335,11 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) ombros."
   },
   {
+    "name": "Elevação Lateral com Cabo Unilateral",
+    "muscle": "Ombros",
+    "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) ombros."
+  },
+  {
     "name": "Elevação Lateral com Faixa Elástica",
     "muscle": "Ombros",
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) ombros."
@@ -1363,6 +1378,11 @@
     "name": "Elevação em Y com Cabo Inclinado com Suporte para as Costas",
     "muscle": "Ombros",
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) ombros."
+  },
+  {
+    "name": "Elevação Frontal com Anilha",
+    "muscle": "Ombros",
+    "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) ombros."
   },
   {
     "name": "Elevação Lateral com Halteres Sentado Inclinado para Frente",
@@ -1915,6 +1935,11 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) pernas."
   },
   {
+    "name": "Agachamento Búlgaro no Smith",
+    "muscle": "Pernas",
+    "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
+  },
+  {
     "name": "Puxada de Arranco",
     "muscle": "Pernas",
     "observations": "Exercício de força de caráter explosivo, que trabalha principalmente o(a) pernas."
@@ -2295,6 +2320,11 @@
     "observations": "Exercício pliométrico com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
   {
+    "name": "Agachamento Búlgaro com Halteres",
+    "muscle": "Pernas",
+    "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
+  },
+  {
     "name": "Levantamento Terra Unilateral com Halteres",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
@@ -2490,6 +2520,11 @@
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) pernas."
   },
   {
+    "name": "Agachamento Búlgaro com Barra",
+    "muscle": "Pernas",
+    "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
+  },
+  {
     "name": "Elevação de Quadril Unilateral com Haltere",
     "muscle": "Glúteos",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
@@ -2533,6 +2568,11 @@
     "name": "Elevação de Quadril em Quatro Apoios",
     "muscle": "Glúteos",
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) glúteos."
+  },
+  {
+    "name": "Agachamento Búlgaro com Pé Frontal Elevado",
+    "muscle": "Glúteos",
+    "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
   },
   {
     "name": "Elevação de Quadril na Máquina Smith",
@@ -2725,9 +2765,19 @@
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) glúteos."
   },
   {
+    "name": "Agachamento Búlgaro",
+    "muscle": "Glúteos",
+    "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
+  },
+  {
     "name": "Elevação de Quadril na Máquina",
     "muscle": "Glúteos",
     "observations": "Exercício de força, que trabalha principalmente o(a) glúteos."
+  },
+  {
+    "name": "Prancha Lateral com Abdução de Quadril",
+    "muscle": "Glúteos",
+    "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
   },
   {
     "name": "Postura da Criança",
@@ -3300,9 +3350,19 @@
     "observations": "Exercício de força de caráter explosivo, que trabalha principalmente o(a) tríceps."
   },
   {
+    "name": "Extensão de Tríceps Sentado com Halteres",
+    "muscle": "Tríceps",
+    "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
+  },
+  {
     "name": "Elevação com Transição",
     "muscle": "Tríceps",
     "observations": "Exercício de força de caráter explosivo, que trabalha principalmente o(a) tríceps."
+  },
+  {
+    "name": "Supino Inclinado com Halteres",
+    "muscle": "Tríceps",
+    "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
     "name": "Extensão de Tríceps com Faixa Acima da Cabeça",
@@ -3355,6 +3415,11 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
+    "name": "Extensão de Tríceps Unilateral no Cabo",
+    "muscle": "Tríceps",
+    "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
+  },
+  {
     "name": "Extensão de Tríceps com Um Braço Acima da Cabeça",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
@@ -3365,673 +3430,693 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
+    "name": "Empurradores de cabo",
+    "muscle": "Tríceps",
+    "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
+  },
+  {
     "name": "Pronação deitado com halteres",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de reabilitação, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Flexão de Punho com Halter em Pegada Neutra Unilateral",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Flexão de Punho Unilateral com Halter",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Rosca Inversa de Punho Sentado com Barra EZ",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Supinação com Halter Unilateral",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de reabilitação, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Caminhada do Fazendeiro",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Flexão de Punho em Pé com Barra",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Flexão de Punho em Pé com Halteres",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Flexão de Punho",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Flexão de Punho com Barra em Pé",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Rolo de Punho",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Rosca de Punho Sentado com Barra EZ",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Rosca de Antebraço com Barra em Pegada Invertida",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Caminhada do Fazendeiro Unilateral",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Rosca Inversa no Banco Inclinado com Barra EZ",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Transporte de Halteres",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Rosca Inversa com Pegada Supinada com Barra EZ",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Rosca Inversa de Punho em Pé com Halteres",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Suspensão Passiva",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Flexão de Punho Inversa com Barra",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Rosca Direta na Polia com Pegada Invertida",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Rosca Inversa com Halteres",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Flexão de Punho com Cabo",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Flexão de Punho com Cabo Sentado",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Retrações Escapulares Suspensas",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de mobilidade com fins de reabilitação, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Flexão de Punho com Barra",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
+    "name": "Caminhada do Fazendeiro Unilateral",
+    "muscle": "Antebraços",
+    "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) antebraços."
+  },
+  {
     "name": "Apertador de Mão",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Flexão de Punho Inversa com Haltere Unilateral",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Rolo de Punho em Pé com Cabo",
-    "muscle": "Antebraço",
+    "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
   {
     "name": "Abdominal com Flexão de Joelhos",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com característica de força, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Moinho com Peso Corporal",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de mobilidade com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação de Tronco",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "L-Sitio",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Flexão Lateral em Pé com Faixa Elástica",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de mobilidade com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação Sentada",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com foco em mobilidade, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação no Cabo (horizontal)",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Flexão de Quadril com Extensão e Flexão",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com foco em mobilidade, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal Declinado com Peso",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Chutes de Tesoura Suspensos",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Roda Abdominal",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Ponte Lateral com Halteres",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Flexões Abdominais",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominais em Pé com Rotação com Faixa Elástica",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Prancha Oca",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter isométrico, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal com Braços Estendidos com Peso",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Pernas Retas em Barras Paralelas",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação no Cabo (de cima para baixo)",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominais Alternados Sentados",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Joelhos Suspenso",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com foco em mobilidade, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Pernas no Banco Inclinado",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Bandeira do Dragão",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal com Peso",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Exercício de Inseto Morto",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com foco em habilidade motora, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação Russa com Bola Medicinal",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Pressão Pallof com Faixa",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação Russa com Faixa Elástica",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominais em Pé com Faixa Elástica",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Crunch Lateral em Carga com Joelhos Flexionados",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominais na Máquina",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominais em Bicicleta",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Tesoura",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com foco em mobilidade, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Press Pallof Horizontal com Cabo Baixo",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Joelhos aos Cotovelos Suspenso",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Dead Bug com Peso",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com característica de força, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal Crunch com Bola de Estabilidade",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Flexões Abdominais com Faixa em Posição de Joelhos",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação em Pé com Barra",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com foco em mobilidade, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal Remador",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Pernas Retas em Decúbito Dorsal",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal na Máquina em Decúbito",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Pike em Argolas",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Exercício de Inseto Morto com Bola",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com foco em habilidade motora, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Prancha",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter isométrico, que trabalha principalmente o(a) abdominais."
   },
   {
+    "name": "Elevação de Joelhos aos Cotovelos Suspenso",
+    "muscle": "Abdominais",
+    "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
+  },
+  {
     "name": "Abdominais Circulares Invertidos Sentados",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com característica de força, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Pernas em V",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação Horizontal com Faixa Elástica",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com foco em mobilidade, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal em V",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Dedos aos Barras",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Bicicleta no Ar em Pé",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com componente cardiovascular, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Prancha com Peso",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
+    "name": "Bicicleta Ergométrica",
+    "muscle": "Abdominais",
+    "observations": "Exercício cardiovascular com ênfase no core, que trabalha principalmente o(a) abdominais."
+  },
+  {
     "name": "Escalador em posição de prancha",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício pliométrico com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Pernas Retas na Cadeira do Capitão",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal Oblíquo em Banco Inclinado",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com característica de força, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Postura da Parada de Ombros",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de equilíbrio com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Círculos de Joelhos Suspensos",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de mobilidade com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal Crunch em Posição de Sapo",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Pernas Suspensa até a Barra",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Pernas Retas Suspensas",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com característica de força, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação Diagonal com Faixa Elástica de Alta para Baixa",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Posição do Caranguejo",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Corte com Faixa em Meio Joelhar",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Prancha Oca com Peso",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter isométrico, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Joelhos na Máquina Ab Coaster",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com característica de força, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação de Tronco na Máquina Sentado",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Pernas com Flexão de Tronco",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Pernas Sentado",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal Oblíquo Lateral",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominais em V com Suspensão",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominais Invertidos",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Flexão Lateral em Pé com Halteres",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Toques nos Dedos dos Pés",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de mobilidade usado como aquecimento, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação Russa com Halteres",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Meia Roda de Vento Suspensa",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de mobilidade com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Postura do Cachorro Olhando para Cima",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação Russa com Peso",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Chute Alternado Sentado",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com componente cardiovascular, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Prancha Lateral",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Prancha com Bola Suíça",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Prancha Serrada",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter isométrico, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Crunch Abdominal em Pé com Cabo",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rolo de Barra com Joelhos no Chão",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação de baixo para cima",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal Oblíquo com Faixa em Posição Ajoelhada",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Prancha de Urso",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter isométrico, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Torção Espinhal Supina",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal Janda",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação Russa em Pé",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "TRX Cão de Caça Unilateral",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de habilidade motora com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Vácuo Abdominal",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter isométrico, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Flexão de Tronco Sentado com Cabo",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Pernas Suspensas com Peso",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominais com Peso",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Cotovelo ao joelho do lado oposto",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com foco em mobilidade, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Pressão Pallof Horizontal com Cabo",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação com Barra em Base Pivotante",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Bicicleta Abdominal com Faixa Elástica",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Joelhos em Suspensão com Rotação de Tronco",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com característica de força, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Toques de Tornozelo",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com foco em mobilidade, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Postura do Gato-Vaca",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Joelhos Suspensa",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core com característica de força, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Flexões de Abdômen com Cabo em Posição Ajoelhada",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Abdominal Declinado",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Rotação Sentada com Barra",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
   {
     "name": "Elevação de Joelhos na Cadeira do Capitão",
-    "muscle": "Abdômen",
+    "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   }
 ]
