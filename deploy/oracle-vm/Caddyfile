@@ -1,3 +1,13 @@
 {$API_DOMAIN} {
-	reverse_proxy api-gateway:8000
+	# animações dos exercícios (webp), enviadas por rsync para ./media na VM
+	handle_path /media/* {
+		root * /srv/media
+		header Cache-Control "public, max-age=604800"
+		header Access-Control-Allow-Origin "*"
+		file_server
+	}
+
+	handle {
+		reverse_proxy api-gateway:8000
+	}
 }
