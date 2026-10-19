@@ -1765,7 +1765,7 @@
     "observations": "Exercício de mobilidade com fins de reabilitação, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Flexão de Pernas Sentado",
+    "name": "Cadeira Flexora (Flexão de Pernas Sentado)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -2075,7 +2075,7 @@
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Extensão de Pernas Sentado na Máquina",
+    "name": "Cadeira Extensora (Extensão de Pernas Sentado na Máquina)",
     "muscle": "Pernas",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) pernas."
   },
@@ -2090,7 +2090,7 @@
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Flexão de Perna Unilateral Sentado",
+    "name": "Cadeira Flexora Unilateral (Flexão de Perna Unilateral Sentado)",
     "muscle": "Pernas",
     "observations": "Exercício de força com fins de reabilitação, que trabalha principalmente o(a) pernas."
   },
@@ -2240,7 +2240,7 @@
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Flexão de Pernas em Decúbito Ventral",
+    "name": "Mesa Flexora (Flexão de Pernas em Decúbito Ventral)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -2285,7 +2285,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Flexão de Perna Unilateral Deitado",
+    "name": "Mesa Flexora Unilateral (Flexão de Perna Unilateral Deitado)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -2465,7 +2465,7 @@
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Extensão Unilateral de Pernas",
+    "name": "Cadeira Extensora Unilateral (Extensão Unilateral de Pernas)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },

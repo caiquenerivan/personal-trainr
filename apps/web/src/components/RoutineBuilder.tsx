@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { ChevronDown, Plus, Trash2, X } from 'lucide-react';
 import { listExercises, type ApiExercise } from '../api/exercises';
+import { ExercisePicker } from './ExercisePicker';
 import { getRoutine, createRoutine, updateRoutine, type Day, type RoutineType } from '../api/routines';
 
 const WORKOUT_LABELS: Day[] = ['A', 'B', 'C', 'D', 'E'];
@@ -298,29 +299,12 @@ export function RoutineBuilder({ routineId }: Props) {
                     <span className="text-xs uppercase text-text-secondary">
                       Exercício
                     </span>
-                    <div className="relative">
-                      <select
-                        value={exercise.exerciseId}
-                        onChange={(e) =>
-                          updateExercise(activeIndex, ei, {
-                            exerciseId: e.target.value,
-                          })
-                        }
-                        className="w-full appearance-none rounded-lg border border-border bg-base p-3 pr-10 text-text-primary outline-none focus:border-accent"
-                        required
-                      >
-                        <option value="">Selecione</option>
-                        {exerciseOptions.map((opt) => (
-                          <option key={opt.id} value={opt.id}>
-                            {opt.name}{opt.muscle ? ` — ${opt.muscle}` : ''}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown
-                        size={16}
-                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-accent"
-                      />
-                    </div>
+                    <ExercisePicker
+                      options={exerciseOptions}
+                      value={exercise.exerciseId}
+                      onChange={(exerciseId) => updateExercise(activeIndex, ei, { exerciseId })}
+                      required
+                    />
                   </label>
 
                   <label className="w-20 space-y-1">
