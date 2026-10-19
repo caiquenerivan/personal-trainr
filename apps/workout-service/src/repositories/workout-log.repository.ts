@@ -2,7 +2,12 @@ import { prisma } from "../lib/prisma";
 import type { WorkoutLog } from "../generated/prisma/client";
 
 export const workoutLogRepository = {
-  async create(data: { alunoId: string; routineExerciseId: string; weightUsed?: number | null }): Promise<WorkoutLog> {
+  async create(data: {
+    alunoId: string;
+    routineExerciseId: string;
+    exerciseId: string;
+    weightUsed?: number | null;
+  }): Promise<WorkoutLog> {
     return prisma.workoutLog.create({ data });
   },
 
@@ -10,6 +15,19 @@ export const workoutLogRepository = {
     return prisma.workoutLog.findMany({
       where: { alunoId },
       orderBy: { completedAt: "desc" },
+    });
+  },
+
+  async findForProgress(alunoId: string, exerciseId?: string) {
+    return prisma.workoutLog.findMany({
+      where: { alunoId, exerciseId: exerciseId ?? { not: null } },
+      orderBy: { completedAt: "asc" },
+      select: {
+        weightUsed: true,
+        completedAt: true,
+        exerciseId: true,
+        exercise: { select: { name: true, muscle: true } },
+      },
     });
   },
 };

@@ -50,7 +50,7 @@ export const dashboardService = {
       assignment.routine.exercises.map((re) => re.id),
     );
     const relevantLogs = logs.filter((log) =>
-      routineExerciseIds.has(log.routineExerciseId),
+      log.routineExerciseId !== null && routineExerciseIds.has(log.routineExerciseId),
     );
 
     const weekCounts = groupLogsByWeek(relevantLogs);

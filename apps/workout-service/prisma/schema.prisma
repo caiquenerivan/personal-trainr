@@ -168,6 +168,7 @@ model Exercise {
   weightTrack      String?
   observations     String?
   routineExercises RoutineExercise[]
+  workoutLogs      WorkoutLog[]
 }
 
 model RoutineExercise {
@@ -185,12 +186,17 @@ model RoutineExercise {
 }
 
 model WorkoutLog {
-  id                String          @id @default(uuid())
+  id                String           @id @default(uuid())
   alunoId           String
-  routineExerciseId String
-  routineExercise   RoutineExercise @relation(fields: [routineExerciseId], references: [id], onDelete: Cascade)
+  // histórico de carga: o log guarda o exercício direto, então sobrevive à edição/remoção da rotina
+  routineExerciseId String?
+  routineExercise   RoutineExercise? @relation(fields: [routineExerciseId], references: [id], onDelete: SetNull)
+  exerciseId        String?
+  exercise          Exercise?        @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
   weightUsed        Float?
-  completedAt       DateTime        @default(now())
+  completedAt       DateTime         @default(now())
+
+  @@index([alunoId, exerciseId, completedAt])
 }
 
 model TrainerRating {

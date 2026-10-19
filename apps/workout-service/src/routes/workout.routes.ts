@@ -51,5 +51,9 @@ router.get("/students/dashboard", requireAnyRole("ALUNO", "TRAINER"), dashboardC
 // Workout logs (accessible by both ALUNO and TRAINER for self-training)
 router.post("/workout/complete", requireAnyRole("ALUNO", "TRAINER"), workoutController.complete);
 router.get("/workout/history", requireAnyRole("ALUNO", "TRAINER"), workoutController.history);
+router.get("/workout/progress", requireAnyRole("ALUNO", "TRAINER"), workoutController.progress);
+router.get("/workout/progress/:exerciseId", requireAnyRole("ALUNO", "TRAINER"), workoutController.exerciseProgress);
+router.get("/students/:alunoId/progress", requireRole("TRAINER"), workoutController.studentProgress);
+router.get("/students/:alunoId/progress/:exerciseId", requireRole("TRAINER"), workoutController.studentProgress);
 
 export default router;
