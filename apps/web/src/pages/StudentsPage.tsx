@@ -431,17 +431,17 @@ export function StudentsPage() {
 
           <label className="block space-y-2">
             <span className="text-xs uppercase text-text-secondary">Meta de Treinos por Semana</span>
-            <input
-              type="number"
-              min={1}
-              max={7}
+            <select
               value={weeklyGoal}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                if (val >= 1 && val <= 7) setWeeklyGoal(val);
-              }}
+              onChange={(e) => setWeeklyGoal(Number(e.target.value))}
               className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
-            />
+            >
+              {[2, 3, 4, 5, 6].map((n) => (
+                <option key={n} value={n}>
+                  {n}x por semana
+                </option>
+              ))}
+            </select>
           </label>
 
           <div className="flex justify-end gap-3 pt-2">

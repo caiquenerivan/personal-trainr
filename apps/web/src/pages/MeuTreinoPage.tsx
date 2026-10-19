@@ -393,17 +393,17 @@ export function MeuTreinoPage() {
 
               <label className="block space-y-2">
                 <span className="text-xs uppercase font-bold text-text-secondary tracking-wider">Meta Semanal</span>
-                <input
-                  type="number"
-                  min={1}
-                  max={7}
+                <select
                   value={weeklyGoal}
-                  onChange={(e) => {
-                    const val = Number(e.target.value);
-                    if (val >= 1 && val <= 7) setWeeklyGoal(val);
-                  }}
+                  onChange={(e) => setWeeklyGoal(Number(e.target.value))}
                   className="w-full rounded-xl border border-border bg-base px-4 py-3 text-sm text-text-primary font-number outline-none focus:border-accent transition"
-                />
+                >
+                  {[2, 3, 4, 5, 6].map((n) => (
+                    <option key={n} value={n}>
+                      {n}x por semana
+                    </option>
+                  ))}
+                </select>
                 <span className="text-[10px] text-text-secondary">Quantos dias por semana você pretende treinar?</span>
               </label>
 
