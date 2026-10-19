@@ -18,7 +18,7 @@ const passwordSchema = z
 const registerSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters long"),
-    email: z.string().email("Invalid email address"),
+    email: z.string().trim().toLowerCase().email("Invalid email address"),
     password: passwordSchema,
     role: z.enum(["TRAINER", "ALUNO"]),
     username: z.string().min(3, "Username must be at least 3 characters"),
@@ -38,7 +38,7 @@ const registerSchema = z
   );
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.string().trim().toLowerCase().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -159,7 +159,7 @@ export async function profile(req: Request, res: Response): Promise<any> {
 }
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.string().trim().toLowerCase().email("Invalid email address"),
 });
 
 const resetPasswordSchema = z.object({
@@ -211,7 +211,7 @@ const verifyEmailSchema = z.object({
 });
 
 const resendVerificationSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.string().trim().toLowerCase().email("Invalid email address"),
 });
 
 export async function verifyEmail(req: Request, res: Response): Promise<any> {

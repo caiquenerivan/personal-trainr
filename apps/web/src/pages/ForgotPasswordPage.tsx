@@ -46,6 +46,9 @@ export function ForgotPasswordPage() {
                   <span className="text-xs uppercase text-text-secondary">Email</span>
                   <input
                     type="email"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="h-12 w-full rounded-lg border border-border bg-base px-3 text-text-primary outline-none focus:border-accent"

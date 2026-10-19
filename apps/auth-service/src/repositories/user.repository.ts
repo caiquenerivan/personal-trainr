@@ -27,7 +27,8 @@ export const userRepository = {
   },
 
   async findByEmail(email: string): Promise<User | null> {
-    return prisma.user.findUnique({ where: { email } });
+    // e-mails são gravados em minúsculas; normaliza também na busca (teclado do celular capitaliza)
+    return prisma.user.findUnique({ where: { email: email.trim().toLowerCase() } });
   },
 
   async findByUsername(username: string): Promise<User | null> {

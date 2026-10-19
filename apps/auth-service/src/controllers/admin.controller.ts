@@ -50,7 +50,7 @@ export async function getUser(req: Request, res: Response): Promise<any> {
 
 const updateUserSchema = z.object({
   name: z.string().min(2).optional(),
-  email: z.string().email().optional(),
+  email: z.string().trim().toLowerCase().email().optional(),
   username: z.string().min(3).optional(),
   phone: z.string().optional().nullable(),
   role: z.enum(["ADMIN", "TRAINER", "ALUNO"]).optional(),

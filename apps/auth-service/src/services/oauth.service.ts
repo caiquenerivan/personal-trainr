@@ -85,7 +85,7 @@ export async function loginOrLinkOAuthUser(params: {
 
   const newUser = await userRepository.create({
     name: params.name || params.email.split("@")[0],
-    email: params.email,
+    email: params.email.trim().toLowerCase(),
     passwordHash: null,
     role: "ALUNO",
     username,
