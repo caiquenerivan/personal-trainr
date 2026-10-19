@@ -19,6 +19,8 @@ services:
       retries: 10
 
   auth-service:
+    # imagem pronta, publicada pelo GitHub Actions (deploy.yml); o build local continua possível com --build
+    image: ghcr.io/caiquenerivan/personaltrainr-auth-service:${IMAGE_TAG:-latest}
     build:
       context: ../../apps/auth-service
       dockerfile: Dockerfile
@@ -31,6 +33,8 @@ services:
     networks: [internal]
 
   workout-service:
+    # imagem pronta, publicada pelo GitHub Actions (deploy.yml); o build local continua possível com --build
+    image: ghcr.io/caiquenerivan/personaltrainr-workout-service:${IMAGE_TAG:-latest}
     build:
       context: ../../apps/workout-service
       dockerfile: Dockerfile
@@ -43,6 +47,8 @@ services:
     networks: [internal]
 
   api-gateway:
+    # imagem pronta, publicada pelo GitHub Actions (deploy.yml); o build local continua possível com --build
+    image: ghcr.io/caiquenerivan/personaltrainr-api-gateway:${IMAGE_TAG:-latest}
     build:
       context: ../../apps/api-gateway
       dockerfile: Dockerfile
