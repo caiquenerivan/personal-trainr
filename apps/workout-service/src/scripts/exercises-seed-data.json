@@ -1,6 +1,6 @@
 [
   {
-    "name": "Crucifixo no Cabo Alto-Baixo",
+    "name": "Crossover Polia Alta (Crucifixo no Cabo Alto-Baixo)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
@@ -115,7 +115,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Crucifixo no Cabo para Peitoral Médio",
+    "name": "Crossover Polia Média (Crucifixo no Cabo para Peitoral Médio)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
@@ -165,7 +165,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Crucifixo no Pec Deck",
+    "name": "Voador (Crucifixo no Pec Deck)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
@@ -205,7 +205,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Flexão de Braços com Anéis em Posição Ajoelhada",
+    "name": "Flexão de Braços nas Argolas Ajoelhado (Flexão de Braços com Anéis em Posição Ajoelhada)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
@@ -260,7 +260,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Press de Peito na Máquina",
+    "name": "Supino Sentado na Máquina (Press de Peito na Máquina)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
@@ -350,7 +350,7 @@
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Supino Reto deitado",
+    "name": "Supino Reto (Supino Reto deitado)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
@@ -365,7 +365,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Flexão de Braços em Anéis",
+    "name": "Flexão de Braços nas Argolas (Flexão de Braços em Anéis)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
@@ -380,7 +380,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Supino Inclinado com Halteres em Declínio",
+    "name": "Supino Declinado com Halteres (Supino Inclinado com Halteres em Declínio)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
@@ -410,7 +410,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Pressão de Peito na Máquina com Pegada Martelo",
+    "name": "Supino na Máquina Pegada Neutra (Pressão de Peito na Máquina com Pegada Martelo)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
@@ -430,17 +430,17 @@
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Crucifixo na Máquina",
+    "name": "Voador na Máquina (Crucifixo na Máquina)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Pressão de Peito na Máquina",
+    "name": "Supino na Máquina (Pressão de Peito na Máquina)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Supino Barra",
+    "name": "Supino Reto com Barra (Supino Barra)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
@@ -460,7 +460,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
   {
-    "name": "Crucifixo no Cabo Baixo-Alto",
+    "name": "Crossover Polia Baixa (Crucifixo no Cabo Baixo-Alto)",
     "muscle": "Peito",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) peito."
   },
@@ -520,7 +520,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Elevação na Barra Fixa",
+    "name": "Barra Fixa (Elevação na Barra Fixa)",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
@@ -535,7 +535,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Elevação na Barra com Pegada Fechada",
+    "name": "Barra Fixa Pegada Fechada (Elevação na Barra com Pegada Fechada)",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
@@ -555,7 +555,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Remada Sentada com Cabo",
+    "name": "Remada Baixa (Remada Sentada com Cabo)",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
@@ -575,12 +575,12 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Elevação na Barra Fixa com Pegada Supinada",
+    "name": "Barra Fixa Supinada (Elevação na Barra Fixa com Pegada Supinada)",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Elevação na Barra com Pegada Aberta",
+    "name": "Barra Fixa Pegada Aberta (Elevação na Barra com Pegada Aberta)",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
@@ -630,7 +630,7 @@
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Puxada na Polia para Dorsais",
+    "name": "Puxada Alta (Puxada na Polia para Dorsais)",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
@@ -695,7 +695,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Puxada lateral com pegada ampla na polia alta",
+    "name": "Puxada Alta Aberta (Puxada lateral com pegada ampla na polia alta)",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
@@ -760,7 +760,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Elevação em Barra com Pegada Neutra",
+    "name": "Barra Fixa Pegada Neutra (Elevação em Barra com Pegada Neutra)",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
@@ -790,7 +790,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Elevação em Anéis",
+    "name": "Barra Fixa nas Argolas (Elevação em Anéis)",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
@@ -830,7 +830,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Puxada no Pulley com Pegada Fechada para Dorsais",
+    "name": "Puxada Alta Pegada Fechada (Puxada no Pulley com Pegada Fechada para Dorsais)",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
@@ -850,7 +850,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Máquina de Puxada Latissimus",
+    "name": "Puxada Alta na Máquina (Máquina de Puxada Latissimus)",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
@@ -950,7 +950,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
   {
-    "name": "Remada Australiana com Pegada Fechada em Anéis",
+    "name": "Remada Australiana nas Argolas (Remada Australiana com Pegada Fechada em Anéis)",
     "muscle": "Costas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) costas."
   },
@@ -1035,7 +1035,7 @@
     "observations": "Exercício de força de caráter explosivo, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Press de Ombro com Faixa",
+    "name": "Desenvolvimento com Faixa (Press de Ombro com Faixa)",
     "muscle": "Ombros",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) ombros."
   },
@@ -1100,12 +1100,12 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Press Militar com Barra",
+    "name": "Desenvolvimento Militar com Barra (Press Militar com Barra)",
     "muscle": "Ombros",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Pressão de Ombros Sentado com Pegada Neutra na Máquina",
+    "name": "Desenvolvimento na Máquina Pegada Neutra (Pressão de Ombros Sentado com Pegada Neutra na Máquina)",
     "muscle": "Ombros",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) ombros."
   },
@@ -1115,7 +1115,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Remada Vertical com Cabo",
+    "name": "Remada Alta no Cabo (Remada Vertical com Cabo)",
     "muscle": "Ombros",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) ombros."
   },
@@ -1175,7 +1175,7 @@
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Puxada de Cabo para o Rosto",
+    "name": "Face Pull (Puxada de Cabo para o Rosto)",
     "muscle": "Ombros",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) ombros."
   },
@@ -1190,7 +1190,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Aberturas Invertidas na Máquina",
+    "name": "Voador Invertido (Aberturas Invertidas na Máquina)",
     "muscle": "Ombros",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) ombros."
   },
@@ -1205,17 +1205,17 @@
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Press de Ombro com Halter em Meio Ajoelhamento",
+    "name": "Desenvolvimento Unilateral Ajoelhado (Press de Ombro com Halter em Meio Ajoelhamento)",
     "muscle": "Ombros",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Remada Vertical com Pegada Fechada com Barra",
+    "name": "Remada Alta com Barra (Remada Vertical com Pegada Fechada com Barra)",
     "muscle": "Ombros",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Pressão de Ombros na Máquina",
+    "name": "Desenvolvimento na Máquina (Pressão de Ombros na Máquina)",
     "muscle": "Ombros",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) ombros."
   },
@@ -1230,7 +1230,7 @@
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Remada Vertical com Halteres",
+    "name": "Remada Alta com Halteres (Remada Vertical com Halteres)",
     "muscle": "Ombros",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) ombros."
   },
@@ -1270,12 +1270,12 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Puxada Facial com Anéis",
+    "name": "Face Pull nas Argolas (Puxada Facial com Anéis)",
     "muscle": "Ombros",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Pressão Sentada Atrás do Pescoço na Smith",
+    "name": "Desenvolvimento por Trás no Smith (Pressão Sentada Atrás do Pescoço na Smith)",
     "muscle": "Ombros",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) ombros."
   },
@@ -1400,7 +1400,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) ombros."
   },
   {
-    "name": "Elevação dumbbell leteral",
+    "name": "Elevação Lateral com Halteres (variação)",
     "muscle": "Ombros",
     "observations": "Exercício de força, que trabalha principalmente o(a) ombros."
   },
@@ -1595,7 +1595,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Calcanhares com Barra",
+    "name": "Panturrilha em Pé com Barra (Elevação de Calcanhares com Barra)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -1615,7 +1615,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Gêmeos Sentado com Peso",
+    "name": "Panturrilha Sentado com Peso (Elevação de Gêmeos Sentado com Peso)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -1625,7 +1625,7 @@
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Adução de Quadril Sentado",
+    "name": "Cadeira Adutora (Adução de Quadril Sentado)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -1675,7 +1675,7 @@
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Gémeos Unilateral com Haltere",
+    "name": "Panturrilha Unilateral com Halter (Elevação de Gémeos Unilateral com Haltere)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -1750,7 +1750,7 @@
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Afundos Caminhando com Saco Búlgaro",
+    "name": "Passada com Saco Búlgaro (Afundos Caminhando com Saco Búlgaro)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -1785,7 +1785,7 @@
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Gêmeos Sentado",
+    "name": "Panturrilha Sentado (Elevação de Gêmeos Sentado)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -1795,7 +1795,7 @@
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Flexão de Perna em Pé",
+    "name": "Flexora em Pé (Flexão de Perna em Pé)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -1810,7 +1810,7 @@
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Prensa de Perna Unilateral",
+    "name": "Leg Press Unilateral (Prensa de Perna Unilateral)",
     "muscle": "Pernas",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) pernas."
   },
@@ -1870,7 +1870,7 @@
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Calcanhar Unilateral",
+    "name": "Panturrilha Unilateral (Elevação de Calcanhar Unilateral)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -1885,7 +1885,7 @@
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Afundos com Barra Caminhando",
+    "name": "Passada com Barra (Afundos com Barra Caminhando)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -1915,7 +1915,7 @@
     "observations": "Exercício de força de caráter explosivo, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Afundos Caminhando",
+    "name": "Passada (Afundos Caminhando)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -1950,7 +1950,7 @@
     "observations": "Exercício de força com fins de reabilitação, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Afundos Caminhando com Halteres",
+    "name": "Passada com Halteres (Afundos Caminhando com Halteres)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -1960,7 +1960,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Levantamento Terra com Pernas Retas com Barra",
+    "name": "Stiff com Barra (Levantamento Terra com Pernas Retas com Barra)",
     "muscle": "Pernas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) pernas."
   },
@@ -1970,7 +1970,7 @@
     "observations": "Exercício de força de caráter explosivo, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Gêmeos em Pé",
+    "name": "Panturrilha em Pé (Elevação de Gêmeos em Pé)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -1985,7 +1985,7 @@
     "observations": "Exercício cardiovascular com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Calcanhares na Máquina Smith",
+    "name": "Panturrilha no Smith (Elevação de Calcanhares na Máquina Smith)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -1995,7 +1995,7 @@
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Sentar na Parede",
+    "name": "Cadeirinha (Sentar na Parede)",
     "muscle": "Pernas",
     "observations": "Exercício de força de caráter isométrico, que trabalha principalmente o(a) pernas."
   },
@@ -2025,12 +2025,12 @@
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Agachamento com Halter em Cálice",
+    "name": "Agachamento Goblet (Agachamento com Halter em Cálice)",
     "muscle": "Pernas",
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Levantamento Terra com Pernas Retas com Halteres",
+    "name": "Stiff com Halteres (Levantamento Terra com Pernas Retas com Halteres)",
     "muscle": "Pernas",
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) pernas."
   },
@@ -2115,7 +2115,7 @@
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Gêmeos em Pé com Halteres",
+    "name": "Panturrilha em Pé com Halteres (Elevação de Gêmeos em Pé com Halteres)",
     "muscle": "Pernas",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
@@ -2135,12 +2135,12 @@
     "observations": "Exercício de força com componente cardiovascular, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Treinador Elíptico",
+    "name": "Elíptico (Treinador Elíptico)",
     "muscle": "Pernas",
     "observations": "Exercício cardiovascular usado como aquecimento, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Gêmeos Sentado na Máquina Smith",
+    "name": "Panturrilha Sentado no Smith (Elevação de Gêmeos Sentado na Máquina Smith)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -2205,7 +2205,7 @@
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Calcanhares no Smith",
+    "name": "Panturrilha no Smith em Pé (Elevação de Calcanhares no Smith)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -2350,7 +2350,7 @@
     "observations": "Exercício cardiovascular de caráter funcional, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Gémeos Unilateral Sentado com Haltere",
+    "name": "Panturrilha Unilateral Sentado com Halter (Elevação de Gémeos Unilateral Sentado com Haltere)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -2375,11 +2375,6 @@
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Levantamento Terra com Halteres Pernas Retas",
-    "muscle": "Pernas",
-    "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
-  },
-  {
     "name": "Levantamento Terra Romeno com Cabo",
     "muscle": "Pernas",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) pernas."
@@ -2395,7 +2390,7 @@
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Baloiços Laterais de Pernas",
+    "name": "Balanço Lateral de Pernas (Baloiços Laterais de Pernas)",
     "muscle": "Pernas",
     "observations": "Exercício de mobilidade usado como aquecimento, que trabalha principalmente o(a) pernas."
   },
@@ -2455,7 +2450,7 @@
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Gêmeos",
+    "name": "Panturrilha (Elevação de Gêmeos)",
     "muscle": "Pernas",
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) pernas."
   },
@@ -2475,7 +2470,7 @@
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Flexão de Pernas com Anel",
+    "name": "Flexão de Pernas nas Argolas (Flexão de Pernas com Anel)",
     "muscle": "Pernas",
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) pernas."
   },
@@ -2485,7 +2480,7 @@
     "observations": "Exercício de reabilitação com foco em mobilidade, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Gêmeos Unilateral na Máquina Smith",
+    "name": "Panturrilha Unilateral no Smith (Elevação de Gêmeos Unilateral na Máquina Smith)",
     "muscle": "Pernas",
     "observations": "Exercício de força, que trabalha principalmente o(a) pernas."
   },
@@ -2515,7 +2510,7 @@
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) pernas."
   },
   {
-    "name": "Elevação de Quadril Unilateral com Haltere",
+    "name": "Elevação Pélvica Unilateral com Halter (Elevação de Quadril Unilateral com Haltere)",
     "muscle": "Glúteos",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
   },
@@ -2565,7 +2560,7 @@
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Elevação de Quadril na Máquina Smith",
+    "name": "Elevação Pélvica no Smith (Elevação de Quadril na Máquina Smith)",
     "muscle": "Glúteos",
     "observations": "Exercício de força, que trabalha principalmente o(a) glúteos."
   },
@@ -2600,7 +2595,7 @@
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Elevação de Quadril com Barra",
+    "name": "Elevação Pélvica com Barra (Elevação de Quadril com Barra)",
     "muscle": "Glúteos",
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) glúteos."
   },
@@ -2635,7 +2630,7 @@
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Elevação de Quadril",
+    "name": "Elevação Pélvica (Elevação de Quadril)",
     "muscle": "Glúteos",
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) glúteos."
   },
@@ -2650,7 +2645,7 @@
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Elevação de Quadril Unilateral com Halter",
+    "name": "Elevação Pélvica Unilateral com Halter (Elevação de Quadril Unilateral com Halter)",
     "muscle": "Glúteos",
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
   },
@@ -2725,12 +2720,12 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Agachamento com Kettlebell em Cálice",
+    "name": "Agachamento Goblet com Kettlebell (Agachamento com Kettlebell em Cálice)",
     "muscle": "Glúteos",
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Abdução de Quadril Sentado",
+    "name": "Cadeira Abdutora (Abdução de Quadril Sentado)",
     "muscle": "Glúteos",
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) glúteos."
   },
@@ -2750,7 +2745,7 @@
     "observations": "Exercício de mobilidade com fins de reabilitação, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Elevação de Quadril com Abdução",
+    "name": "Elevação Pélvica com Abdução (Elevação de Quadril com Abdução)",
     "muscle": "Glúteos",
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) glúteos."
   },
@@ -2760,7 +2755,7 @@
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Elevação de Quadril na Máquina",
+    "name": "Elevação Pélvica na Máquina (Elevação de Quadril na Máquina)",
     "muscle": "Glúteos",
     "observations": "Exercício de força, que trabalha principalmente o(a) glúteos."
   },
@@ -2790,12 +2785,12 @@
     "observations": "Exercício de força com foco em mobilidade, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Cachorro de Pássaro",
+    "name": "Perdigueiro (Cachorro de Pássaro)",
     "muscle": "Glúteos",
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Elevação de Quadril com Halteres",
+    "name": "Elevação Pélvica com Halteres (Elevação de Quadril com Halteres)",
     "muscle": "Glúteos",
     "observations": "Exercício de força de caráter funcional, que trabalha principalmente o(a) glúteos."
   },
@@ -2805,7 +2800,7 @@
     "observations": "Exercício de força com exigência de equilíbrio, que trabalha principalmente o(a) glúteos."
   },
   {
-    "name": "Flexão de Cotovelos com Faixa Elástica",
+    "name": "Rosca com Faixa Elástica (Flexão de Cotovelos com Faixa Elástica)",
     "muscle": "Bíceps",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) bíceps."
   },
@@ -2890,7 +2885,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) bíceps."
   },
   {
-    "name": "Flexão de Cotovelos com TRX",
+    "name": "Rosca no TRX (Flexão de Cotovelos com TRX)",
     "muscle": "Bíceps",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) bíceps."
   },
@@ -2960,7 +2955,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) bíceps."
   },
   {
-    "name": "Flexão de Cotovelos com Halteres",
+    "name": "Rosca com Halteres (Flexão de Cotovelos com Halteres)",
     "muscle": "Bíceps",
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) bíceps."
   },
@@ -3105,7 +3100,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Extensão de Tríceps na Polia com Pegada Invertida",
+    "name": "Tríceps Pulley Inverso (Extensão de Tríceps na Polia com Pegada Invertida)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3120,7 +3115,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Extensão de Tríceps com Halter em Pé",
+    "name": "Tríceps Francês em Pé (Extensão de Tríceps com Halter em Pé)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3130,7 +3125,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Extensão de Tríceps com Barra EZ deitado",
+    "name": "Tríceps Testa com Barra EZ (Extensão de Tríceps com Barra EZ deitado)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3180,12 +3175,12 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Extensão de Tríceps com Barra deitado",
+    "name": "Tríceps Testa com Barra (Extensão de Tríceps com Barra deitado)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Extensão de Tríceps com Anéis",
+    "name": "Extensão de Tríceps nas Argolas (Extensão de Tríceps com Anéis)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3240,7 +3235,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Extensão de Tríceps com Cabo Acima da Cabeça",
+    "name": "Tríceps Francês no Cabo (Extensão de Tríceps com Cabo Acima da Cabeça)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3255,17 +3250,17 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Mergulho de Tríceps Sentado no Banco",
+    "name": "Tríceps Banco (Mergulho de Tríceps Sentado no Banco)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Mergulhos em Anéis",
+    "name": "Mergulho nas Argolas (Mergulhos em Anéis)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Extensão de Tríceps com Halteres deitado",
+    "name": "Tríceps Testa com Halteres (Extensão de Tríceps com Halteres deitado)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3275,7 +3270,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Extensão de Tríceps Sentado com Halteres",
+    "name": "Tríceps Francês Sentado (Extensão de Tríceps Sentado com Halteres)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3305,7 +3300,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Empurradores de Cabo (Barra Reta)",
+    "name": "Tríceps Pulley com Barra Reta (Empurradores de Cabo)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3325,12 +3320,12 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Supino Francês com Barra em Declínio",
+    "name": "Tríceps Testa Declinado (Supino Francês com Barra em Declínio)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Extensão de Tríceps no Cabo",
+    "name": "Tríceps Pulley (Extensão de Tríceps no Cabo)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3405,7 +3400,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Extensão de Tríceps com Um Braço Acima da Cabeça",
+    "name": "Tríceps Francês Unilateral (Extensão de Tríceps com Um Braço Acima da Cabeça)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3415,7 +3410,7 @@
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
   {
-    "name": "Empurradores de Cabo (Corda)",
+    "name": "Tríceps Corda (Empurradores de Cabo)",
     "muscle": "Tríceps",
     "observations": "Exercício de força com padrão de empurrar, que trabalha principalmente o(a) tríceps."
   },
@@ -3515,7 +3510,7 @@
     "observations": "Exercício de mobilidade de alongamento, que trabalha principalmente o(a) antebraços."
   },
   {
-    "name": "Flexão de Punho Inversa com Barra",
+    "name": "Rosca Punho Inversa com Barra (Flexão de Punho Inversa com Barra)",
     "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
@@ -3530,7 +3525,7 @@
     "observations": "Exercício de força com padrão de puxar, que trabalha principalmente o(a) antebraços."
   },
   {
-    "name": "Flexão de Punho com Cabo",
+    "name": "Rosca Punho no Cabo (Flexão de Punho com Cabo)",
     "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
@@ -3545,7 +3540,7 @@
     "observations": "Exercício de mobilidade com fins de reabilitação, que trabalha principalmente o(a) antebraços."
   },
   {
-    "name": "Flexão de Punho com Barra",
+    "name": "Rosca Punho com Barra (Flexão de Punho com Barra)",
     "muscle": "Antebraços",
     "observations": "Exercício de força, que trabalha principalmente o(a) antebraços."
   },
@@ -3580,7 +3575,7 @@
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
-    "name": "L-Sitio",
+    "name": "L-Sit (L-Sitio)",
     "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
@@ -3625,7 +3620,7 @@
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
-    "name": "Flexões Abdominais",
+    "name": "Abdominal Supra (Flexões Abdominais)",
     "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
@@ -3680,7 +3675,7 @@
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
-    "name": "Exercício de Inseto Morto",
+    "name": "Dead Bug (Exercício de Inseto Morto)",
     "muscle": "Abdominais",
     "observations": "Exercício de core com foco em habilidade motora, que trabalha principalmente o(a) abdominais."
   },
@@ -3810,7 +3805,7 @@
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
-    "name": "Dedos aos Barras",
+    "name": "Toes to Bar (Dedos aos Barras)",
     "muscle": "Abdominais",
     "observations": "Exercício de core de caráter funcional, que trabalha principalmente o(a) abdominais."
   },
@@ -3830,7 +3825,7 @@
     "observations": "Exercício cardiovascular com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
   {
-    "name": "Escalador em posição de prancha",
+    "name": "Escalador / Mountain Climber (Escalador em posição de prancha)",
     "muscle": "Abdominais",
     "observations": "Exercício pliométrico com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
@@ -3920,7 +3915,7 @@
     "observations": "Exercício de core com exigência de equilíbrio, que trabalha principalmente o(a) abdominais."
   },
   {
-    "name": "Abdominais Invertidos",
+    "name": "Abdominal Infra (Abdominais Invertidos)",
     "muscle": "Abdominais",
     "observations": "Exercício de core, que trabalha principalmente o(a) abdominais."
   },
@@ -4080,7 +4075,7 @@
     "observations": "Exercício de core com característica de força, que trabalha principalmente o(a) abdominais."
   },
   {
-    "name": "Flexões de Abdômen com Cabo em Posição Ajoelhada",
+    "name": "Abdominal na Polia Ajoelhado (Flexões de Abdômen com Cabo em Posição Ajoelhada)",
     "muscle": "Abdominais",
     "observations": "Exercício de força com ênfase no core, que trabalha principalmente o(a) abdominais."
   },
