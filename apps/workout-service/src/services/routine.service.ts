@@ -51,16 +51,20 @@ export const routineService = {
       }>;
     }>;
   }) {
-    const connection = await prisma.trainerStudentConnection.findUnique({
-      where: {
-        trainerId_studentId: {
-          trainerId: data.trainerId,
-          studentId: data.alunoId,
-        },
-      },
-    });
+    // o próprio personal pode vincular uma rotina a si mesmo (tela "Meu Treino"); para alunos exige vínculo ativo
+    const selfAssign = data.alunoId === data.trainerId;
+    const connection = selfAssign
+      ? null
+      : await prisma.trainerStudentConnection.findUnique({
+          where: {
+            trainerId_studentId: {
+              trainerId: data.trainerId,
+              studentId: data.alunoId,
+            },
+          },
+        });
 
-    if (!connection || connection.status !== "ACTIVE") {
+    if (!selfAssign && (!connection || connection.status !== "ACTIVE")) {
       throw { status: 403, message: "Você não tem permissão para atribuir treino a este aluno" };
     }
 
