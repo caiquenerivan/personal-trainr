@@ -7,6 +7,7 @@ import {
   ClipboardList,
   Library,
   BarChart3,
+  TrendingUp,
   Dumbbell,
   User,
   LogOut,
@@ -28,6 +29,7 @@ const menuItems = [
   { label: 'Rotinas', to: '/rotinas', icon: ClipboardList },
   { label: 'Exercícios', to: '/exercicios', icon: Library },
   { label: 'Meu Treino', to: '/meu-treino', icon: Dumbbell },
+  { label: 'Minha Evolução', to: '/minha-evolucao', icon: TrendingUp },
   { label: 'Progresso', to: '/progresso', icon: BarChart3 },
   { label: 'Perfil', to: '/perfil', icon: User },
 ];

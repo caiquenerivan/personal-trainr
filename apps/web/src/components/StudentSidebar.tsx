@@ -1,11 +1,12 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Users, User, LogOut, X } from 'lucide-react';
+import { Home, Users, User, LogOut, X, TrendingUp } from 'lucide-react';
 import { clearUserData } from '../utils/userStorage';
 import logoFitnessGoldRunner from '../assets/logo-fitness-gold-runner.png';
 import type { UserData } from '../api/auth';
 
 const menuItems = [
   { label: 'Painel', to: '/aluno/painel', icon: Home },
+  { label: 'Evolução', to: '/aluno/evolucao', icon: TrendingUp },
   { label: 'Personal', to: '/aluno/personal', icon: Users },
   { label: 'Perfil', to: '/aluno/perfil', icon: User },
 ];

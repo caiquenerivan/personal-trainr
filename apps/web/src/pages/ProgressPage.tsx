@@ -308,12 +308,13 @@ export function ProgressPage() {
               </div>
 
               {/* ── Footer: VER DETALHES ── */}
-              <button
-                type="button"
-                className="mt-6 w-full rounded-lg border border-[#4A4A4A] bg-transparent py-2.5 text-xs font-semibold uppercase tracking-wider text-[#A7A7A7] transition-all hover:border-[#AF9150] hover:text-[#AF9150]"
+              <Link
+                to={`/progresso/${student.id}/carga`}
+                state={{ name: student.name }}
+                className="mt-6 block w-full rounded-lg border border-[#4A4A4A] bg-transparent py-2.5 text-center text-xs font-semibold uppercase tracking-wider text-[#A7A7A7] transition-all hover:border-[#AF9150] hover:text-[#AF9150]"
               >
-                Ver Detalhes
-              </button>
+                Evolução de carga
+              </Link>
             </article>
           );
         })}

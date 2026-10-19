@@ -37,6 +37,7 @@ const AdminSubscriptionsPage = lazy(() => import('./pages/admin/AdminSubscriptio
 const AdminExercisesPage = lazy(() => import('./pages/admin/AdminExercisesPage').then((m) => ({ default: m.AdminExercisesPage })));
 const AdminPerfilPage = lazy(() => import('./pages/admin/AdminPerfilPage').then((m) => ({ default: m.AdminPerfilPage })));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage })));
+const LoadProgressPage = lazy(() => import('./pages/LoadProgressPage').then((m) => ({ default: m.LoadProgressPage })));
 const TermsPage = lazy(() => import('./pages/TermsPage').then((m) => ({ default: m.TermsPage })));
 
 function PageLoader() {
@@ -74,6 +75,8 @@ export function AppRouter() {
             <Route path="/rotinas/editar/:id" element={<RoutineEditPage />} />
             <Route path="/exercicios" element={<ExercisesPage />} />
             <Route path="/progresso" element={<ProgressPage />} />
+            <Route path="/progresso/:alunoId/carga" element={<LoadProgressPage />} />
+            <Route path="/minha-evolucao" element={<LoadProgressPage />} />
             <Route path="/meu-treino" element={<MeuTreinoPage />} />
             <Route path="/perfil" element={<TrainerPerfilPage />} />
           </Route>
@@ -85,6 +88,7 @@ export function AppRouter() {
             <Route path="/aluno/painel" element={<StudentDashboardPage />} />
             <Route path="/aluno/treinos" element={<StudentTreinosPage />} />
             <Route path="/aluno/treino-hoje" element={<StudentTreinoHojePage />} />
+            <Route path="/aluno/evolucao" element={<LoadProgressPage />} />
             <Route path="/aluno/perfil" element={<StudentPerfilPage />} />
             <Route path="/aluno/personal" element={<StudentPersonalPage />} />
           </Route>
