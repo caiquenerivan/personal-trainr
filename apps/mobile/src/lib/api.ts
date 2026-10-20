@@ -1,5 +1,5 @@
 import { AxiosError, create as createAxios, type InternalAxiosRequestConfig } from 'axios';
-import { createAuthApi, createWorkoutApi } from '@personaltrainr/shared';
+import { createAuthApi, createConnectionApi, createTrainerApi, createWorkoutApi } from '@personaltrainr/shared';
 import { API_URL } from './config';
 import { getAccessToken, getRefreshToken, saveTokens, saveUser } from './sessionStorage';
 
@@ -12,6 +12,8 @@ export const authApi = createAuthApi(publicClient);
 
 export const api = createAxios({ baseURL: API_URL, timeout: TIMEOUT_MS });
 export const workoutApi = createWorkoutApi(api);
+export const trainerApi = createTrainerApi(api);
+export const connectionApi = createConnectionApi(api);
 
 let onSessionExpired: () => void = () => {};
 
@@ -88,6 +90,11 @@ api.interceptors.response.use(
     }
   },
 );
+
+// Plano do personal não inclui o recurso (painel, progresso dos alunos).
+export function isPlanLocked(error: unknown): boolean {
+  return error instanceof AxiosError && error.response?.status === 403;
+}
 
 // Mensagem do backend ({ message }) quando houver, senão um texto genérico.
 export function getErrorMessage(error: unknown, fallback: string): string {
