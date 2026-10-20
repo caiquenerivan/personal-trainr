@@ -4,8 +4,71 @@
     {
       "name": "web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000
+    },
+    {
+      "name": "auth-service",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "-w",
+        "@personaltrainr/auth-service"
+      ],
+      "port": 3001,
+      "env": {
+        "CORS_ORIGIN": "http://localhost:3000,http://localhost:8081"
+      }
+    },
+    {
+      "name": "workout-service",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "-w",
+        "@personaltrainr/workout-service"
+      ],
+      "port": 3002,
+      "env": {
+        "CORS_ORIGIN": "http://localhost:3000,http://localhost:8081"
+      }
+    },
+    {
+      "name": "api-gateway",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "-w",
+        "@personaltrainr/api-gateway"
+      ],
+      "port": 8000,
+      "env": {
+        "CORS_ORIGIN": "http://localhost:3000,http://localhost:8081"
+      }
+    },
+    {
+      "name": "mobile-web",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "expo",
+        "start",
+        "--web",
+        "--port",
+        "8081"
+      ],
+      "cwd": "apps/mobile",
+      "port": 8081,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "http://localhost:8000",
+        "BROWSER": "none",
+        "CI": "1"
+      }
     }
   ]
 }

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
-import { register, login, forgotPassword, resetPassword, verifyEmail, resendVerification, verifyTwoFactor } from "../controllers/auth.controller";
-import { googleRedirect, googleCallback } from "../controllers/oauth.controller";
+import { register, login, refresh, logout, forgotPassword, resetPassword, verifyEmail, resendVerification, verifyTwoFactor } from "../controllers/auth.controller";
+import { googleRedirect, googleCallback, googleMobile } from "../controllers/oauth.controller";
 
 const router = Router();
 
@@ -28,6 +28,10 @@ const twoFactorAttemptLimiter = rateLimit({
 
 router.post("/register", authAttemptLimiter, register);
 router.post("/login", authAttemptLimiter, login);
+// Sem o authAttemptLimiter: o app chama a cada ~15 min por usuário, e o
+// token é aleatório de 256 bits, então não há o que adivinhar.
+router.post("/refresh", refresh);
+router.post("/logout", logout);
 router.post("/forgot-password", authAttemptLimiter, forgotPassword);
 router.post("/reset-password", authAttemptLimiter, resetPassword);
 router.post("/verify-email", authAttemptLimiter, verifyEmail);
@@ -35,5 +39,6 @@ router.post("/resend-verification", authAttemptLimiter, resendVerification);
 router.post("/2fa/verify", twoFactorAttemptLimiter, verifyTwoFactor);
 router.get("/google", googleRedirect);
 router.get("/google/callback", googleCallback);
+router.post("/google/mobile", authAttemptLimiter, googleMobile);
 
 export default router;

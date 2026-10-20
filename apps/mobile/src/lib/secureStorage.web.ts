@@ -1,0 +1,7 @@
+// Só para a pré-visualização no navegador (SecureStore não existe na web).
+// O app não é publicado para web.
+export const secureStorage = {
+  getItem: async (key: string) => window.localStorage.getItem(key),
+  setItem: async (key: string, value: string) => window.localStorage.setItem(key, value),
+  removeItem: async (key: string) => window.localStorage.removeItem(key),
+};

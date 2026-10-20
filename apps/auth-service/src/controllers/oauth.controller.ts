@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { OAuth2Client } from "google-auth-library";
+import { z } from "zod";
 import { generateOAuthState, verifyOAuthState, loginOrLinkOAuthUser } from "../services/oauth.service";
 import { logger } from "../lib/logger";
 
@@ -69,5 +70,53 @@ export async function googleCallback(req: Request, res: Response): Promise<any> 
   } catch (error) {
     logger.error({ err: error }, "Google OAuth callback error");
     return res.redirect(failureRedirect);
+  }
+}
+
+const googleMobileSchema = z.object({
+  idToken: z.string().min(1, "idToken is required"),
+});
+
+// Login nativo do app: o SDK do Google no aparelho já devolve um idToken
+// (emitido para o client ID web, configurado como webClientId no app), então
+// não há redirect — só validamos o token e emitimos a sessão mobile.
+export async function googleMobile(req: Request, res: Response): Promise<any> {
+  const validation = googleMobileSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({ message: "Validation error", errors: validation.error.format() });
+  }
+
+  let payload;
+  try {
+    const ticket = await getClient().verifyIdToken({
+      idToken: validation.data.idToken,
+      audience: GOOGLE_CLIENT_ID,
+    });
+    payload = ticket.getPayload();
+  } catch {
+    return res.status(401).json({ message: "Token do Google inválido" });
+  }
+
+  if (!payload?.sub || !payload.email || !payload.email_verified) {
+    return res.status(401).json({ message: "Token do Google inválido" });
+  }
+
+  try {
+    const session = await loginOrLinkOAuthUser(
+      {
+        provider: "GOOGLE",
+        providerUserId: payload.sub,
+        email: payload.email,
+        name: payload.name || "",
+      },
+      "mobile",
+    );
+    return res.status(200).json(session);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    logger.error({ err: error }, "Google mobile login error");
+    return res.status(500).json({ message: "Internal server error" });
   }
 }

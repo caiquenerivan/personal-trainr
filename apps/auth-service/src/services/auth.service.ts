@@ -10,6 +10,7 @@ import { emailVerificationTokenRepository } from "../repositories/emailVerificat
 import { trainerProfileRepository } from "../repositories/trainerProfile.repository";
 import type { TrainerProfileData } from "../repositories/trainerProfile.repository";
 import { subscriptionRepository } from "../repositories/subscription.repository";
+import { refreshTokenRepository } from "../repositories/refreshToken.repository";
 import { PLAN_STUDENT_LIMITS } from "../config/plans";
 import { sendPasswordResetEmail, sendVerificationEmail } from "../providers/EmailProvider";
 import { encryptSecret, decryptSecret } from "../lib/totpCrypto";
@@ -24,6 +25,14 @@ const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 const TOTP_ISSUER = "Personal Trainr";
 const TWO_FACTOR_PENDING_SCOPE = "2fa-pending";
 const BACKUP_CODE_COUNT = 8;
+const WEB_ACCESS_TOKEN_TTL = "1d";
+// O app mobile renova o access token pelo refresh token, então ele pode ser
+// curto; o refresh token dura o bastante para o aluno não ser deslogado
+// entre um treino e outro.
+const MOBILE_ACCESS_TOKEN_TTL = "15m";
+const REFRESH_TOKEN_TTL_MS = 60 * 24 * 60 * 60 * 1000;
+
+export type ClientType = "web" | "mobile";
 
 function hashToken(token: string): string {
   return crypto.createHash("sha256").update(token).digest("hex");
@@ -35,11 +44,37 @@ function generateBackupCodes(): { plain: string[]; hashed: string[] } {
   return { plain, hashed };
 }
 
+async function createRefreshToken(userId: string): Promise<string> {
+  const rawToken = crypto.randomBytes(32).toString("hex");
+  await refreshTokenRepository.create({
+    userId,
+    tokenHash: hashToken(rawToken),
+    expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
+  });
+  return rawToken;
+}
+
+// Web recebe só o JWT de 1 dia (guardado em localStorage, onde um refresh
+// token de longa duração seria exposto a XSS); mobile recebe access token
+// curto + refresh token, guardados no SecureStore do aparelho.
+async function issueTokens(
+  user: { id: string; role: string },
+  client: ClientType,
+): Promise<{ token: string; refreshToken?: string }> {
+  const payload = { userId: user.id, role: user.role };
+  if (client === "web") {
+    return { token: jwt.sign(payload, JWT_SECRET, { expiresIn: WEB_ACCESS_TOKEN_TTL }) };
+  }
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: MOBILE_ACCESS_TOKEN_TTL });
+  const refreshToken = await createRefreshToken(user.id);
+  return { token, refreshToken };
+}
+
 // Emite a sessão pós-autenticação: tempToken se 2FA estiver ativo, ou o JWT
 // final direto. Compartilhado entre login por senha e login via OAuth, já
 // que a partir daqui a lógica é idêntica (a diferença está em como cada um
 // chegou a um `user` confiável).
-export function issueSession(user: {
+export async function issueSession(user: {
   id: string;
   name: string;
   email: string;
@@ -54,7 +89,7 @@ export function issueSession(user: {
   birthDate: Date | null;
   emailVerified: boolean;
   twoFactorEnabled: boolean;
-}) {
+}, client: ClientType = "web") {
   if (user.twoFactorEnabled) {
     const tempToken = jwt.sign(
       { userId: user.id, scope: TWO_FACTOR_PENDING_SCOPE },
@@ -64,14 +99,10 @@ export function issueSession(user: {
     return { requiresTwoFactor: true as const, tempToken };
   }
 
-  const token = jwt.sign(
-    { userId: user.id, role: user.role },
-    JWT_SECRET,
-    { expiresIn: "1d" },
-  );
+  const tokens = await issueTokens(user, client);
 
   return {
-    token,
+    ...tokens,
     user: {
       ...toPublicUserFields(user),
       requiresTwoFactorSetup: user.role === "ADMIN" && !user.twoFactorEnabled,
@@ -210,7 +241,7 @@ export const authService = {
     };
   },
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string, client: ClientType = "web") {
     const user = await userRepository.findByEmail(email);
     if (!user || !user.passwordHash) {
       throw { status: 401, message: "Invalid email or password" };
@@ -229,7 +260,48 @@ export const authService = {
       throw { status: 403, message: "Confirme seu e-mail antes de fazer login. Verifique sua caixa de entrada." };
     }
 
-    return issueSession(user);
+    return issueSession(user, client);
+  },
+
+  async refreshSession(rawRefreshToken: string) {
+    const stored = await refreshTokenRepository.findByHash(hashToken(rawRefreshToken));
+    if (!stored) {
+      throw { status: 401, message: "Sessão expirada. Faça login novamente." };
+    }
+
+    // Token já rotacionado sendo reapresentado: ou o app perdeu a resposta
+    // da rotação, ou o token vazou. Sem como distinguir, encerra todas as
+    // sessões mobile do usuário.
+    if (stored.revokedAt) {
+      await refreshTokenRepository.revokeAllForUser(stored.userId);
+      throw { status: 401, message: "Sessão expirada. Faça login novamente." };
+    }
+
+    if (stored.expiresAt <= new Date()) {
+      throw { status: 401, message: "Sessão expirada. Faça login novamente." };
+    }
+
+    const user = await userRepository.findByIdWithHash(stored.userId);
+    if (!user || !user.isActive) {
+      await refreshTokenRepository.revokeAllForUser(stored.userId);
+      throw { status: 401, message: "Sessão expirada. Faça login novamente." };
+    }
+
+    const revoked = await refreshTokenRepository.revoke(stored.id);
+    if (!revoked) {
+      throw { status: 401, message: "Sessão expirada. Faça login novamente." };
+    }
+
+    const tokens = await issueTokens(user, "mobile");
+    return { ...tokens, user: toPublicUserFields(user) };
+  },
+
+  async logout(rawRefreshToken: string) {
+    const stored = await refreshTokenRepository.findByHash(hashToken(rawRefreshToken));
+    if (stored) {
+      await refreshTokenRepository.revoke(stored.id);
+    }
+    return { message: "Sessão encerrada" };
   },
 
   async getProfile(userId: string) {
@@ -298,6 +370,7 @@ export const authService = {
 
     const newHash = await bcrypt.hash(newPassword, 10);
     await userRepository.updatePasswordHash(userId, newHash);
+    await refreshTokenRepository.revokeAllForUser(userId);
 
     return { message: "Password updated successfully" };
   },
@@ -333,6 +406,7 @@ export const authService = {
     const newHash = await bcrypt.hash(newPassword, 10);
     await userRepository.updatePasswordHash(resetToken.userId, newHash);
     await passwordResetTokenRepository.markUsed(resetToken.id);
+    await refreshTokenRepository.revokeAllForUser(resetToken.userId);
 
     return { message: "Senha redefinida com sucesso" };
   },
@@ -450,7 +524,7 @@ export const authService = {
     return { message: "2FA desativado com sucesso" };
   },
 
-  async verifyTwoFactor(tempToken: string, code: string) {
+  async verifyTwoFactor(tempToken: string, code: string, client: ClientType = "web") {
     let payload: { userId: string; scope: string };
     try {
       payload = jwt.verify(tempToken, JWT_SECRET) as { userId: string; scope: string };
@@ -494,14 +568,10 @@ export const authService = {
       throw { status: 401, message: "Código inválido" };
     }
 
-    const token = jwt.sign(
-      { userId: user.id, role: user.role },
-      JWT_SECRET,
-      { expiresIn: "1d" },
-    );
+    const tokens = await issueTokens(user, client);
 
     return {
-      token,
+      ...tokens,
       user: {
         ...toPublicUserFields(user),
         requiresTwoFactorSetup: false,

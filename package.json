@@ -5,7 +5,8 @@
   "packageManager": "npm@11.6.2",
   "description": "Monorepo for Personal Trainr",
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
     "build": "turbo build",
@@ -13,5 +14,9 @@
   },
   "devDependencies": {
     "turbo": "^2.0.12"
+  },
+  "overrides": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
   }
 }

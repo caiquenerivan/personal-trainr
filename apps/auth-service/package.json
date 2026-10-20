@@ -8,7 +8,8 @@
     "test": "vitest run",
     "seed:admin": "ts-node src/scripts/promote-admin.ts",
     "reset:2fa": "ts-node src/scripts/reset-2fa.ts",
-    "send-verification-to-existing-users": "ts-node src/scripts/send-verification-to-existing-users.ts"
+    "send-verification-to-existing-users": "ts-node src/scripts/send-verification-to-existing-users.ts",
+    "seed:test-users": "ts-node src/scripts/seed-test-users.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

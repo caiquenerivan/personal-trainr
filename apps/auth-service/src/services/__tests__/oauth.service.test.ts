@@ -9,6 +9,14 @@ vi.mock("../../repositories/user.repository", () => ({
     updateEmailVerified: vi.fn(),
   },
 }));
+vi.mock("../../repositories/refreshToken.repository", () => ({
+  refreshTokenRepository: {
+    create: vi.fn(),
+    findByHash: vi.fn(),
+    revoke: vi.fn(),
+    revokeAllForUser: vi.fn(),
+  },
+}));
 vi.mock("../../repositories/oauthAccount.repository", () => ({
   oauthAccountRepository: {
     findByProviderAndProviderUserId: vi.fn(),

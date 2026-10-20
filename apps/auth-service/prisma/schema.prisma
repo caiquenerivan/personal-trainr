@@ -100,6 +100,7 @@ model User {
   passwordResetTokens     PasswordResetToken[]
   emailVerificationTokens EmailVerificationToken[]
   oauthAccounts           OAuthAccount[]
+  refreshTokens           RefreshToken[]
   subscription            Subscription?
 }
 
@@ -125,6 +126,21 @@ model EmailVerificationToken {
   createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Refresh tokens do app mobile (rotativos: cada uso revoga o atual e emite
+// um novo). O web continua só com o JWT de 1 dia.
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // Contas de login social vinculadas (Fase 3 usa este model; já criado

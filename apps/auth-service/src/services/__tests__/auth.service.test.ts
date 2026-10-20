@@ -48,6 +48,14 @@ vi.mock("../../repositories/subscription.repository", () => ({
     updateByUserId: vi.fn(),
   },
 }));
+vi.mock("../../repositories/refreshToken.repository", () => ({
+  refreshTokenRepository: {
+    create: vi.fn(),
+    findByHash: vi.fn(),
+    revoke: vi.fn(),
+    revokeAllForUser: vi.fn(),
+  },
+}));
 vi.mock("../../providers/EmailProvider", () => ({
   sendPasswordResetEmail: vi.fn(),
   sendVerificationEmail: vi.fn(),
@@ -59,6 +67,7 @@ import { passwordResetTokenRepository } from "../../repositories/passwordResetTo
 import { emailVerificationTokenRepository } from "../../repositories/emailVerificationToken.repository";
 import { trainerProfileRepository } from "../../repositories/trainerProfile.repository";
 import { subscriptionRepository } from "../../repositories/subscription.repository";
+import { refreshTokenRepository } from "../../repositories/refreshToken.repository";
 import { sendPasswordResetEmail, sendVerificationEmail } from "../../providers/EmailProvider";
 
 const baseUser = {
@@ -688,5 +697,108 @@ describe("authService.updateTrainerProfile", () => {
     });
 
     expect(result.trainerProfile.experienceYears).toBe(5);
+  });
+});
+
+describe("authService sessão mobile (refresh token)", () => {
+  const storedToken = {
+    id: "rt-1",
+    userId: "user-1",
+    tokenHash: "hash",
+    expiresAt: new Date(Date.now() + 60_000),
+    revokedAt: null,
+    createdAt: new Date(),
+  };
+
+  it("login web não emite refresh token", async () => {
+    vi.mocked(userRepository.findByEmail).mockResolvedValue({
+      ...baseUser,
+      passwordHash: await bcrypt.hash("senha123", 4),
+    });
+
+    const result = await authService.login("aluno@example.com", "senha123");
+
+    expect(result).not.toHaveProperty("refreshToken");
+    expect(refreshTokenRepository.create).not.toHaveBeenCalled();
+  });
+
+  it("login mobile emite refresh token e persiste só o hash", async () => {
+    vi.mocked(userRepository.findByEmail).mockResolvedValue({
+      ...baseUser,
+      passwordHash: await bcrypt.hash("senha123", 4),
+    });
+
+    const result = (await authService.login("aluno@example.com", "senha123", "mobile")) as any;
+
+    expect(result.refreshToken).toMatch(/^[0-9a-f]{64}$/);
+    const saved = vi.mocked(refreshTokenRepository.create).mock.calls[0][0];
+    expect(saved.userId).toBe("user-1");
+    expect(saved.tokenHash).not.toBe(result.refreshToken);
+  });
+
+  it("refresh rotaciona: revoga o atual e emite um novo", async () => {
+    vi.mocked(refreshTokenRepository.findByHash).mockResolvedValue(storedToken);
+    vi.mocked(userRepository.findByIdWithHash).mockResolvedValue(baseUser);
+    vi.mocked(refreshTokenRepository.revoke).mockResolvedValue(true);
+
+    const result = await authService.refreshSession("raw-token");
+
+    expect(refreshTokenRepository.revoke).toHaveBeenCalledWith("rt-1");
+    expect(result.token).toBeTruthy();
+    expect(result.refreshToken).toBeTruthy();
+    expect(result.user.id).toBe("user-1");
+  });
+
+  it("refresh com token já revogado encerra todas as sessões do usuário", async () => {
+    vi.mocked(refreshTokenRepository.findByHash).mockResolvedValue({
+      ...storedToken,
+      revokedAt: new Date(),
+    });
+
+    await expect(authService.refreshSession("raw-token")).rejects.toMatchObject({ status: 401 });
+    expect(refreshTokenRepository.revokeAllForUser).toHaveBeenCalledWith("user-1");
+    expect(refreshTokenRepository.create).not.toHaveBeenCalled();
+  });
+
+  it("refresh com token expirado é rejeitado", async () => {
+    vi.mocked(refreshTokenRepository.findByHash).mockResolvedValue({
+      ...storedToken,
+      expiresAt: new Date(Date.now() - 1000),
+    });
+
+    await expect(authService.refreshSession("raw-token")).rejects.toMatchObject({ status: 401 });
+    expect(refreshTokenRepository.create).not.toHaveBeenCalled();
+  });
+
+  it("refresh de usuário desativado é rejeitado", async () => {
+    vi.mocked(refreshTokenRepository.findByHash).mockResolvedValue(storedToken);
+    vi.mocked(userRepository.findByIdWithHash).mockResolvedValue({ ...baseUser, isActive: false });
+
+    await expect(authService.refreshSession("raw-token")).rejects.toMatchObject({ status: 401 });
+    expect(refreshTokenRepository.create).not.toHaveBeenCalled();
+  });
+
+  it("refresh perde a corrida quando outro uso já rotacionou o token", async () => {
+    vi.mocked(refreshTokenRepository.findByHash).mockResolvedValue(storedToken);
+    vi.mocked(userRepository.findByIdWithHash).mockResolvedValue(baseUser);
+    vi.mocked(refreshTokenRepository.revoke).mockResolvedValue(false);
+
+    await expect(authService.refreshSession("raw-token")).rejects.toMatchObject({ status: 401 });
+    expect(refreshTokenRepository.create).not.toHaveBeenCalled();
+  });
+
+  it("redefinir senha encerra as sessões mobile", async () => {
+    vi.mocked(passwordResetTokenRepository.findValidByHash).mockResolvedValue({
+      id: "prt-1",
+      userId: "user-1",
+      tokenHash: "h",
+      expiresAt: new Date(Date.now() + 60_000),
+      usedAt: null,
+      createdAt: new Date(),
+    });
+
+    await authService.resetPassword("token", "novaSenha123");
+
+    expect(refreshTokenRepository.revokeAllForUser).toHaveBeenCalledWith("user-1");
   });
 });

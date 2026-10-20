@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { userRepository } from "../repositories/user.repository";
 import { oauthAccountRepository } from "../repositories/oauthAccount.repository";
 import type { OAuthProvider } from "../generated/prisma/client";
-import { issueSession } from "./auth.service";
+import { issueSession, type ClientType } from "./auth.service";
 
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is required");
@@ -39,7 +39,7 @@ export async function loginOrLinkOAuthUser(params: {
   providerUserId: string;
   email: string;
   name: string;
-}) {
+}, client: ClientType = "web") {
   const existingAccount = await oauthAccountRepository.findByProviderAndProviderUserId(
     params.provider,
     params.providerUserId,
@@ -53,7 +53,7 @@ export async function loginOrLinkOAuthUser(params: {
     if (!user.isActive) {
       throw { status: 403, message: "Conta desativada. Entre em contato com o suporte." };
     }
-    return issueSession(user);
+    return issueSession(user, client);
   }
 
   const existingUser = await userRepository.findByEmail(params.email);
@@ -78,7 +78,7 @@ export async function loginOrLinkOAuthUser(params: {
     }
 
     const user = await userRepository.findByIdWithHash(existingUser.id);
-    return issueSession(user!);
+    return issueSession(user!, client);
   }
 
   const username = await generateUsernameFromEmail(params.email);
@@ -100,7 +100,7 @@ export async function loginOrLinkOAuthUser(params: {
   });
 
   const user = await userRepository.findByIdWithHash(newUser.id);
-  return issueSession(user!);
+  return issueSession(user!, client);
 }
 
 async function generateUsernameFromEmail(email: string): Promise<string> {

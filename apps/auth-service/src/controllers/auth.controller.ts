@@ -37,9 +37,17 @@ const registerSchema = z
     },
   );
 
+// "mobile" faz a sessão vir com refresh token (ver issueTokens).
+const clientSchema = z.enum(["web", "mobile"]).default("web");
+
 const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
+  client: clientSchema,
+});
+
+const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1, "Refresh token is required"),
 });
 
 const updateProfileSchema = z.object({
@@ -85,13 +93,56 @@ export async function login(req: Request, res: Response): Promise<any> {
       });
     }
 
-    const result = await authService.login(validation.data.email, validation.data.password);
+    const result = await authService.login(
+      validation.data.email,
+      validation.data.password,
+      validation.data.client,
+    );
     return res.status(200).json(result);
   } catch (error: any) {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
     logger.error({ err: error }, "Login error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function refresh(req: Request, res: Response): Promise<any> {
+  try {
+    const validation = refreshTokenSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await authService.refreshSession(validation.data.refreshToken);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    logger.error({ err: error }, "Refresh session error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function logout(req: Request, res: Response): Promise<any> {
+  try {
+    const validation = refreshTokenSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await authService.logout(validation.data.refreshToken);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    logger.error({ err: error }, "Logout error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -410,6 +461,7 @@ export async function disableTwoFactor(req: Request, res: Response): Promise<any
 const verifyTwoFactorSchema = z.object({
   tempToken: z.string().min(1, "Token is required"),
   code: z.string().min(6, "Código inválido").max(10, "Código inválido"),
+  client: clientSchema,
 });
 
 export async function verifyTwoFactor(req: Request, res: Response): Promise<any> {
@@ -422,7 +474,11 @@ export async function verifyTwoFactor(req: Request, res: Response): Promise<any>
       });
     }
 
-    const result = await authService.verifyTwoFactor(validation.data.tempToken, validation.data.code);
+    const result = await authService.verifyTwoFactor(
+      validation.data.tempToken,
+      validation.data.code,
+      validation.data.client,
+    );
     return res.status(200).json(result);
   } catch (error: any) {
     if (error.status) {
