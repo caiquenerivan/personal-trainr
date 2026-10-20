@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        title: ['Backed', 'sans-serif'],
-        number: ['Gehors', 'sans-serif'],
+        title: ['Trainr Block', 'sans-serif'],
+        number: ['Trainr Block', 'sans-serif'],
         body: ['Play', 'sans-serif'],
       },
       colors: {

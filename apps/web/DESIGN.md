@@ -10,10 +10,10 @@
 - **Bordas (`border`)**: `#4A4A4A`
 
 ## Tipografia
-- **Títulos (`font-title`)**: `Backed` (Fonte pesada para títulos de página e seções. Fallback: `sans-serif`).
-- **Números de Destaque (`font-number`)**: `Gehors` (Fonte específica para contadores, métricas e estatísticas. Fallback: `sans-serif`).
+- **Títulos (`font-title`)**: `Trainr Block` — fonte própria (gerada em `tools/trainr-block`), pesada, para títulos de página e seções. Fallback: `sans-serif`.
+- **Números de Destaque (`font-number`)**: `Trainr Block` também — algarismos tabulares (mesma largura), bons para contadores e métricas.
 - **Corpo / Parágrafos / Inputs (`font-body`)**: `Play` (Textos gerais de alta legibilidade).
-- **Nota**: Backed não possui pontuação — vírgulas e pontos devem usar `font-body`.
+- **Nota**: a Trainr Block tem pontuação e acentos; não é mais preciso trocar vírgulas e pontos para `font-body`. Ela só tem maiúsculas (minúsculas viram maiúsculas).
 
 ## Convenções de Código
 - **Cores fixas**: Nunca usar valores hex hardcoded (`#A7A7A7`, `#4A4A4A`, `#D9D9D9`, `#505050`, `#111111`). Sempre usar tokens do Tailwind.
