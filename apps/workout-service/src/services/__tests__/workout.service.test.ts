@@ -18,7 +18,15 @@ vi.mock("../../repositories/workout-log.repository", () => ({
   },
 }));
 
+vi.mock("../notification.service", () => ({
+  notificationService: {
+    isNewSession: vi.fn().mockResolvedValue(false),
+    notifyWorkoutCompleted: vi.fn().mockResolvedValue(undefined),
+  },
+}));
+
 import { workoutService } from "../workout.service";
+import { notificationService } from "../notification.service";
 import { prisma } from "../../lib/prisma";
 import { workoutLogRepository } from "../../repositories/workout-log.repository";
 
@@ -141,5 +149,29 @@ describe("workoutService.syncWorkoutLogs", () => {
     expect(results.map((r) => r.status)).toEqual(["rejected", "saved"]);
     const saved = vi.mocked(workoutLogRepository.createManyFromClient).mock.calls[0][0][0];
     expect(saved.completedAt.getTime()).toBeLessThanOrEqual(Date.now() + 5 * 60 * 1000);
+  });
+});
+
+describe("notificação de treino concluído", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(workoutLogRepository.findClientIds).mockResolvedValue([]);
+    vi.mocked(prisma.routineExercise.findMany).mockResolvedValue([{ id: "re-1", routineId: "r-1", exerciseId: "ex-1" }] as any);
+    vi.mocked(prisma.exercise.findMany).mockResolvedValue([{ id: "ex-1" }] as any);
+    vi.mocked(prisma.routineAssignment.findMany).mockResolvedValue([{ routineId: "r-1" }] as any);
+  });
+
+  const log = { clientId: "c-1", routineExerciseId: "re-1", exerciseId: "ex-1", completedAt: new Date().toISOString() };
+
+  it("avisa o personal quando o lote abre uma sessão nova", async () => {
+    vi.mocked(notificationService.isNewSession).mockResolvedValue(true);
+    await workoutService.syncWorkoutLogs("aluno-1", [log]);
+    expect(notificationService.notifyWorkoutCompleted).toHaveBeenCalledWith("aluno-1", ["re-1"]);
+  });
+
+  it("não avisa de novo dentro da mesma sessão", async () => {
+    vi.mocked(notificationService.isNewSession).mockResolvedValue(false);
+    await workoutService.syncWorkoutLogs("aluno-1", [log]);
+    expect(notificationService.notifyWorkoutCompleted).not.toHaveBeenCalled();
   });
 });

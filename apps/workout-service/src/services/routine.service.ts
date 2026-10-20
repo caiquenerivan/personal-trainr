@@ -1,4 +1,5 @@
 import { routineRepository } from "../repositories/routine.repository";
+import { notificationService } from "./notification.service";
 import { routineAssignmentRepository } from "../repositories/routine-assignment.repository";
 import { exerciseRepository } from "../repositories/exercise.repository";
 import { prisma } from "../lib/prisma";
@@ -130,6 +131,9 @@ export const routineService = {
       weeklyGoal: data.weeklyGoal,
       expiresAt,
     });
+
+    // avisa o aluno no celular (não espera nem falha a atribuição por isso)
+    notificationService.notifyRoutineAssigned(data.alunoId, data.trainerId, routine.name).catch(() => {});
 
     return { assignment, routine };
   },

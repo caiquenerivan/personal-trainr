@@ -111,6 +111,7 @@ const workoutRoutes: [string, string][] = [
   ["/api/students", "/api/students"],
   ["/api/my-routine", "/api/my-routine"],
   ["/api/my-assignments", "/api/my-assignments"],
+  ["/api/notifications", "/api/notifications"],
 ];
 
 for (const [mountPath, targetPath] of workoutRoutes) {

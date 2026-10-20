@@ -1,5 +1,6 @@
 import { workoutLogRepository } from "../repositories/workout-log.repository";
 import { prisma } from "../lib/prisma";
+import { notificationService } from "./notification.service";
 
 // Limites para o completedAt vindo do aparelho: tolera relógio um pouco
 // adiantado e descarta registros velhos demais para serem um treino real
@@ -43,12 +44,16 @@ export const workoutService = {
       throw { status: 403, message: "Este exercício não pertence a uma rotina atribuída a você" };
     }
 
+    const newSession = await notificationService.isNewSession(alunoId, new Date());
     const log = await workoutLogRepository.create({
       alunoId,
       routineExerciseId,
       exerciseId: routineExercise.exerciseId,
       weightUsed,
     });
+    if (newSession) {
+      notificationService.notifyWorkoutCompleted(alunoId, [routineExerciseId]).catch(() => {});
+    }
 
     return { log };
   },
@@ -122,7 +127,13 @@ export const workoutService = {
     }
 
     if (toCreate.length > 0) {
+      const first = new Date(Math.min(...toCreate.map((l) => l.completedAt.getTime())));
+      const newSession = await notificationService.isNewSession(alunoId, first);
       await workoutLogRepository.createManyFromClient(toCreate);
+      if (newSession) {
+        const ids = toCreate.map((l) => l.routineExerciseId).filter((id): id is string => !!id);
+        notificationService.notifyWorkoutCompleted(alunoId, ids).catch(() => {});
+      }
     }
 
     return { results };

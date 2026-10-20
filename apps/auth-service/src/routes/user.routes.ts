@@ -9,6 +9,7 @@ import {
   setupTwoFactor,
   confirmTwoFactor,
   disableTwoFactor,
+  deleteAccount,
 } from "../controllers/auth.controller";
 import { upload } from "../middlewares/upload.middleware";
 
@@ -23,5 +24,7 @@ router.get("/subscription", getSubscription);
 router.post("/2fa/setup", setupTwoFactor);
 router.post("/2fa/confirm", confirmTwoFactor);
 router.post("/2fa/disable", disableTwoFactor);
+// POST e não DELETE: alguns proxies descartam corpo em DELETE, e a senha vai nele.
+router.post("/me/delete", deleteAccount);
 
 export default router;

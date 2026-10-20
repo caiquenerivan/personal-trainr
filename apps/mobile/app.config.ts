@@ -5,6 +5,12 @@ import type { ExpoConfig } from 'expo/config';
 // login (o restante do app funciona normal).
 const googleIosUrlScheme = process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME;
 
+// Firebase (FCM) do Android, exigido para receber push remoto: caminho do
+// google-services.json. No EAS vem de uma variável do tipo arquivo
+// (GOOGLE_SERVICES_JSON). Sem ele o app funciona, só sem push remoto — as
+// notificações locais (descanso, lembrete) continuam.
+const googleServicesFile = process.env.GOOGLE_SERVICES_JSON;
+
 const config: ExpoConfig = {
   name: 'Personal Trainr',
   slug: 'personaltrainr',
@@ -27,6 +33,7 @@ const config: ExpoConfig = {
       monochromeImage: './assets/android-icon-monochrome.png',
     },
     predictiveBackGestureEnabled: false,
+    ...(googleServicesFile ? { googleServicesFile } : {}),
   },
   web: {
     favicon: './assets/favicon.png',
@@ -46,6 +53,14 @@ const config: ExpoConfig = {
     'expo-secure-store',
     'expo-image',
     'expo-sqlite',
+    [
+      'expo-notifications',
+      {
+        icon: './assets/notification-icon.png',
+        color: '#AF9150',
+        defaultChannel: 'default',
+      },
+    ],
     ...(googleIosUrlScheme
       ? [['@react-native-google-signin/google-signin', { iosUrlScheme: googleIosUrlScheme }] as [string, object]]
       : []),

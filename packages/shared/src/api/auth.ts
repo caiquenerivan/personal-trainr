@@ -34,6 +34,13 @@ export function createAuthApi(api: AxiosInstance) {
       return response.data.user;
     },
 
+    // Exclusão da própria conta: confirmation = "EXCLUIR"; password só para
+    // contas com senha (login social não tem).
+    async deleteAccount(confirmation: string, password?: string) {
+      const response = await api.post<{ message: string }>('/api/users/me/delete', { confirmation, password });
+      return response.data;
+    },
+
     async forgotPassword(email: string) {
       const response = await api.post<{ message: string }>('/api/auth/forgot-password', { email });
       return response.data;

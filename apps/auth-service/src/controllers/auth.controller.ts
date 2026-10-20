@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { authService } from "../services/auth.service";
+import { accountService } from "../services/account.service";
 import { uploadToCloudinary } from "../services/upload.service";
 import { logger } from "../lib/logger";
 
@@ -515,6 +516,37 @@ export async function changePassword(req: Request, res: Response): Promise<any> 
       return res.status(error.status).json({ message: error.message });
     }
     logger.error({ err: error }, "Change password error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const deleteAccountSchema = z.object({
+  confirmation: z.string().min(1, "Confirmação obrigatória"),
+  password: z.string().optional(),
+});
+
+export async function deleteAccount(req: Request, res: Response): Promise<any> {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const validation = deleteAccountSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await accountService.deleteOwnAccount(userId, validation.data);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    logger.error({ err: error }, "Delete account error");
     return res.status(500).json({ message: "Internal server error" });
   }
 }

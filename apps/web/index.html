@@ -6,10 +6,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/src/assets/runner-gold.png" />
   <title>Personal Trainr</title>
+  <meta name="description" content="Personal Trainr: plataforma para personal trainers montarem e acompanharem os treinos dos alunos, e para alunos executarem o treino do dia pelo app." />
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <!--
+      Conteúdo para quem lê o HTML sem executar JavaScript (verificação de
+      marca do Google OAuth, buscadores). O React substitui tudo ao carregar.
+    -->
+    <main style="max-width:640px;margin:48px auto;padding:0 20px;font-family:sans-serif;color:#D9D9D9;background:#333333">
+      <h1>Personal Trainr</h1>
+      <p>
+        Plataforma para personal trainers montarem rotinas de treino e acompanharem a evolução dos alunos, e para
+        alunos executarem o treino do dia, registrarem cargas e verem seu progresso — no site e no app.
+      </p>
+      <nav>
+        <a href="/login">Entrar</a> ·
+        <a href="/cadastro">Criar conta</a> ·
+        <a href="/privacidade">Política de Privacidade</a> ·
+        <a href="/termos">Termos de Uso</a> ·
+        <a href="/excluir-conta">Excluir conta</a>
+      </nav>
+    </main>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

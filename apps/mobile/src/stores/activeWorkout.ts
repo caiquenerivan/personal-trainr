@@ -29,6 +29,7 @@ type ActiveWorkoutState = {
   setWeight: (userId: string, routineExerciseId: string, value: string) => void;
   stopRest: (userId: string) => void;
   reset: (userId: string) => void;
+  forget: (userId: string) => void;
 };
 
 export const useActiveWorkoutStore = create<ActiveWorkoutState>()(
@@ -70,6 +71,13 @@ export const useActiveWorkoutStore = create<ActiveWorkoutState>()(
 
         // Mantém a carga digitada: na próxima vez o aluno já vê a última usada.
         reset: (userId) => update(userId, (w) => ({ ...emptyWorkout(w.day), weights: w.weights })),
+
+        forget: (userId) =>
+          set((state) => {
+            const byUser = { ...state.byUser };
+            delete byUser[userId];
+            return { byUser };
+          }),
       };
     },
     {

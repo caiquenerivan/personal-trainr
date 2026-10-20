@@ -1,4 +1,5 @@
-import { Linking, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { useAuth } from '../../stores/auth';
 import { WEB_URL } from '../../lib/config';
 import { ROLE_LABELS } from '../../lib/menu';
@@ -6,11 +7,14 @@ import { Avatar } from '../../components/Avatar';
 import { Button } from '../../components/Button';
 import { Screen } from '../../components/Screen';
 import { Text } from '../../components/Text';
+import { DeleteAccountModal } from '../../features/account/DeleteAccountModal';
+import { ReminderSettings } from '../../features/account/ReminderSettings';
 import { colors, radius } from '../../theme';
 
 export default function PerfilScreen() {
   const user = useAuth((s) => s.user);
   const signOut = useAuth((s) => s.signOut);
+  const [deleting, setDeleting] = useState(false);
   if (!user) return null;
 
   return (
@@ -26,12 +30,17 @@ export default function PerfilScreen() {
           </Text>
         </View>
       </View>
+      <ReminderSettings />
       <Button
         title="Editar perfil no site"
         variant="outline"
         onPress={() => Linking.openURL(`${WEB_URL}/login`)}
       />
       <Button title="Sair" onPress={signOut} />
+      <Pressable onPress={() => setDeleting(true)} style={styles.delete} accessibilityRole="button" hitSlop={8}>
+        <Text style={styles.deleteText}>Excluir conta</Text>
+      </Pressable>
+      <DeleteAccountModal open={deleting} onClose={() => setDeleting(false)} />
     </Screen>
   );
 }
@@ -51,4 +60,6 @@ const styles = StyleSheet.create({
   name: { fontSize: 16 },
   secondary: { color: colors.textSecondary },
   role: { color: colors.accentLight, marginTop: 4 },
+  delete: { alignSelf: 'center', paddingVertical: 12 },
+  deleteText: { fontSize: 13, color: colors.danger, textDecorationLine: 'underline' },
 });

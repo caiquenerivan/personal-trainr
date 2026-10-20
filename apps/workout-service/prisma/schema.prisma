@@ -96,6 +96,7 @@ model User {
   trainerProfile TrainerProfile?
   students       TrainerStudentConnection[] @relation("TrainerToConnection")
   trainers       TrainerStudentConnection[] @relation("StudentToConnection")
+  pushTokens     PushToken[]
 }
 
 model TrainerProfile {
@@ -210,4 +211,19 @@ model TrainerRating {
   updatedAt DateTime @updatedAt
 
   @@unique([trainerId, studentId])
+}
+
+// Token Expo Push de cada aparelho com o app logado. Um token pertence a um
+// usuário por vez (o mesmo celular pode trocar de conta); some junto com a
+// conta (cascade) e quando a Expo avisa que o app foi desinstalado.
+model PushToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  platform  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }

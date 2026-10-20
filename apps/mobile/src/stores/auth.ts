@@ -4,6 +4,7 @@ import { api, authApi, setSessionExpiredHandler } from '../lib/api';
 import { clearSession, getRefreshToken, loadSession, saveTokens, saveUser } from '../lib/sessionStorage';
 import { queryClient } from '../lib/queryClient';
 import { signOutFromGoogle } from '../lib/googleSignIn';
+import { clearLocalNotifications, unregisterPushToken } from '../lib/notifications';
 
 type AuthStatus = 'loading' | 'signedOut' | 'signedIn';
 
@@ -47,6 +48,9 @@ export const useAuth = create<AuthState>((set, get) => ({
   },
 
   async signOut() {
+    // antes de limpar a sessão: a remoção do token de push precisa estar logada
+    await unregisterPushToken();
+    await clearLocalNotifications();
     const refreshToken = await getRefreshToken();
     await clearSession();
     queryClient.clear();

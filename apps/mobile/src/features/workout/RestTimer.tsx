@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Timer } from 'lucide-react-native';
+import { cancelScheduled, scheduleRestEnd } from '../../lib/notifications';
 import { Text } from '../../components/Text';
 import { colors, fonts, radius } from '../../theme';
 
@@ -13,6 +14,22 @@ export function RestTimer({ endsAt, onDone }: { endsAt: number | null; onDone: (
   useEffect(() => {
     onDoneRef.current = onDone;
   }, [onDone]);
+
+  // Notificação local para quando o app estiver em segundo plano (com ele
+  // aberto, o contador e a vibração já avisam).
+  useEffect(() => {
+    if (!endsAt) return;
+    let id: string | null = null;
+    let cancelled = false;
+    scheduleRestEnd(Math.round((endsAt - Date.now()) / 1000)).then((scheduled) => {
+      if (cancelled) cancelScheduled(scheduled);
+      else id = scheduled;
+    });
+    return () => {
+      cancelled = true;
+      cancelScheduled(id);
+    };
+  }, [endsAt]);
 
   useEffect(() => {
     if (!endsAt) return;

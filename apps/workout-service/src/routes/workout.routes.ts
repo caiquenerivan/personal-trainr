@@ -6,6 +6,7 @@ import * as trainerController from "../controllers/trainer.controller";
 import * as connectionController from "../controllers/connection.controller";
 import * as dashboardController from "../controllers/dashboard.controller";
 import * as ratingController from "../controllers/rating.controller";
+import * as notificationController from "../controllers/notification.controller";
 import { requireRole, requireAnyRole } from "../middlewares/auth-context.middleware";
 
 const router = Router();
@@ -55,6 +56,9 @@ router.get("/workout/history", requireAnyRole("ALUNO", "TRAINER"), workoutContro
 router.get("/workout/progress", requireAnyRole("ALUNO", "TRAINER"), workoutController.progress);
 router.get("/workout/progress/:exerciseId", requireAnyRole("ALUNO", "TRAINER"), workoutController.exerciseProgress);
 router.get("/students/:alunoId/progress", requireRole("TRAINER"), workoutController.studentProgress);
+// Notificações push do app (qualquer papel logado)
+router.post("/notifications/token", requireAnyRole("ALUNO", "TRAINER"), notificationController.registerToken);
+router.post("/notifications/token/remove", requireAnyRole("ALUNO", "TRAINER"), notificationController.removeToken);
 router.get("/students/:alunoId/progress/:exerciseId", requireRole("TRAINER"), workoutController.studentProgress);
 
 export default router;

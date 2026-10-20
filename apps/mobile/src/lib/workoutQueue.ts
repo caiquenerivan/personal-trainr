@@ -57,3 +57,9 @@ export function getLocalSessions(userId: string): LocalSession[] {
 export function saveLocalSession(userId: string, session: LocalSession) {
   write(sessionsKey(userId), [session, ...getLocalSessions(userId)].slice(0, MAX_SESSIONS));
 }
+
+// Conta excluída: some com a fila e o diário dela deste aparelho.
+export function clearUserWorkoutData(userId: string) {
+  kvStorage.removeItem(queueKey(userId));
+  kvStorage.removeItem(sessionsKey(userId));
+}

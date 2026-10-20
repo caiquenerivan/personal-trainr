@@ -14,6 +14,8 @@ export const api = createAxios({ baseURL: API_URL, timeout: TIMEOUT_MS });
 export const workoutApi = createWorkoutApi(api);
 export const trainerApi = createTrainerApi(api);
 export const connectionApi = createConnectionApi(api);
+// Rotas de conta que exigem estar logado (ex.: excluir conta).
+export const accountApi = createAuthApi(api);
 
 let onSessionExpired: () => void = () => {};
 

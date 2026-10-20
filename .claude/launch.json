@@ -11,6 +11,17 @@
       "port": 3000
     },
     {
+      "name": "web-only",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "-w",
+        "@personaltrainr/web"
+      ],
+      "port": 3000
+    },
+    {
       "name": "auth-service",
       "runtimeExecutable": "npm",
       "runtimeArgs": [

@@ -38,6 +38,7 @@ const AdminExercisesPage = lazy(() => import('./pages/admin/AdminExercisesPage')
 const AdminPerfilPage = lazy(() => import('./pages/admin/AdminPerfilPage').then((m) => ({ default: m.AdminPerfilPage })));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage })));
 const LoadProgressPage = lazy(() => import('./pages/LoadProgressPage').then((m) => ({ default: m.LoadProgressPage })));
+const DeleteAccountPage = lazy(() => import('./pages/DeleteAccountPage').then((m) => ({ default: m.DeleteAccountPage })));
 const TermsPage = lazy(() => import('./pages/TermsPage').then((m) => ({ default: m.TermsPage })));
 
 function PageLoader() {
@@ -116,6 +117,7 @@ export function AppRouter() {
         <Route path="/verificar-email" element={<VerifyEmailPage />} />
         <Route path="/privacidade" element={<PrivacyPolicyPage />} />
         <Route path="/termos" element={<TermsPage />} />
+        <Route path="/excluir-conta" element={<DeleteAccountPage />} />
 
         {/* ─── Fallback ──────────────────────────────────── */}
         <Route path="*" element={<Navigate to="/" replace />} />

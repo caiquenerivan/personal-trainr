@@ -1,6 +1,7 @@
 import { Drawer } from 'expo-router/drawer';
 import { useAuth } from '../../stores/auth';
 import { useSyncTriggers } from '../../hooks/useSyncTriggers';
+import { useNotificationSetup } from '../../hooks/useNotificationSetup';
 import { AppHeader } from '../../components/AppHeader';
 import { DrawerContent } from '../../components/DrawerContent';
 import { Toast } from '../../components/Toast';
@@ -10,6 +11,7 @@ export default function AppLayout() {
   const role = useAuth((s) => s.user?.role);
   const isTrainer = role === 'TRAINER';
   useSyncTriggers();
+  useNotificationSetup();
 
   return (
     <>

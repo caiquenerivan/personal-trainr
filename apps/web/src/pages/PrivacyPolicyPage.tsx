@@ -74,8 +74,9 @@ export function PrivacyPolicyPage() {
             <h2 className="font-title text-lg uppercase text-text-primary mb-2">5. Retenção de dados</h2>
             <p>
               Mantemos seus dados enquanto sua conta estiver ativa ou enquanto necessário para cumprir finalidades
-              legais, contratuais ou regulatórias. Você pode solicitar a exclusão da sua conta e dos dados
-              associados a qualquer momento.
+              legais, contratuais ou regulatórias. Você pode excluir sua conta e todos os dados associados a
+              qualquer momento, pelo app (Perfil &rarr; Excluir conta) ou pela página{' '}
+              <Link to="/excluir-conta" className="text-accent underline">Excluir conta</Link>.
             </p>
           </section>
 
