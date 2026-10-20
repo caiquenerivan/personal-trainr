@@ -1,5 +1,5 @@
 import { AxiosError, create as createAxios, type InternalAxiosRequestConfig } from 'axios';
-import { createAuthApi } from '@personaltrainr/shared';
+import { createAuthApi, createWorkoutApi } from '@personaltrainr/shared';
 import { API_URL } from './config';
 import { getAccessToken, getRefreshToken, saveTokens, saveUser } from './sessionStorage';
 
@@ -11,6 +11,7 @@ const publicClient = createAxios({ baseURL: API_URL, timeout: TIMEOUT_MS });
 export const authApi = createAuthApi(publicClient);
 
 export const api = createAxios({ baseURL: API_URL, timeout: TIMEOUT_MS });
+export const workoutApi = createWorkoutApi(api);
 
 let onSessionExpired: () => void = () => {};
 

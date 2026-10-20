@@ -1,6 +1,26 @@
 import { workoutLogRepository } from "../repositories/workout-log.repository";
 import { prisma } from "../lib/prisma";
 
+// Limites para o completedAt vindo do aparelho: tolera relógio um pouco
+// adiantado e descarta registros velhos demais para serem um treino real
+// esperando sinal.
+const CLOCK_SKEW_MS = 5 * 60 * 1000;
+const MAX_OFFLINE_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+
+export type ClientWorkoutLog = {
+  clientId: string;
+  routineExerciseId: string;
+  exerciseId: string;
+  weightUsed?: number | null;
+  completedAt: string;
+};
+
+export type SyncResult = {
+  clientId: string;
+  status: "saved" | "duplicate" | "rejected";
+  reason?: string;
+};
+
 export const workoutService = {
   async completeWorkout(alunoId: string, routineExerciseId: string, weightUsed?: number | null) {
     const routineExercise = await prisma.routineExercise.findUnique({
@@ -31,6 +51,81 @@ export const workoutService = {
     });
 
     return { log };
+  },
+
+  // Recebe a fila de exercícios concluídos offline pelo app. Cada item é
+  // resolvido de forma independente: um rejeitado não impede os demais, e o
+  // app descarta da fila tudo que voltar como saved/duplicate/rejected.
+  async syncWorkoutLogs(alunoId: string, items: ClientWorkoutLog[]): Promise<{ results: SyncResult[] }> {
+    const results: SyncResult[] = [];
+    const seen = new Set<string>();
+    const existing = new Set(await workoutLogRepository.findClientIds(items.map((i) => i.clientId)));
+
+    const routineExerciseIds = [...new Set(items.map((i) => i.routineExerciseId))];
+    const exerciseIds = [...new Set(items.map((i) => i.exerciseId))];
+    const [routineExercises, exercises, assignments] = await Promise.all([
+      prisma.routineExercise.findMany({ where: { id: { in: routineExerciseIds } } }),
+      prisma.exercise.findMany({ where: { id: { in: exerciseIds } }, select: { id: true } }),
+      // Sem filtrar isActive: o treino pode ter sido feito antes de o personal
+      // trocar a rotina, e só chegar aqui depois.
+      prisma.routineAssignment.findMany({ where: { alunoId }, select: { routineId: true } }),
+    ]);
+    const routineExerciseById = new Map(routineExercises.map((re) => [re.id, re]));
+    const existingExerciseIds = new Set(exercises.map((e) => e.id));
+    const assignedRoutineIds = new Set(assignments.map((a) => a.routineId));
+
+    const now = Date.now();
+    const toCreate: Parameters<typeof workoutLogRepository.createManyFromClient>[0] = [];
+
+    for (const item of items) {
+      if (existing.has(item.clientId) || seen.has(item.clientId)) {
+        results.push({ clientId: item.clientId, status: "duplicate" });
+        continue;
+      }
+      seen.add(item.clientId);
+
+      const completedAtMs = new Date(item.completedAt).getTime();
+      if (Number.isNaN(completedAtMs) || completedAtMs < now - MAX_OFFLINE_AGE_MS) {
+        results.push({ clientId: item.clientId, status: "rejected", reason: "completedAt fora do intervalo" });
+        continue;
+      }
+
+      const routineExercise = routineExerciseById.get(item.routineExerciseId);
+      let routineExerciseId: string | null = null;
+      let exerciseId: string;
+
+      if (routineExercise) {
+        if (!assignedRoutineIds.has(routineExercise.routineId)) {
+          results.push({ clientId: item.clientId, status: "rejected", reason: "Rotina não atribuída a você" });
+          continue;
+        }
+        routineExerciseId = routineExercise.id;
+        exerciseId = routineExercise.exerciseId;
+      } else if (existingExerciseIds.has(item.exerciseId)) {
+        // A rotina foi editada enquanto o app estava offline (a edição recria
+        // os RoutineExercise): guarda só o exercício, como o histórico de carga.
+        exerciseId = item.exerciseId;
+      } else {
+        results.push({ clientId: item.clientId, status: "rejected", reason: "Exercício não encontrado" });
+        continue;
+      }
+
+      toCreate.push({
+        alunoId,
+        clientId: item.clientId,
+        routineExerciseId,
+        exerciseId,
+        weightUsed: item.weightUsed ?? null,
+        completedAt: new Date(Math.min(completedAtMs, now + CLOCK_SKEW_MS)),
+      });
+      results.push({ clientId: item.clientId, status: "saved" });
+    }
+
+    if (toCreate.length > 0) {
+      await workoutLogRepository.createManyFromClient(toCreate);
+    }
+
+    return { results };
   },
 
   async getHistory(alunoId: string) {

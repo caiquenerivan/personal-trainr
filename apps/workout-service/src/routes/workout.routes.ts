@@ -50,6 +50,7 @@ router.get("/students/dashboard", requireAnyRole("ALUNO", "TRAINER"), dashboardC
 
 // Workout logs (accessible by both ALUNO and TRAINER for self-training)
 router.post("/workout/complete", requireAnyRole("ALUNO", "TRAINER"), workoutController.complete);
+router.post("/workout/sync", requireAnyRole("ALUNO", "TRAINER"), workoutController.sync);
 router.get("/workout/history", requireAnyRole("ALUNO", "TRAINER"), workoutController.history);
 router.get("/workout/progress", requireAnyRole("ALUNO", "TRAINER"), workoutController.progress);
 router.get("/workout/progress/:exerciseId", requireAnyRole("ALUNO", "TRAINER"), workoutController.exerciseProgress);

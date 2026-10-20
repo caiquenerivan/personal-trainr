@@ -2,14 +2,17 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("../../lib/prisma", () => ({
   prisma: {
-    routineExercise: { findUnique: vi.fn() },
-    routineAssignment: { findFirst: vi.fn() },
+    routineExercise: { findUnique: vi.fn(), findMany: vi.fn() },
+    routineAssignment: { findFirst: vi.fn(), findMany: vi.fn() },
+    exercise: { findMany: vi.fn() },
     trainerStudentConnection: { findUnique: vi.fn() },
   },
 }));
 vi.mock("../../repositories/workout-log.repository", () => ({
   workoutLogRepository: {
     create: vi.fn(),
+    findClientIds: vi.fn(),
+    createManyFromClient: vi.fn(),
     findByAlunoId: vi.fn(),
     findForProgress: vi.fn(),
   },
@@ -62,5 +65,81 @@ describe("workoutService", () => {
   it("bloqueia o personal sem vínculo ativo com o aluno", async () => {
     vi.mocked(prisma.trainerStudentConnection.findUnique).mockResolvedValue({ status: "PENDING" } as any);
     await expect(workoutService.assertTrainerOfStudent("t-1", "a-1")).rejects.toMatchObject({ status: 403 });
+  });
+});
+
+describe("workoutService.syncWorkoutLogs", () => {
+  const recent = () => new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const item = (over: Partial<Record<string, any>> = {}) => ({
+    clientId: "c-1",
+    routineExerciseId: "re-1",
+    exerciseId: "ex-1",
+    weightUsed: 40,
+    completedAt: recent(),
+    ...over,
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(workoutLogRepository.findClientIds).mockResolvedValue([]);
+    vi.mocked(prisma.routineExercise.findMany).mockResolvedValue([
+      { id: "re-1", routineId: "r-1", exerciseId: "ex-1" },
+    ] as any);
+    vi.mocked(prisma.exercise.findMany).mockResolvedValue([{ id: "ex-1" }, { id: "ex-2" }] as any);
+    vi.mocked(prisma.routineAssignment.findMany).mockResolvedValue([{ routineId: "r-1" }] as any);
+  });
+
+  it("salva com a data do aparelho, não a do envio", async () => {
+    const completedAt = recent();
+    const { results } = await workoutService.syncWorkoutLogs("aluno-1", [item({ completedAt })]);
+
+    expect(results).toEqual([{ clientId: "c-1", status: "saved" }]);
+    const saved = vi.mocked(workoutLogRepository.createManyFromClient).mock.calls[0][0];
+    expect(saved[0]).toMatchObject({ alunoId: "aluno-1", clientId: "c-1", routineExerciseId: "re-1", exerciseId: "ex-1", weightUsed: 40 });
+    expect(saved[0].completedAt.toISOString()).toBe(completedAt);
+  });
+
+  it("não duplica um clientId já sincronizado nem repetido no mesmo lote", async () => {
+    vi.mocked(workoutLogRepository.findClientIds).mockResolvedValue(["c-1"]);
+
+    const { results } = await workoutService.syncWorkoutLogs("aluno-1", [item(), item({ clientId: "c-2" }), item({ clientId: "c-2" })]);
+
+    expect(results.map((r) => r.status)).toEqual(["duplicate", "saved", "duplicate"]);
+    expect(vi.mocked(workoutLogRepository.createManyFromClient).mock.calls[0][0]).toHaveLength(1);
+  });
+
+  it("guarda só o exercício quando a rotina foi editada enquanto estava offline", async () => {
+    const { results } = await workoutService.syncWorkoutLogs("aluno-1", [
+      item({ routineExerciseId: "re-apagado", exerciseId: "ex-2" }),
+    ]);
+
+    expect(results[0].status).toBe("saved");
+    expect(vi.mocked(workoutLogRepository.createManyFromClient).mock.calls[0][0][0]).toMatchObject({
+      routineExerciseId: null,
+      exerciseId: "ex-2",
+    });
+  });
+
+  it("rejeita exercício de rotina que nunca foi atribuída ao usuário", async () => {
+    vi.mocked(prisma.routineAssignment.findMany).mockResolvedValue([]);
+
+    const { results } = await workoutService.syncWorkoutLogs("aluno-1", [item()]);
+
+    expect(results[0]).toMatchObject({ status: "rejected" });
+    expect(workoutLogRepository.createManyFromClient).not.toHaveBeenCalled();
+  });
+
+  it("rejeita registro antigo demais e limita data no futuro ao relógio do servidor", async () => {
+    const old = new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString();
+    const future = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
+
+    const { results } = await workoutService.syncWorkoutLogs("aluno-1", [
+      item({ completedAt: old }),
+      item({ clientId: "c-2", completedAt: future }),
+    ]);
+
+    expect(results.map((r) => r.status)).toEqual(["rejected", "saved"]);
+    const saved = vi.mocked(workoutLogRepository.createManyFromClient).mock.calls[0][0][0];
+    expect(saved.completedAt.getTime()).toBeLessThanOrEqual(Date.now() + 5 * 60 * 1000);
   });
 });

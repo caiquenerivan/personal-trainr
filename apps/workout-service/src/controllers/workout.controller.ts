@@ -8,6 +8,43 @@ const completeWorkoutSchema = z.object({
   weightUsed: z.number().positive("Weight must be positive").optional().nullable(),
 });
 
+const syncWorkoutSchema = z.object({
+  logs: z
+    .array(
+      z.object({
+        clientId: z.string().uuid(),
+        routineExerciseId: z.string().uuid(),
+        exerciseId: z.string().uuid(),
+        weightUsed: z.number().positive().max(1000).optional().nullable(),
+        completedAt: z.string().datetime({ offset: true }),
+      }),
+    )
+    .min(1)
+    .max(200),
+});
+
+// Fila de exercícios concluídos offline pelo app mobile.
+export async function sync(req: Request, res: Response): Promise<any> {
+  try {
+    const validation = syncWorkoutSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: validation.error.format(),
+      });
+    }
+
+    const result = await workoutService.syncWorkoutLogs(req.user!.id, validation.data.logs);
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    logger.error({ err: error }, "Sync workout logs error");
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export async function complete(req: Request, res: Response): Promise<any> {
   try {
     const validation = completeWorkoutSchema.safeParse(req.body);
