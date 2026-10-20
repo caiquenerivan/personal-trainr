@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getMyRoutine, completeExercise, getWorkoutHistory, getDashboard } from '../api/student';
 import { listMyRoutines, assignRoutine } from '../api/connections';
 import { userGet, userSet } from '../utils/userStorage';
+import { useActiveWorkout } from '../hooks/useActiveWorkout';
 import { Modal } from '../components/Modal';
 import {
   Flame,
@@ -78,7 +79,9 @@ export function MeuTreinoPage() {
   const [assigning, setAssigning] = useState(false);
 
   // Dashboard states
-  const [selectedLetter, setSelectedLetter] = useState('A');
+  // letra, marcações e cargas do treino em andamento ficam salvas no navegador
+  const workout = useActiveWorkout();
+  const selectedLetter = workout.letter;
   const [weeklyStreak, setWeeklyStreak] = useState(0);
   const [objective, setObjective] = useState('Hipertrofia');
   const [weight, setWeight] = useState('—');
@@ -86,8 +89,8 @@ export function MeuTreinoPage() {
   const [userName, setUserName] = useState('Personal');
 
   // Workout execution states
-  const [checkedExercises, setCheckedExercises] = useState<Record<string, boolean>>({});
-  const [weightsUsed, setWeightsUsed] = useState<Record<string, string>>({});
+  const checkedExercises = workout.checked;
+  const weightsUsed = workout.weights;
   const [detailTarget, setDetailTarget] = useState<ExerciseDetail | null>(null);
   const [finishingWorkout, setFinishingWorkout] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -143,6 +146,9 @@ export function MeuTreinoPage() {
         const res = await getWorkoutHistory();
         backendLogs = res.logs ?? [];
       } catch {}
+
+      // treino em andamento salvo, ou o próximo depois do último feito
+      workout.restore(activeRoutine, backendLogs);
 
       const enrichedHistory = enrichHistoryList(backendLogs, activeRoutine);
       setHistoryList(enrichedHistory);
@@ -263,12 +269,12 @@ export function MeuTreinoPage() {
 
   const handleToggleCheck = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setCheckedExercises((prev) => ({ ...prev, [id]: !prev[id] }));
+    workout.toggle(id);
   };
 
   const handleWeightChange = (id: string, value: string, e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    setWeightsUsed((prev) => ({ ...prev, [id]: value }));
+    workout.setWeight(id, value);
   };
 
   const totalExercises = activeExercises.length;
@@ -304,8 +310,8 @@ export function MeuTreinoPage() {
 
       setCompletedWorkoutTitle(formattedTitle);
       setShowCelebration(true);
-      setCheckedExercises({});
-      setWeightsUsed({});
+      // limpa as marcações e já deixa o próximo treino (A → B…) selecionado
+      if (routine) workout.finish(routine);
       await loadData();
     } catch (err) {
       console.error('Error finalizing workout:', err);
@@ -317,9 +323,7 @@ export function MeuTreinoPage() {
   const handleSwitchRoutine = () => {
     setRoutine(null);
     setShowAssignForm(true);
-    setCheckedExercises({});
-    setWeightsUsed({});
-    setSelectedLetter('A');
+    workout.clear();
     loadAvailableRoutines();
   };
 
@@ -508,7 +512,7 @@ export function MeuTreinoPage() {
               <button
                 key={letter}
                 type="button"
-                onClick={() => setSelectedLetter(letter)}
+                onClick={() => workout.selectLetter(letter)}
                 className={`relative flex-1 py-3 text-center rounded-lg font-title text-base uppercase tracking-wider transition active:scale-95 ${
                   isSelected
                     ? 'bg-accent text-black font-extrabold shadow'
@@ -593,9 +597,10 @@ export function MeuTreinoPage() {
                         </div>
                       </div>
 
-                      <div className="hidden sm:block shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="text"
+                          inputMode="decimal"
                           value={weightsUsed[item.id] ?? ''}
                           onChange={(e) => handleWeightChange(item.id, e.target.value, e)}
                           placeholder="Carga"

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getMyRoutine, completeExercise, getWorkoutHistory, getDashboard } from '../api/student';
 import { userGet, userSet } from '../utils/userStorage';
+import { useActiveWorkout } from '../hooks/useActiveWorkout';
 import { Modal } from '../components/Modal';
 import {
   Flame,
@@ -54,7 +55,9 @@ export function StudentDashboardPage() {
   const [error, setError] = useState<string | null>(null);
   
   // Dashboard states
-  const [selectedLetter, setSelectedLetter] = useState('A');
+  // letra, marcações e cargas do treino em andamento ficam salvas no navegador
+  const workout = useActiveWorkout();
+  const selectedLetter = workout.letter;
   const [weeklyStreak, setWeeklyStreak] = useState(0);
   const [objective, setObjective] = useState('Hipertrofia');
   const [weight, setWeight] = useState('—');
@@ -62,8 +65,8 @@ export function StudentDashboardPage() {
   const [userName, setUserName] = useState('Aluno');
   
   // Workout execution states
-  const [checkedExercises, setCheckedExercises] = useState<Record<string, boolean>>({});
-  const [weightsUsed, setWeightsUsed] = useState<Record<string, string>>({});
+  const checkedExercises = workout.checked;
+  const weightsUsed = workout.weights;
   const [detailTarget, setDetailTarget] = useState<ExerciseDetail | null>(null);
   const [finishingWorkout, setFinishingWorkout] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -114,7 +117,10 @@ export function StudentDashboardPage() {
         console.warn('Failed to load backend workout history logs', err);
       }
 
-      // 6. Build premium history view
+      // 6. Treino em andamento salvo, ou o próximo depois do último feito
+      if (activeRoutine) workout.restore(activeRoutine, backendLogs);
+
+      // 7. Build premium history view
       const enrichedHistory = enrichHistoryList(backendLogs, activeRoutine);
       setHistoryList(enrichedHistory);
       
@@ -209,18 +215,12 @@ export function StudentDashboardPage() {
   // Toggle checklist exercise
   const handleToggleCheck = (id: string, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent opening detail modal
-    setCheckedExercises(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
+    workout.toggle(id);
   };
 
   const handleWeightChange = (id: string, value: string, e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    setWeightsUsed(prev => ({
-      ...prev,
-      [id]: value
-    }));
+    workout.setWeight(id, value);
   };
 
   // Calculate Progress
@@ -262,8 +262,8 @@ export function StudentDashboardPage() {
       // 3. Update UI state
       setCompletedWorkoutTitle(formattedTitle);
       setShowCelebration(true);
-      setCheckedExercises({});
-      setWeightsUsed({});
+      // limpa as marcações e já deixa o próximo treino (A → B…) selecionado
+      if (routine) workout.finish(routine);
       
       // Reload history list
       await loadData();
@@ -378,7 +378,7 @@ export function StudentDashboardPage() {
               <button
                 key={letter}
                 type="button"
-                onClick={() => setSelectedLetter(letter)}
+                onClick={() => workout.selectLetter(letter)}
                 className={`relative flex-1 py-3 text-center rounded-lg font-title text-base uppercase tracking-wider transition active:scale-95 ${
                   isSelected
                     ? 'bg-accent text-black font-extrabold shadow'
@@ -473,9 +473,10 @@ export function StudentDashboardPage() {
                       </div>
 
                       {/* Weight input on row */}
-                      <div className="hidden sm:block shrink-0" onClick={e => e.stopPropagation()}>
+                      <div className="shrink-0" onClick={e => e.stopPropagation()}>
                         <input
                           type="text"
+                          inputMode="decimal"
                           value={weightsUsed[item.id] ?? ''}
                           onChange={(e) => handleWeightChange(item.id, e.target.value, e)}
                           placeholder="Carga"

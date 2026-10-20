@@ -23,3 +23,11 @@ export function routineDays(routine: MyRoutine | null | undefined): Day[] {
 export function exercisesForDay(routine: MyRoutine | null | undefined, day: Day): RoutineExercise[] {
   return routine?.exercises[day] ?? [];
 }
+
+// A → B → C → A… dentro das letras da rotina; sem treino anterior, a primeira
+// letra que tem exercícios.
+export function nextDay(routine: MyRoutine | null | undefined, last: Day | null): Day {
+  const days = routineDays(routine);
+  if (last && days.includes(last)) return days[(days.indexOf(last) + 1) % days.length];
+  return days.find((d) => exercisesForDay(routine, d).length > 0) ?? days[0] ?? 'A';
+}

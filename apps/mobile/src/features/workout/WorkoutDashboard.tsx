@@ -23,10 +23,11 @@ import { HistoryCard } from './HistoryCard';
 import { LetterSelector } from './LetterSelector';
 import { RestTimer } from './RestTimer';
 import { StatCard } from './StatCard';
-import { buildHistory } from './history';
-import { exercisesForDay, routineDays, workoutTitle } from './naming';
+import { buildHistory, lastWorkoutDay } from './history';
+import { exercisesForDay, nextDay, routineDays, workoutTitle } from './naming';
 
 const KEEP_AWAKE_TAG = 'active-workout';
+const STALE_WORKOUT_MS = 12 * 60 * 60 * 1000;
 
 // Painel do aluno do web (/aluno/painel) adaptado ao app: treino do dia com
 // execução offline e histórico. O personal usa o mesmo painel em "Meu Treino",
@@ -42,6 +43,7 @@ export function WorkoutDashboard({ variant }: { variant: 'student' | 'trainer' }
   const routine = routineQuery.data;
 
   const workout = useActiveWorkout(userId);
+  const hasSavedWorkout = useActiveWorkoutStore((s) => !!s.byUser[userId]);
   const { selectDay, toggle, setWeight, stopRest, reset } = useActiveWorkoutStore.getState();
   const syncStatus = useSyncStatus();
 
@@ -55,6 +57,20 @@ export function WorkoutDashboard({ variant }: { variant: 'student' | 'trainer' }
   const exercises = exercisesForDay(routine, day);
   const checkedCount = exercises.filter((e) => workout.checked[e.id]).length;
   const progress = exercises.length > 0 ? Math.round((checkedCount / exercises.length) * 100) : 0;
+
+  // Sem treino salvo neste aparelho (ou com um largado há mais de 12 h), abre
+  // no treino seguinte ao último feito, pelo histórico.
+  const historyReady = historyQuery.isSuccess || historyQuery.isError;
+  useEffect(() => {
+    if (!routine || !historyReady) return;
+    const stale = !!workout.startedAt && Date.now() - Date.parse(workout.startedAt) > STALE_WORKOUT_MS;
+    if (hasSavedWorkout && !stale) return;
+    if (stale) reset(userId);
+    const last = lastWorkoutDay({ sessions: getLocalSessions(userId), serverLogs: historyQuery.data ?? [], routine });
+    selectDay(userId, nextDay(routine, last));
+    // só ao carregar; depois a letra é escolha do usuário
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routine?.id, historyReady, userId]);
 
   // Tela acesa enquanto houver treino em andamento.
   useEffect(() => {
@@ -84,6 +100,7 @@ export function WorkoutDashboard({ variant }: { variant: 'student' | 'trainer' }
     const title = workoutTitle(routine, day);
     finishWorkout({ userId, day, title, exercises, workout });
     reset(userId);
+    selectDay(userId, nextDay(routine, day)); // já deixa o próximo treino (A → B…)
     setHistoryVersion((v) => v + 1);
     setCelebrated(title);
   }

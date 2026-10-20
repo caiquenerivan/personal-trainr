@@ -73,3 +73,25 @@ function dayResolver(routine: MyRoutine | null | undefined) {
     (log.exerciseId && byExercise.get(log.exerciseId)) ||
     null;
 }
+
+// Letra do treino feito mais recentemente, juntando o diário local (inclui o
+// que ainda não foi enviado) e os logs do servidor (web, outro aparelho).
+export function lastWorkoutDay(params: {
+  sessions: LocalSession[];
+  serverLogs: WorkoutLog[];
+  routine: MyRoutine | null | undefined;
+}): Day | null {
+  const { sessions, serverLogs, routine } = params;
+  const dayOf = dayResolver(routine);
+  let best: { at: number; day: Day } | null = null;
+  for (const s of sessions) {
+    const at = Date.parse(s.finishedAt);
+    if (!best || at > best.at) best = { at, day: s.day };
+  }
+  for (const log of serverLogs) {
+    const day = dayOf(log);
+    const at = Date.parse(log.completedAt);
+    if (day && (!best || at > best.at)) best = { at, day };
+  }
+  return best?.day ?? null;
+}
