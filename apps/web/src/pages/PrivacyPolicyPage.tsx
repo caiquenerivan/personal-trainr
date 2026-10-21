@@ -11,7 +11,7 @@ export function PrivacyPolicyPage() {
         <h1 className="mt-6 font-title text-3xl uppercase tracking-wider text-text-primary">
           Política de Privacidade
         </h1>
-        <p className="mt-2 text-xs text-text-secondary">Última atualização: 03 de agosto de 2026</p>
+        <p className="mt-2 text-xs text-text-secondary">Última atualização: 21 de outubro de 2026</p>
 
         <div className="mt-8 space-y-6 text-sm leading-relaxed text-text-secondary">
           <p>
@@ -29,6 +29,8 @@ export function PrivacyPolicyPage() {
               <li>Dados de treino: rotinas, exercícios, cargas e histórico de treinos concluídos.</li>
               <li>Dados de pagamento (personal trainers assinantes): CPF/CNPJ, processado diretamente pelo nosso
                 parceiro de pagamentos (Asaas) — não armazenamos dados de cartão de crédito.</li>
+              <li>App para celular: identificador do aparelho para notificações e, no plano gratuito de alunos, o
+                identificador de publicidade do Android, usado pelo parceiro de anúncios.</li>
             </ul>
           </section>
 
@@ -50,6 +52,11 @@ export function PrivacyPolicyPage() {
               <li><strong className="text-text-primary">Asaas</strong> — processamento de pagamentos e cobrança de assinaturas.</li>
               <li><strong className="text-text-primary">Cloudinary</strong> — armazenamento de fotos de perfil.</li>
               <li><strong className="text-text-primary">Brevo</strong> — envio de e-mails transacionais (ex: redefinição de senha).</li>
+              <li><strong className="text-text-primary">Google AdMob</strong> — exibição de anúncios no app para celular,
+                apenas no plano gratuito de alunos. O Google pode usar o identificador de publicidade do aparelho
+                conforme a política de privacidade dele; você pode redefini-lo ou limitar anúncios
+                personalizados nas configurações do Android.</li>
+              <li><strong className="text-text-primary">Google Play</strong> — cobrança do plano Sem Anúncios de alunos.</li>
             </ul>
             <p className="mt-2">Não vendemos nem alugamos seus dados pessoais a terceiros.</p>
           </section>

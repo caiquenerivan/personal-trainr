@@ -7,11 +7,12 @@ import {
   Target,
 } from 'lucide-react';
 
-const recursos = [
+const recursos: { icon: typeof MessageCircle; title: string; desc: string; soon?: boolean }[] = [
   {
     icon: MessageCircle,
     title: 'Comunicação fluida',
     desc: 'Chat direto entre treinador e aluno, sem fricção.',
+    soon: true,
   },
   {
     icon: Clock,
@@ -39,6 +40,14 @@ const recursos = [
     desc: 'Defina objetivos e acompanhe o caminho até eles.',
   },
 ];
+
+function SoonTag() {
+  return (
+    <span className="rounded-full border border-accent/40 bg-accent/10 px-3 py-0.5 text-[11px] font-bold tracking-widest text-accent-light">
+      EM BREVE
+    </span>
+  );
+}
 
 export function Recursos() {
   return (
@@ -69,8 +78,9 @@ export function Recursos() {
                   <div className="w-16 h-16 rounded-xl bg-card border border-accent flex items-center justify-center mb-6">
                     <r.icon size={28} className="text-accent" />
                   </div>
-                  <h3 className="text-white font-bold uppercase text-lg tracking-wider">
+                  <h3 className="flex flex-wrap items-center gap-3 text-white font-bold uppercase text-lg tracking-wider">
                     {r.title}
+                    {r.soon && <SoonTag />}
                   </h3>
                   <p className="text-text-secondary text-sm leading-relaxed mt-2 max-w-xl">
                     {r.desc}
@@ -81,8 +91,9 @@ export function Recursos() {
                   <div className="w-14 h-14 rounded-xl bg-card border border-accent flex items-center justify-center">
                     <r.icon size={24} className="text-accent" />
                   </div>
-                  <h3 className="text-white font-bold uppercase mt-6 mb-2 text-base tracking-wider">
+                  <h3 className="flex flex-wrap items-center gap-3 text-white font-bold uppercase mt-6 mb-2 text-base tracking-wider">
                     {r.title}
+                    {r.soon && <SoonTag />}
                   </h3>
                   <p className="text-text-secondary text-sm leading-relaxed">{r.desc}</p>
                 </>

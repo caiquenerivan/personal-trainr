@@ -61,6 +61,12 @@ Android cadastrado com a assinatura do app.
    npx eas-cli@latest env:create --name EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID --value <GOOGLE_CLIENT_ID> --environment production --visibility plaintext
    ```
 
+## Conta pessoal: teste fechado obrigatório
+
+Contas pessoais criadas depois de novembro de 2023 só liberam produção
+depois de um **teste fechado com pelo menos 12 testadores inscritos por 14
+dias seguidos**. Começar pelo teste fechado assim que houver um `.aab`.
+
 ## 3. Play Console
 
 1. Criar o app: nome "Personal Trainr", idioma pt-BR, app gratuito.
@@ -77,13 +83,17 @@ Android cadastrado com a assinatura do app.
    - Pagamentos não são feitos no app.
 5. **Classificação de conteúdo:** questionário (app de condicionamento
    físico, sem conteúdo sensível).
-6. **Público-alvo:** definir a faixa etária. Os termos do site ainda não
-   fixam idade mínima; vale incluir (ex.: 18+, ou 13+ com autorização dos
-   responsáveis) antes de responder.
-7. **Acesso ao app para revisão:** criar uma conta de teste em produção
+6. **Público-alvo:** 16 anos ou mais (igual aos Termos de Uso). Não marcar
+   que o app é direcionado a crianças.
+7. **Anúncios:** sim, contém anúncios (AdMob, só para alunos no plano
+   gratuito). **Compras no app:** sim (assinatura Sem Anúncios, R$ 10,99/mês).
+   Na Segurança dos dados, incluir **ID de publicidade** (coletado pelo SDK
+   de anúncios, finalidade: publicidade) e **Histórico de compras**
+   (assinatura, finalidade: funcionalidade do app).
+8. **Acesso ao app para revisão:** criar uma conta de teste em produção
    (aluno vinculado a um personal, com rotina) e informar e-mail/senha no
    formulário de acesso, senão a revisão não consegue entrar.
-8. Ficha da loja: ícone 512×512, imagem de destaque 1024×500, ao menos 2
+9. Ficha da loja: ícone 512×512, imagem de destaque 1024×500, ao menos 2
    capturas de tela de celular, descrição curta e completa.
 
 ## 4. Build e envio

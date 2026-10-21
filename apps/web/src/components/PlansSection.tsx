@@ -46,9 +46,6 @@ export function PlansSection() {
           <p className="text-text-secondary mt-4 max-w-xl mx-auto">
             Comece grátis e evolua conforme sua base de alunos cresce.
           </p>
-          <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-accent-light">
-            Para alunos, a plataforma é 100% gratuita
-          </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3 items-start">
@@ -100,7 +97,62 @@ export function PlansSection() {
             </div>
           ))}
         </div>
+
+        <StudentPlans />
       </div>
     </section>
+  );
+}
+
+// Alunos: grátis; no app para celular o plano grátis tem anúncios ao abrir os
+// exercícios, e o Sem Anúncios é assinado pela Google Play (dentro do app).
+function StudentPlans() {
+  return (
+    <div className="mt-24">
+      <div className="text-center mb-12">
+        <p className="text-accent-light text-sm tracking-widest uppercase font-semibold">Planos para alunos</p>
+        <h3 className="font-title text-3xl md:text-4xl uppercase leading-tight mt-4">
+          <span className="text-white">Treine </span>
+          <span className="text-accent">de graça</span>
+        </h3>
+      </div>
+      <div className="mx-auto grid max-w-3xl gap-8 md:grid-cols-2 items-start">
+        <div className="rounded-2xl border border-white/10 bg-card p-8 flex flex-col">
+          <h4 className="font-title text-xl uppercase tracking-wide text-white">Grátis</h4>
+          <div className="mt-4 flex items-baseline gap-1">
+            <span className="font-number text-4xl font-bold text-accent">R$ 0</span>
+          </div>
+          <ul className="mt-8 space-y-3 flex-1">
+            {['Todos os treinos e a evolução de carga', 'Site sem anúncios', 'No app para celular, anúncios ao abrir os exercícios'].map((f) => (
+              <li key={f} className="flex items-start gap-2 text-sm text-text-primary">
+                <Check size={16} className="mt-0.5 shrink-0 text-accent" />
+                {f}
+              </li>
+            ))}
+          </ul>
+          <Link
+            to="/cadastro"
+            className="mt-8 inline-flex items-center justify-center rounded-lg h-12 px-6 text-sm font-bold uppercase tracking-wider border border-border text-white transition hover:bg-white/5"
+          >
+            Criar conta grátis
+          </Link>
+        </div>
+        <div className="rounded-2xl border border-accent/60 bg-card p-8 flex flex-col">
+          <h4 className="font-title text-xl uppercase tracking-wide text-white">Sem anúncios</h4>
+          <div className="mt-4 flex items-baseline gap-1">
+            <span className="font-number text-4xl font-bold text-accent">R$ 10,99</span>
+            <span className="text-sm text-text-secondary">/mês</span>
+          </div>
+          <ul className="mt-8 space-y-3 flex-1">
+            {['Tudo do Grátis', 'App para celular sem anúncios', 'Assinatura e cancelamento pela Google Play, dentro do app'].map((f) => (
+              <li key={f} className="flex items-start gap-2 text-sm text-text-primary">
+                <Check size={16} className="mt-0.5 shrink-0 text-accent" />
+                {f}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 }

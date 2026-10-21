@@ -10,6 +10,8 @@ import { useSyncStatus } from '../../stores/syncStatus';
 import { useDashboard, useMyRoutine, useWorkoutHistory } from '../../hooks/useWorkoutData';
 import { finishWorkout } from '../../lib/finishWorkout';
 import { syncPendingLogs } from '../../lib/sync';
+import { maybeShowExerciseAd } from '../../lib/ads';
+import { usePremium } from '../../stores/premium';
 import { getLocalSessions, getPendingLogs } from '../../lib/workoutQueue';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
@@ -46,6 +48,7 @@ export function WorkoutDashboard({ variant }: { variant: 'student' | 'trainer' }
   const hasSavedWorkout = useActiveWorkoutStore((s) => !!s.byUser[userId]);
   const { selectDay, toggle, setWeight, stopRest, reset } = useActiveWorkoutStore.getState();
   const syncStatus = useSyncStatus();
+  const isPremium = usePremium((s) => s.isPremium);
 
   const [detail, setDetail] = useState<RoutineExercise | null>(null);
   const [celebrated, setCelebrated] = useState<string | null>(null);
@@ -95,6 +98,11 @@ export function WorkoutDashboard({ variant }: { variant: 'student' | 'trainer' }
   const handleToggle = (item: RoutineExercise) => toggle(userId, item.id, item.restTime);
   const handleWeight = (id: string, value: string) => setWeight(userId, id, value);
   const handleRestDone = () => stopRest(userId);
+  // anúncio só para o aluno do plano grátis (nunca no Meu Treino do personal)
+  const openDetail = (item: RoutineExercise) => {
+    if (variant === 'student' && user.role === 'ALUNO' && !isPremium) maybeShowExerciseAd();
+    setDetail(item);
+  };
 
   function handleFinish() {
     const title = workoutTitle(routine, day);
@@ -210,7 +218,7 @@ export function WorkoutDashboard({ variant }: { variant: 'student' | 'trainer' }
                         weight={workout.weights[item.id] ?? ''}
                         onToggle={handleToggle}
                         onWeightChange={handleWeight}
-                        onOpenDetail={setDetail}
+                        onOpenDetail={openDetail}
                       />
                     ))}
                   </View>

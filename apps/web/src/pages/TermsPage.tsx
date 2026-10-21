@@ -11,7 +11,7 @@ export function TermsPage() {
         <h1 className="mt-6 font-title text-3xl uppercase tracking-wider text-text-primary">
           Termos de Uso
         </h1>
-        <p className="mt-2 text-xs text-text-secondary">Última atualização: 03 de agosto de 2026</p>
+        <p className="mt-2 text-xs text-text-secondary">Última atualização: 21 de outubro de 2026</p>
 
         <div className="mt-8 space-y-6 text-sm leading-relaxed text-text-secondary">
           <p>
@@ -31,6 +31,7 @@ export function TermsPage() {
           <section>
             <h2 className="font-title text-lg uppercase text-text-primary mb-2">2. Cadastro e conta</h2>
             <ul className="list-disc pl-5 space-y-1">
+              <li>A plataforma é destinada a pessoas com 16 anos ou mais.</li>
               <li>Você deve fornecer informações verdadeiras, completas e atualizadas no cadastro.</li>
               <li>Você é responsável por manter a confidencialidade da sua senha e por todas as atividades na sua conta.</li>
               <li>Personal trainers declaram possuir registro profissional (CREF) válido, informado no cadastro.</li>
@@ -40,8 +41,11 @@ export function TermsPage() {
           <section>
             <h2 className="font-title text-lg uppercase text-text-primary mb-2">3. Planos e pagamento</h2>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Personal trainers podem assinar planos pagos para aumentar o limite de alunos vinculados.</li>
-              <li>Pagamentos são processados por um parceiro externo (Asaas); não armazenamos dados de cartão.</li>
+              <li>Personal trainers podem assinar planos pagos para aumentar o limite de alunos vinculados. Esses
+                pagamentos são processados por um parceiro externo (Asaas); não armazenamos dados de cartão.</li>
+              <li>Para alunos, o uso é gratuito. No app para celular, o plano gratuito exibe anúncios ao abrir os
+                exercícios; o plano Sem Anúncios (R$ 10,99/mês) remove os anúncios e é assinado e cobrado pela
+                loja de aplicativos (Google Play), conforme as regras dela.</li>
               <li>Assinaturas são renovadas automaticamente até serem canceladas.</li>
               <li>Em caso de inadimplência, a conta retorna automaticamente ao plano gratuito e seus limites.</li>
             </ul>
@@ -71,6 +75,8 @@ export function TermsPage() {
             <p>
               Você pode cancelar sua conta e/ou assinatura a qualquer momento. O cancelamento de uma assinatura
               paga não gera reembolso proporcional ao período já pago, salvo disposição legal em contrário.
+              Assinaturas feitas pela Google Play são canceladas na própria Google Play (Pagamentos e
+              assinaturas), e excluir a conta não cancela essa cobrança automaticamente.
             </p>
           </section>
 

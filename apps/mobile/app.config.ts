@@ -11,6 +11,11 @@ const googleIosUrlScheme = process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME;
 // notificações locais (descanso, lembrete) continuam.
 const googleServicesFile = process.env.GOOGLE_SERVICES_JSON;
 
+// AdMob: sem o ID real (variável no EAS), usa o app de teste do Google — e o
+// app não mostra anúncio em produção enquanto não houver o ID do bloco.
+const admobAndroidAppId = process.env.ADMOB_ANDROID_APP_ID ?? 'ca-app-pub-3940256099942544~3347511713';
+const admobIosAppId = process.env.ADMOB_IOS_APP_ID ?? 'ca-app-pub-3940256099942544~1458002511';
+
 const config: ExpoConfig = {
   name: 'Personal Trainr',
   slug: 'personaltrainr',
@@ -53,6 +58,11 @@ const config: ExpoConfig = {
     'expo-secure-store',
     'expo-image',
     'expo-sqlite',
+    'expo-iap',
+    [
+      'react-native-google-mobile-ads',
+      { androidAppId: admobAndroidAppId, iosAppId: admobIosAppId },
+    ],
     [
       'expo-notifications',
       {
