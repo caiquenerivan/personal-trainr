@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
+import { ObjectiveCard } from '../components/ObjectiveCard';
 import { getMyRoutine, completeExercise, getWorkoutHistory, getDashboard } from '../api/student';
 import { userGet, userSet } from '../utils/userStorage';
 import { useActiveWorkout } from '../hooks/useActiveWorkout';
 import { Modal } from '../components/Modal';
 import {
   Flame,
-  Target,
   Scale,
   Ruler,
   CheckSquare,
@@ -59,7 +59,6 @@ export function StudentDashboardPage() {
   const workout = useActiveWorkout();
   const selectedLetter = workout.letter;
   const [weeklyStreak, setWeeklyStreak] = useState(0);
-  const [objective, setObjective] = useState('Hipertrofia');
   const [weight, setWeight] = useState('—');
   const [height, setHeight] = useState('—');
   const [userName, setUserName] = useState('Aluno');
@@ -85,15 +84,6 @@ export function StudentDashboardPage() {
         setUserName(user.name ?? 'Aluno');
         setWeight(user.weight ? `${user.weight} kg` : '—');
         setHeight(user.height ? `${user.height} cm` : '—');
-      }
-
-      // 2. Load Objective from local storage
-      const storedObjective = window.localStorage.getItem('personaltrainr.objective');
-      if (storedObjective) {
-        setObjective(storedObjective);
-      } else {
-        window.localStorage.setItem('personaltrainr.objective', 'Hipertrofia');
-        setObjective('Hipertrofia');
       }
 
       // 3. Fetch Active Routine
@@ -323,18 +313,7 @@ export function StudentDashboardPage() {
           </div>
         </div>
 
-        {/* Objetivo */}
-        <div className="rounded-xl bg-card border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/50 shadow-[0_4px_24px_rgba(0,0,0,0.4)] hover:shadow-[0_0_28px_rgba(175,145,80,0.3)]">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
-            <Target size={24} />
-          </div>
-          <div>
-            <span className="block text-[10px] uppercase font-bold text-text-secondary">Objetivo</span>
-            <span className="font-body text-sm font-bold text-text-primary uppercase tracking-wide truncate block">
-              {objective}
-            </span>
-          </div>
-        </div>
+        <ObjectiveCard />
 
         {/* Peso */}
         <div className="rounded-xl bg-card border border-border/40 p-4 flex items-center gap-4 transition-all duration-300 hover:border-accent/50 shadow-[0_4px_24px_rgba(0,0,0,0.4)] hover:shadow-[0_0_28px_rgba(175,145,80,0.3)]">

@@ -87,6 +87,7 @@ export async function issueSession(user: {
   weight: number | null;
   height: number | null;
   birthDate: Date | null;
+  objective?: string | null;
   emailVerified: boolean;
   twoFactorEnabled: boolean;
 }, client: ClientType = "web") {
@@ -123,6 +124,7 @@ function toPublicUserFields(user: {
   weight: number | null;
   height: number | null;
   birthDate: Date | null;
+  objective?: string | null;
   emailVerified: boolean;
   twoFactorEnabled: boolean;
 }) {
@@ -139,6 +141,7 @@ function toPublicUserFields(user: {
     weight: user.weight,
     height: user.height,
     birthDate: user.birthDate,
+    objective: user.objective ?? null,
     emailVerified: user.emailVerified,
     twoFactorEnabled: user.twoFactorEnabled,
   };
@@ -329,6 +332,7 @@ export const authService = {
       username?: string | null;
       bio?: string | null;
       instagram?: string | null;
+      objective?: string | null;
     },
   ) {
     if (data.username) {

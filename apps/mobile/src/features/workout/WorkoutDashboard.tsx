@@ -25,6 +25,7 @@ import { HistoryCard } from './HistoryCard';
 import { LetterSelector } from './LetterSelector';
 import { RestTimer } from './RestTimer';
 import { StatCard } from './StatCard';
+import { ObjectiveModal } from './ObjectiveModal';
 import { buildHistory, lastWorkoutDay } from './history';
 import { exercisesForDay, nextDay, routineDays, workoutTitle } from './naming';
 
@@ -54,6 +55,7 @@ export function WorkoutDashboard({ variant }: { variant: 'student' | 'trainer' }
   const [celebrated, setCelebrated] = useState<string | null>(null);
   const [historyVersion, setHistoryVersion] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [editingObjective, setEditingObjective] = useState(false);
 
   const days = routineDays(routine);
   const day: Day = days.includes(workout.day) ? workout.day : (days[0] ?? 'A');
@@ -162,7 +164,14 @@ export function WorkoutDashboard({ variant }: { variant: 'student' | 'trainer' }
               value={String(dashboardQuery.data?.weeklyStreak ?? 0)}
               unit={dashboardQuery.data?.weeklyStreak === 1 ? 'Semana' : 'Semanas'}
             />
-            <StatCard icon={Target} color={colors.accent} label="Objetivo" value="Hipertrofia" numeric={false} />
+            <StatCard
+              icon={Target}
+              color={colors.accent}
+              label="Objetivo"
+              value={user.objective ?? 'Definir'}
+              numeric={false}
+              onPress={() => setEditingObjective(true)}
+            />
             <StatCard icon={Scale} color={colors.blue} label="Peso" value={user.weight ? String(user.weight) : '—'} unit={user.weight ? 'kg' : undefined} />
             <StatCard icon={Ruler} color={colors.success} label="Altura" value={user.height ? String(user.height) : '—'} unit={user.height ? 'cm' : undefined} />
           </View>
@@ -248,6 +257,7 @@ export function WorkoutDashboard({ variant }: { variant: 'student' | 'trainer' }
       </ScrollView>
 
       <ExerciseDetailModal item={detail} onClose={() => setDetail(null)} />
+      <ObjectiveModal open={editingObjective} onClose={() => setEditingObjective(false)} />
       <CelebrationModal
         title={celebrated}
         pending={syncStatus.pending > 0 && !syncStatus.syncing}

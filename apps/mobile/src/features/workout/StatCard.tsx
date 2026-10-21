@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react-native';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '../../components/Text';
 import { colors, fonts, radius } from '../../theme';
 
@@ -10,6 +10,7 @@ export function StatCard({
   value,
   unit,
   numeric = true,
+  onPress,
 }: {
   icon: LucideIcon;
   color: string;
@@ -17,9 +18,15 @@ export function StatCard({
   value: string;
   unit?: string;
   numeric?: boolean;
+  onPress?: () => void;
 }) {
   return (
-    <View style={styles.card}>
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      accessibilityRole={onPress ? 'button' : undefined}
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+    >
       <View style={[styles.icon, { backgroundColor: `${color}1A` }]}>
         <Icon size={24} color={color} />
       </View>
@@ -32,7 +39,7 @@ export function StatCard({
           {unit && <Text style={styles.unit}>{unit}</Text>}
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -47,6 +54,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     padding: 16,
   },
+  pressed: { borderColor: colors.accent },
   icon: { width: 48, height: 48, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center' },
   text: { flex: 1, minWidth: 0 },
   label: { fontFamily: fonts.bodyBold, fontSize: 10, textTransform: 'uppercase', color: colors.textSecondary },

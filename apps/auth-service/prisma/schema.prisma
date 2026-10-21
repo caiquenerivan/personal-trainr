@@ -83,6 +83,7 @@ model User {
   weight       Float?
   height       Float?
   birthDate    DateTime?
+  objective    String?   // objetivo de treino escolhido pelo usuário (ver OBJECTIVES)
   createdAt    DateTime  @default(now())
 
   // 2FA (TOTP)

@@ -51,7 +51,14 @@ const refreshTokenSchema = z.object({
   refreshToken: z.string().min(1, "Refresh token is required"),
 });
 
+// Mesma lista do app e do site (packages/shared OBJECTIVES).
+const OBJECTIVES = [
+  "Hipertrofia", "Emagrecimento", "Definição", "Força",
+  "Condicionamento", "Resistência", "Saúde e bem-estar",
+] as const;
+
 const updateProfileSchema = z.object({
+  objective: z.enum(OBJECTIVES).optional().nullable(),
   name: z.string().min(1, "Name is required").optional(),
   avatarUrl: z.string().url("Invalid URL").optional().nullable(),
   phone: z.string().optional().nullable(),
@@ -167,6 +174,7 @@ export async function updateProfile(req: Request, res: Response): Promise<any> {
     if (body.username === "") body.username = null;
     if (body.bio === "") body.bio = null;
     if (body.instagram === "") body.instagram = null;
+    if (body.objective === "") body.objective = null;
 
     if (req.file) {
       const avatarUrl = await uploadToCloudinary(req.file.buffer);

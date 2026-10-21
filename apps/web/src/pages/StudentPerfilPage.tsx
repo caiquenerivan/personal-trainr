@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import { getStoredObjective } from '../components/ObjectiveCard';
 import { Link } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import {
@@ -95,13 +96,7 @@ export function StudentPerfilPage() {
     }
   })();
 
-  const objective = (() => {
-    try {
-      return window.localStorage.getItem('personaltrainr.objective') ?? 'Hipertrofia';
-    } catch {
-      return 'Hipertrofia';
-    }
-  })();
+  const objective = getStoredObjective() ?? 'Não definido';
 
   // ─── Init ─────────────────────────────────────────────────
   useEffect(() => {

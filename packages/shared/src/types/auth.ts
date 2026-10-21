@@ -13,6 +13,7 @@ export type UserData = {
   weight?: number | null;
   height?: number | null;
   birthDate?: string | null;
+  objective?: string | null;
   emailVerified: boolean;
   twoFactorEnabled: boolean;
   requiresTwoFactorSetup?: boolean;
@@ -44,3 +45,16 @@ export type LoginResponse = Session | TwoFactorChallenge;
 export function isTwoFactorChallenge(response: LoginResponse): response is TwoFactorChallenge {
   return 'requiresTwoFactor' in response;
 }
+
+// Objetivos de treino aceitos pelo backend (auth-service valida a mesma lista).
+export const OBJECTIVES = [
+  'Hipertrofia',
+  'Emagrecimento',
+  'Definição',
+  'Força',
+  'Condicionamento',
+  'Resistência',
+  'Saúde e bem-estar',
+] as const;
+
+export type Objective = (typeof OBJECTIVES)[number];
