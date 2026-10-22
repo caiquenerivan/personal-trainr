@@ -80,6 +80,18 @@
         "BROWSER": "none",
         "CI": "1"
       }
+    },
+    {
+      "name": "web-static",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "--yes",
+        "serve@14.2.4",
+        "-l",
+        "4173",
+        "apps/web/dist"
+      ],
+      "port": 4173
     }
   ]
 }

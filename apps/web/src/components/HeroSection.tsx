@@ -22,17 +22,20 @@ export function HeroSection() {
             </span>
           </div>
 
-          <h1 className="font-title leading-tight text-5xl md:text-6xl lg:text-7xl uppercase">
+          {/* Slogan só visual; o <h1> da página é a frase com as palavras-chave logo abaixo. */}
+          <p className="font-title leading-tight text-5xl md:text-6xl lg:text-7xl uppercase">
             <span className="text-white">Supere seus limites com</span>{' '}
             <span className="text-accent">Personal Trainr<span className="font-body">.</span></span>
-          </h1>
-
-          <p className="text-text-secondary text-base md:text-lg leading-relaxed max-w-xl">
-            A plataforma premium que conecta{' '}
-            <strong className="text-white font-semibold">personal trainers</strong> e{' '}
-            <strong className="text-white font-semibold">alunos</strong>. Monte rotinas,
-            acompanhe evolução e transforme cada treino em resultado real.
           </p>
+
+          <div className="text-text-secondary text-base md:text-lg leading-relaxed max-w-xl">
+            <h1 className="inline font-normal">
+              App para{' '}
+              <strong className="text-white font-semibold">personal trainer</strong> montar treinos e acompanhar{' '}
+              <strong className="text-white font-semibold">alunos</strong>.
+            </h1>{' '}
+            Monte rotinas, acompanhe evolução e transforme cada treino em resultado real.
+          </div>
 
           <div className="flex flex-wrap items-center gap-4">
             <Link

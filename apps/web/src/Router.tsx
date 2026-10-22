@@ -6,8 +6,13 @@ import { StudentLayout } from './layouts/StudentLayout';
 import { AdminLayout } from './layouts/AdminLayout';
 import { PublicRoute, TrainerRoute, StudentRoute, AdminRoute, AuthenticatedRoute } from './components/ProtectedRoute';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { SeoManager } from './components/SeoManager';
+// Páginas públicas pré-renderizadas no build: carregadas sem lazy para o React
+// não trocar o HTML estático por "Carregando..." antes de exibi-las.
+import { LandingPage } from './pages/LandingPage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { TermsPage } from './pages/TermsPage';
 
-const LandingPage = lazy(() => import('./pages/LandingPage').then((m) => ({ default: m.LandingPage })));
 const RegisterPage = lazy(() => import('./pages/RegisterPage').then((m) => ({ default: m.RegisterPage })));
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage })));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage })));
@@ -36,10 +41,8 @@ const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage').then((m
 const AdminSubscriptionsPage = lazy(() => import('./pages/admin/AdminSubscriptionsPage').then((m) => ({ default: m.AdminSubscriptionsPage })));
 const AdminExercisesPage = lazy(() => import('./pages/admin/AdminExercisesPage').then((m) => ({ default: m.AdminExercisesPage })));
 const AdminPerfilPage = lazy(() => import('./pages/admin/AdminPerfilPage').then((m) => ({ default: m.AdminPerfilPage })));
-const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage })));
 const LoadProgressPage = lazy(() => import('./pages/LoadProgressPage').then((m) => ({ default: m.LoadProgressPage })));
 const DeleteAccountPage = lazy(() => import('./pages/DeleteAccountPage').then((m) => ({ default: m.DeleteAccountPage })));
-const TermsPage = lazy(() => import('./pages/TermsPage').then((m) => ({ default: m.TermsPage })));
 
 function PageLoader() {
   return (
@@ -52,6 +55,7 @@ function PageLoader() {
 export function AppRouter() {
   return (
     <BrowserRouter>
+      <SeoManager />
       <Suspense fallback={<PageLoader />}>
         <ErrorBoundary>
         <Routes>

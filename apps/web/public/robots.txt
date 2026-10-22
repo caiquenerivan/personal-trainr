@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+Disallow: /painel
+Disallow: /alunos
+Disallow: /rotinas
+Disallow: /exercicios
+Disallow: /progresso
+Disallow: /minha-evolucao
+Disallow: /meu-treino
+Disallow: /perfil
+Disallow: /aluno/
+Disallow: /admin
+Disallow: /configurar-2fa
+Disallow: /oauth/
+Disallow: /redefinir-senha
+Disallow: /verificar-email
+
+Sitemap: https://www.personaltrainr.club/sitemap.xml
