@@ -9,6 +9,7 @@ type ExerciseDetail = {
   series: number;
   reps: number;
   restTime: number;
+  instructions?: string | null;
   exercise: {
     id: string;
     name: string;
@@ -38,6 +39,7 @@ type ExerciseRow = {
   gifUrl?: string | null;
   videoUrl?: string | null;
   observations?: string | null;
+  instructions?: string | null;
   done: boolean;
   weight: string;
 };
@@ -72,6 +74,7 @@ export function StudentTreinoHojePage() {
               gifUrl: ex.exercise.gifUrl,
               videoUrl: ex.exercise.videoUrl,
               observations: ex.exercise.observations,
+              instructions: ex.instructions,
               done: false,
               weight: '',
             })),
@@ -213,6 +216,11 @@ export function StudentTreinoHojePage() {
                     }`}
                   >
                     {exercise.name}
+                    {exercise.instructions && (
+                      <span className="mt-0.5 block text-xs font-semibold text-accent no-underline">
+                        {exercise.instructions}
+                      </span>
+                    )}
                   </button>
 
                   <span className="font-number text-sm text-accent">
@@ -277,6 +285,15 @@ export function StudentTreinoHojePage() {
                     (e.target as HTMLImageElement).style.display = 'none';
                   }}
                 />
+              </div>
+            )}
+
+            {detailTarget.instructions && (
+              <div>
+                <span className="text-xs uppercase text-text-secondary">Instrução do personal</span>
+                <p className="mt-1 rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-text-primary">
+                  {detailTarget.instructions}
+                </p>
               </div>
             )}
 

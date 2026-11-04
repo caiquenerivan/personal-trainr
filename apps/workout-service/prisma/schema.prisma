@@ -183,6 +183,8 @@ model RoutineExercise {
   series          Int
   reps            Int
   restTime        Int
+  // instrução do personal para este exercício nesta rotina (ex.: drop-set)
+  instructions    String?
   workoutLogs     WorkoutLog[]
 }
 

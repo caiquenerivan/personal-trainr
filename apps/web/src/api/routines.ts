@@ -10,6 +10,7 @@ export type RoutineExerciseInput = {
   series: number;
   reps: number;
   restTime: number;
+  instructions?: string | null;
 };
 
 export type RoutineExerciseDetail = {
@@ -19,6 +20,7 @@ export type RoutineExerciseDetail = {
   series: number;
   reps: number;
   restTime: number;
+  instructions: string | null;
   exercise: {
     id: string;
     name: string;

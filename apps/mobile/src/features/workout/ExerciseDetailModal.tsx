@@ -44,9 +44,16 @@ export function ExerciseDetailModal({ item, onClose }: { item: RoutineExercise |
             </View>
           )}
 
+          {item?.instructions ? (
+            <View style={styles.obs}>
+              <Text style={styles.obsLabel}>Instrução do personal</Text>
+              <Text style={[styles.obsText, styles.instructionsText]}>{item.instructions}</Text>
+            </View>
+          ) : null}
+
           {exercise.observations && (
             <View style={styles.obs}>
-              <Text style={styles.obsLabel}>Observações & Instruções</Text>
+              <Text style={styles.obsLabel}>Observações</Text>
               <Text style={styles.obsText}>{exercise.observations}</Text>
             </View>
           )}
@@ -92,4 +99,5 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     lineHeight: 20,
   },
+  instructionsText: { borderColor: 'rgba(175,145,80,0.4)', backgroundColor: 'rgba(175,145,80,0.1)' },
 });

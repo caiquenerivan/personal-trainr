@@ -54,6 +54,7 @@ export const ExerciseRow = memo(function ExerciseRow({
             <Text style={styles.restText}>Descanso: {item.restTime}s</Text>
           </View>
         </View>
+        {item.instructions ? <Text style={styles.instructions}>{item.instructions}</Text> : null}
       </View>
 
       <TextInput
@@ -100,6 +101,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   restText: { fontSize: 10, color: colors.textSecondary },
+  instructions: { fontFamily: fonts.bodyBold, fontSize: 12, color: colors.accent },
   weight: {
     width: 64,
     height: touchTarget,

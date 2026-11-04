@@ -86,6 +86,7 @@ export type RoutineDetail = {
     series: number;
     reps: number;
     restTime: number;
+    instructions: string | null;
     exercise: CatalogExercise;
   }[];
 };
@@ -100,6 +101,7 @@ export type RoutinePayload = {
     series: number;
     reps: number;
     restTime: number;
+    instructions?: string | null;
   }[];
 };
 

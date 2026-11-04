@@ -22,6 +22,7 @@ type ExerciseDetail = {
   series: number;
   reps: number;
   restTime: number;
+  instructions?: string | null;
   exercise: {
     id: string;
     name: string;
@@ -449,6 +450,9 @@ export function StudentDashboardPage() {
                             Descanso: {item.restTime}s
                           </span>
                         </div>
+                        {item.instructions && (
+                          <p className="mt-1 text-xs font-semibold text-accent">{item.instructions}</p>
+                        )}
                       </div>
 
                       {/* Weight input on row */}
@@ -587,9 +591,26 @@ export function StudentDashboardPage() {
               </div>
             )}
 
+            {detailTarget.instructions && (
+
+              <div className="space-y-1.5">
+
+                <span className="text-[10px] uppercase font-bold text-text-secondary tracking-widest">Instrução do personal</span>
+
+                <p className="rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-text-primary leading-relaxed">
+
+                  {detailTarget.instructions}
+
+                </p>
+
+              </div>
+
+            )}
+
+
             {detailTarget.exercise.observations && (
               <div className="space-y-1.5">
-                <span className="text-[10px] uppercase font-bold text-text-secondary tracking-widest">Observações & Instruções</span>
+                <span className="text-[10px] uppercase font-bold text-text-secondary tracking-widest">Observações</span>
                 <p className="rounded-xl border border-border bg-base px-4 py-3 text-sm text-text-primary leading-relaxed">
                   {detailTarget.exercise.observations}
                 </p>

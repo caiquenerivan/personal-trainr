@@ -10,6 +10,7 @@ const routineExerciseInputSchema = z.object({
   series: z.number().int().positive("Series must be a positive integer"),
   reps: z.number().int().positive("Reps must be a positive integer"),
   restTime: z.number().int().positive("Rest time must be a positive integer"),
+  instructions: z.string().max(500, "Instructions must be at most 500 characters").optional().nullable(),
 });
 
 const createRoutineSchema = z.object({

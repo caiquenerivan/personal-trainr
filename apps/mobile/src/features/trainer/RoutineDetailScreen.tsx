@@ -90,6 +90,7 @@ export function RoutineDetailScreen({ id }: { id: string }) {
                           <Text style={styles.metric}>{ex.reps} reps</Text>
                           <Text style={styles.small}>{ex.restTime}s descanso</Text>
                         </View>
+                        {ex.instructions ? <Text style={styles.instructions}>{ex.instructions}</Text> : null}
                       </View>
                     </View>
                   ))
@@ -155,6 +156,7 @@ function Action({
 const styles = StyleSheet.create({
   flex: { flex: 1, minWidth: 0 },
   muted: { color: colors.textSecondary },
+  instructions: { fontFamily: fonts.bodyBold, fontSize: 12, color: colors.accent, marginTop: 2 },
   small: { fontSize: 12, color: colors.textSecondary },
   card: { gap: 16, padding: 20 },
   headerTexts: { gap: 4 },

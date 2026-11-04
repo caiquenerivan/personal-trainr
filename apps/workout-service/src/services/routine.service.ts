@@ -13,9 +13,11 @@ export const routineService = {
     exercises: Array<{
       exerciseId: string;
       day: Day;
+      dayDescription?: string;
       series: number;
       reps: number;
       restTime: number;
+      instructions?: string | null;
     }>;
   }) {
     const exerciseIds = data.exercises.map((e) => e.exerciseId);
@@ -174,6 +176,7 @@ export const routineService = {
         series: number;
         reps: number;
         restTime: number;
+        instructions?: string | null;
       }>;
     },
   ) {

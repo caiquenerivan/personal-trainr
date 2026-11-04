@@ -17,6 +17,8 @@ export type RoutineExercise = {
   series: number;
   reps: number;
   restTime: number;
+  // instrução do personal para este exercício nesta rotina (ex.: drop-set)
+  instructions?: string | null;
   exercise: Exercise;
 };
 

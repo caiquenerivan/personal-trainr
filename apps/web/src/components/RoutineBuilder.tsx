@@ -14,6 +14,7 @@ type BuilderExercise = {
   series: number;
   reps: number;
   restTime: number;
+  instructions: string;
 };
 
 type BuilderWorkout = {
@@ -71,6 +72,7 @@ export function RoutineBuilder({ routineId }: Props) {
                 series: e.series,
                 reps: e.reps,
                 restTime: e.restTime,
+                instructions: e.instructions ?? '',
               })),
             };
           }),
@@ -106,7 +108,7 @@ export function RoutineBuilder({ routineId }: Props) {
     setWorkouts((prev) =>
       prev.map((w, i) =>
         i === workoutIndex
-          ? { ...w, exercises: [...w.exercises, { exerciseId: '', series: 3, reps: 10, restTime: 60 }] }
+          ? { ...w, exercises: [...w.exercises, { exerciseId: '', series: 3, reps: 10, restTime: 60, instructions: '' }] }
           : w,
       ),
     );
@@ -155,6 +157,7 @@ export function RoutineBuilder({ routineId }: Props) {
           series: e.series,
           reps: e.reps,
           restTime: e.restTime,
+          instructions: e.instructions.trim() || null,
         })),
     );
 
@@ -370,6 +373,21 @@ export function RoutineBuilder({ routineId }: Props) {
                   >
                     <Trash2 size={18} />
                   </button>
+
+                  <label className="basis-full space-y-1">
+                    <span className="text-xs uppercase text-text-secondary">
+                      Instrução para o aluno (opcional)
+                    </span>
+                    <input
+                      value={exercise.instructions}
+                      onChange={(e) =>
+                        updateExercise(activeIndex, ei, { instructions: e.target.value })
+                      }
+                      maxLength={500}
+                      placeholder="Ex: Última série em drop-set"
+                      className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
+                    />
+                  </label>
                 </div>
               ))}
             </div>

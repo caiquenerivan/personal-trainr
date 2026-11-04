@@ -21,7 +21,7 @@ const DAYS: Day[] = ['A', 'B', 'C', 'D', 'E'];
 const COUNTS = [2, 3, 4, 5] as const;
 const TYPE_BY_COUNT: Record<number, RoutineType> = { 2: 'AB', 3: 'ABC', 4: 'ABCD', 5: 'ABCDE' };
 
-type BuilderExercise = { key: string; exercise: CatalogExercise | null; series: string; reps: string; restTime: string };
+type BuilderExercise = { key: string; exercise: CatalogExercise | null; series: string; reps: string; restTime: string; instructions: string };
 type BuilderWorkout = { day: Day; description: string; exercises: BuilderExercise[] };
 
 let keySeq = 0;
@@ -43,6 +43,7 @@ function fromRoutine(routine: RoutineDetail): BuilderWorkout[] {
         series: String(e.series),
         reps: String(e.reps),
         restTime: String(e.restTime),
+        instructions: e.instructions ?? '',
       })),
     };
   });
@@ -98,7 +99,7 @@ function Builder({ routine }: { routine?: RoutineDetail }) {
 
   function addExercise() {
     const key = newKey();
-    updateActive({ exercises: [...active.exercises, { key, exercise: null, series: '3', reps: '10', restTime: '60' }] });
+    updateActive({ exercises: [...active.exercises, { key, exercise: null, series: '3', reps: '10', restTime: '60', instructions: '' }] });
     setPicking(key);
   }
 
@@ -118,6 +119,7 @@ function Builder({ routine }: { routine?: RoutineDetail }) {
           series: Math.max(1, parseInt(e.series, 10) || 1),
           reps: Math.max(1, parseInt(e.reps, 10) || 1),
           restTime: Math.max(1, parseInt(e.restTime, 10) || 1),
+          instructions: e.instructions.trim() || null,
         })),
     );
     if (exercises.length === 0) {
@@ -201,6 +203,14 @@ function Builder({ routine }: { routine?: RoutineDetail }) {
               <NumberField label="Repetições" value={e.reps} onChange={(reps) => updateExercise(e.key, { reps })} />
               <NumberField label="Descanso (s)" value={e.restTime} onChange={(restTime) => updateExercise(e.key, { restTime })} />
             </View>
+            <TextField
+              label="Instrução para o aluno (opcional)"
+              value={e.instructions}
+              onChangeText={(instructions) => updateExercise(e.key, { instructions })}
+              placeholder="Ex: Última série em drop-set"
+              maxLength={500}
+              style={styles.instructionsInput}
+            />
           </View>
         ))}
 
@@ -272,6 +282,7 @@ const styles = StyleSheet.create({
   },
   remove: { width: touchTarget, height: touchTarget, alignItems: 'center', justifyContent: 'center' },
   numbers: { flexDirection: 'row', gap: 8 },
+  instructionsInput: { backgroundColor: colors.card },
   numberField: { flex: 1, gap: 4 },
   numberLabel: { fontSize: 10 },
   numberInput: {

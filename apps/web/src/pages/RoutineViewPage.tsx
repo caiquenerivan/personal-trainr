@@ -145,6 +145,11 @@ export function RoutineViewPage() {
                         <span className="text-xs text-text-secondary">
                           {ex.restTime}s descanso
                         </span>
+                        {ex.instructions && (
+                          <p className="basis-full text-xs font-semibold text-accent">
+                            {ex.instructions}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>

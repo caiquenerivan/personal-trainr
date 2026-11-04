@@ -24,6 +24,7 @@ type ExerciseDetail = {
   series: number;
   reps: number;
   restTime: number;
+  instructions?: string | null;
   exercise: {
     id: string;
     name: string;
@@ -578,6 +579,9 @@ export function MeuTreinoPage() {
                             Descanso: {item.restTime}s
                           </span>
                         </div>
+                        {item.instructions && (
+                          <p className="mt-1 text-xs font-semibold text-accent">{item.instructions}</p>
+                        )}
                       </div>
 
                       <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
@@ -700,6 +704,23 @@ export function MeuTreinoPage() {
                 />
               </div>
             )}
+
+            {detailTarget.instructions && (
+
+              <div className="space-y-1.5">
+
+                <span className="text-[10px] uppercase font-bold text-text-secondary tracking-widest">Instrução do personal</span>
+
+                <p className="rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-text-primary leading-relaxed">
+
+                  {detailTarget.instructions}
+
+                </p>
+
+              </div>
+
+            )}
+
 
             {detailTarget.exercise.observations && (
               <div className="space-y-1.5">

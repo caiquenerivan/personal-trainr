@@ -14,6 +14,7 @@ export interface CreateRoutineExerciseData {
   series: number;
   reps: number;
   restTime: number;
+  instructions?: string | null;
 }
 
 export interface RoutineWithExercises extends Routine {
@@ -24,6 +25,7 @@ export interface RoutineWithExercises extends Routine {
     series: number;
     reps: number;
     restTime: number;
+    instructions: string | null;
     exercise: {
       id: string;
       name: string;
@@ -52,6 +54,7 @@ export const routineRepository = {
               series: e.series,
               reps: e.reps,
               restTime: e.restTime,
+              instructions: e.instructions?.trim() || null,
             })),
           },
         },
@@ -107,6 +110,7 @@ export const routineRepository = {
               series: e.series,
               reps: e.reps,
               restTime: e.restTime,
+              instructions: e.instructions?.trim() || null,
             })),
           },
         },
