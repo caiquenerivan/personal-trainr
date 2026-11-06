@@ -26,6 +26,7 @@ export const routineAssignmentRepository = {
           include: {
             exercises: {
               include: { exercise: true },
+              orderBy: { position: "asc" },
             },
           },
         },

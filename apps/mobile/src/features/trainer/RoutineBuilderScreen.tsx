@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
-import { ChevronDown, Plus, Trash2 } from 'lucide-react-native';
+import { useAnimatedRef } from 'react-native-reanimated';
+import type Animated from 'react-native-reanimated';
+import { ChevronDown, GripVertical, Plus, Trash2 } from 'lucide-react-native';
 import type { CatalogExercise, Day, RoutineDetail, RoutineType } from '@personaltrainr/shared';
 import { useExerciseCatalog, useRoutine, useSaveRoutine } from '../../hooks/useTrainerData';
 import { getErrorMessage } from '../../lib/api';
@@ -12,6 +14,7 @@ import { Card } from '../../components/Card';
 import { Chips } from '../../components/Chips';
 import { PageHeader } from '../../components/PageHeader';
 import { ScrollScreen } from '../../components/ScrollScreen';
+import { SortableList } from '../../components/SortableList';
 import { Text } from '../../components/Text';
 import { TextField } from '../../components/TextField';
 import { colors, fonts, radius, touchTarget } from '../../theme';
@@ -77,6 +80,7 @@ function Builder({ routine }: { routine?: RoutineDetail }) {
   const [workouts, setWorkouts] = useState<BuilderWorkout[]>(() => (routine ? fromRoutine(routine) : emptyWorkouts(2)));
   const [activeDay, setActiveDay] = useState<Day>('A');
   const [picking, setPicking] = useState<string | null>(null);
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const [error, setError] = useState<string | null>(null);
 
   const activeIndex = Math.max(0, workouts.findIndex((w) => w.day === activeDay));
@@ -95,6 +99,13 @@ function Builder({ routine }: { routine?: RoutineDetail }) {
 
   function updateExercise(key: string, patch: Partial<BuilderExercise>) {
     updateActive({ exercises: active.exercises.map((e) => (e.key === key ? { ...e, ...patch } : e)) });
+  }
+
+  function reorderExercises(from: number, to: number) {
+    const exercises = [...active.exercises];
+    const [moved] = exercises.splice(from, 1);
+    exercises.splice(to, 0, moved);
+    updateActive({ exercises });
   }
 
   function addExercise() {
@@ -139,7 +150,7 @@ function Builder({ routine }: { routine?: RoutineDetail }) {
   }
 
   return (
-    <ScrollScreen>
+    <ScrollScreen scrollRef={scrollRef}>
       <PageHeader title={routine ? 'Editar rotina' : 'Montar nova rotina'} onBack={() => router.back()} />
 
       {error && <Alert>{error}</Alert>}
@@ -179,40 +190,54 @@ function Builder({ routine }: { routine?: RoutineDetail }) {
           maxLength={60}
         />
 
-        {active.exercises.map((e, index) => (
-          <View key={e.key} style={styles.exercise}>
-            <View style={styles.exerciseTop}>
-              <Text style={styles.order}>{index + 1}</Text>
-              <Pressable onPress={() => setPicking(e.key)} style={styles.picker} accessibilityRole="button">
-                {e.exercise ? <ExerciseThumb exercise={e.exercise} size={36} /> : null}
-                <Text style={[styles.flex, !e.exercise && styles.muted]} numberOfLines={2}>
-                  {e.exercise?.name ?? 'Escolher exercício'}
-                </Text>
-                <ChevronDown size={16} color={colors.accent} />
-              </Pressable>
-              <Pressable
-                onPress={() => updateActive({ exercises: active.exercises.filter((x) => x.key !== e.key) })}
-                style={styles.remove}
-                accessibilityLabel="Remover exercício"
-              >
-                <Trash2 size={18} color={colors.accent} />
-              </Pressable>
-            </View>
-            <View style={styles.numbers}>
-              <NumberField label="Séries" value={e.series} onChange={(series) => updateExercise(e.key, { series })} />
-              <NumberField label="Repetições" value={e.reps} onChange={(reps) => updateExercise(e.key, { reps })} />
-              <NumberField label="Descanso (s)" value={e.restTime} onChange={(restTime) => updateExercise(e.key, { restTime })} />
-            </View>
-            <TextField
-              label="Instrução para o aluno (opcional)"
-              value={e.instructions}
-              onChangeText={(instructions) => updateExercise(e.key, { instructions })}
-              placeholder="Ex: Última série em drop-set"
-              maxLength={500}
-              style={styles.instructionsInput}
-            />
+        {active.exercises.length > 1 && (
+          <View style={styles.hint}>
+            <GripVertical size={14} color={colors.accent} />
+            <Text style={styles.hintText}>Segure ⋮⋮ e arraste para definir a ordem dos exercícios</Text>
           </View>
-        ))}
+        )}
+
+        <SortableList
+          items={active.exercises}
+          keyOf={(e) => e.key}
+          onReorder={reorderExercises}
+          scrollRef={scrollRef}
+          renderItem={(e, index, handle) => (
+              <View style={styles.exercise}>
+                <View style={styles.exerciseTop}>
+                  {handle}
+                  <Text style={styles.order}>{index + 1}</Text>
+                  <Pressable onPress={() => setPicking(e.key)} style={styles.picker} accessibilityRole="button">
+                    {e.exercise ? <ExerciseThumb exercise={e.exercise} size={36} /> : null}
+                    <Text style={[styles.flex, !e.exercise && styles.muted]} numberOfLines={2}>
+                      {e.exercise?.name ?? 'Escolher exercício'}
+                    </Text>
+                    <ChevronDown size={16} color={colors.accent} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => updateActive({ exercises: active.exercises.filter((x) => x.key !== e.key) })}
+                    style={styles.remove}
+                    accessibilityLabel="Remover exercício"
+                  >
+                    <Trash2 size={18} color={colors.accent} />
+                  </Pressable>
+                </View>
+                <View style={styles.numbers}>
+                  <NumberField label="Séries" value={e.series} onChange={(series) => updateExercise(e.key, { series })} />
+                  <NumberField label="Repetições" value={e.reps} onChange={(reps) => updateExercise(e.key, { reps })} />
+                  <NumberField label="Descanso (s)" value={e.restTime} onChange={(restTime) => updateExercise(e.key, { restTime })} />
+                </View>
+                <TextField
+                  label="Instrução para o aluno (opcional)"
+                  value={e.instructions}
+                  onChangeText={(instructions) => updateExercise(e.key, { instructions })}
+                  placeholder="Ex: Última série em drop-set"
+                  maxLength={500}
+                  style={styles.instructionsInput}
+                />
+              </View>
+          )}
+        />
 
         <Pressable onPress={addExercise} style={styles.add} accessibilityRole="button">
           <Plus size={16} color={colors.accent} />
@@ -267,6 +292,8 @@ const styles = StyleSheet.create({
   exercise: { gap: 12, borderRadius: radius.xl, backgroundColor: colors.base, padding: 12 },
   exerciseTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   order: { fontFamily: fonts.number, width: 18, textAlign: 'center', color: colors.accent },
+  hint: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  hintText: { fontSize: 12, color: colors.textSecondary },
   picker: {
     flex: 1,
     flexDirection: 'row',

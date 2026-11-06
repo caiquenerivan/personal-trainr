@@ -26,6 +26,7 @@ export interface RoutineWithExercises extends Routine {
     reps: number;
     restTime: number;
     instructions: string | null;
+    position: number;
     exercise: {
       id: string;
       name: string;
@@ -47,7 +48,7 @@ export const routineRepository = {
           name: data.name,
           type: data.type,
           exercises: {
-            create: exercises.map((e) => ({
+            create: exercises.map((e, position) => ({
               exerciseId: e.exerciseId,
               day: e.day,
               dayDescription: e.dayDescription ?? null,
@@ -55,12 +56,14 @@ export const routineRepository = {
               reps: e.reps,
               restTime: e.restTime,
               instructions: e.instructions?.trim() || null,
+              position,
             })),
           },
         },
         include: {
           exercises: {
             include: { exercise: true },
+            orderBy: { position: "asc" },
           },
         },
       }) as Promise<RoutineWithExercises>;
@@ -73,6 +76,7 @@ export const routineRepository = {
       include: {
         exercises: {
           include: { exercise: true },
+          orderBy: { position: "asc" },
         },
       },
     }) as Promise<RoutineWithExercises | null>;
@@ -84,6 +88,7 @@ export const routineRepository = {
       include: {
         exercises: {
           include: { exercise: true },
+          orderBy: { position: "asc" },
         },
       },
       orderBy: { createdAt: "desc" },
@@ -103,7 +108,7 @@ export const routineRepository = {
           name: data.name,
           type: data.type,
           exercises: {
-            create: exercises.map((e) => ({
+            create: exercises.map((e, position) => ({
               exerciseId: e.exerciseId,
               day: e.day,
               dayDescription: e.dayDescription ?? null,
@@ -111,12 +116,14 @@ export const routineRepository = {
               reps: e.reps,
               restTime: e.restTime,
               instructions: e.instructions?.trim() || null,
+              position,
             })),
           },
         },
         include: {
           exercises: {
             include: { exercise: true },
+            orderBy: { position: "asc" },
           },
         },
       }) as Promise<RoutineWithExercises>;

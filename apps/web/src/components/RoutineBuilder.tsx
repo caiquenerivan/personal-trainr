@@ -1,15 +1,28 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
-import { ChevronDown, Plus, Trash2, X } from 'lucide-react';
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import { SortableContext, arrayMove, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { ChevronDown, GripVertical, Plus, Trash2, X } from 'lucide-react';
 import { listExercises, type ApiExercise } from '../api/exercises';
 import { ExercisePicker } from './ExercisePicker';
+import { SortableCard } from './SortableCard';
 import { getRoutine, createRoutine, updateRoutine, type Day, type RoutineType } from '../api/routines';
 
 const WORKOUT_LABELS: Day[] = ['A', 'B', 'C', 'D', 'E'];
 const TYPE_BY_COUNT: Record<number, RoutineType> = { 2: 'AB', 3: 'ABC', 4: 'ABCD', 5: 'ABCDE' };
 
 type BuilderExercise = {
+  key: string;
   exerciseId: string;
   series: number;
   reps: number;
@@ -22,6 +35,9 @@ type BuilderWorkout = {
   description: string;
   exercises: BuilderExercise[];
 };
+
+let keySeq = 0;
+const newKey = () => `ex-${++keySeq}`;
 
 function buildEmptyWorkouts(count: number): BuilderWorkout[] {
   return WORKOUT_LABELS.slice(0, count).map((day) => ({
@@ -47,6 +63,10 @@ export function RoutineBuilder({ routineId }: Props) {
   const [loading, setLoading] = useState(isEditing);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
   useEffect(() => {
     listExercises().catch(() => []).then((options) => setExerciseOptions(options ?? []));
@@ -68,6 +88,7 @@ export function RoutineBuilder({ routineId }: Props) {
               day,
               description: dayExercises[0]?.dayDescription ?? '',
               exercises: dayExercises.map((e) => ({
+                key: newKey(),
                 exerciseId: e.exercise.id,
                 series: e.series,
                 reps: e.reps,
@@ -108,7 +129,7 @@ export function RoutineBuilder({ routineId }: Props) {
     setWorkouts((prev) =>
       prev.map((w, i) =>
         i === workoutIndex
-          ? { ...w, exercises: [...w.exercises, { exerciseId: '', series: 3, reps: 10, restTime: 60, instructions: '' }] }
+          ? { ...w, exercises: [...w.exercises, { key: newKey(), exerciseId: '', series: 3, reps: 10, restTime: 60, instructions: '' }] }
           : w,
       ),
     );
@@ -121,6 +142,18 @@ export function RoutineBuilder({ routineId }: Props) {
           ? { ...w, exercises: w.exercises.filter((_, ei) => ei !== exerciseIndex) }
           : w,
       ),
+    );
+  }
+
+  function reorderExercises(workoutIndex: number, { active, over }: DragEndEvent) {
+    if (!over || active.id === over.id) return;
+    setWorkouts((prev) =>
+      prev.map((w, i) => {
+        if (i !== workoutIndex) return w;
+        const from = w.exercises.findIndex((e) => e.key === active.id);
+        const to = w.exercises.findIndex((e) => e.key === over.id);
+        return { ...w, exercises: arrayMove(w.exercises, from, to) };
+      }),
     );
   }
 
@@ -292,105 +325,123 @@ export function RoutineBuilder({ routineId }: Props) {
             </label>
 
             {/* Exercise cards */}
-            <div className="space-y-3">
-              {workouts[activeIndex].exercises.map((exercise, ei) => (
-                <div
-                  key={ei}
-                  className="flex flex-wrap items-end gap-3 rounded-xl bg-base p-4"
-                >
-                  <label className="flex-1 space-y-1 min-w-[160px]">
-                    <span className="text-xs uppercase text-text-secondary">
-                      Exercício
-                    </span>
-                    <ExercisePicker
-                      options={exerciseOptions}
-                      value={exercise.exerciseId}
-                      onChange={(exerciseId) => updateExercise(activeIndex, ei, { exerciseId })}
-                      required
-                    />
-                  </label>
+            {workouts[activeIndex].exercises.length > 1 && (
+              <p className="flex items-center gap-1.5 text-xs text-text-secondary">
+                <GripVertical size={14} className="text-accent" />
+                Arraste pela alça para definir a ordem em que o aluno faz os exercícios
+              </p>
+            )}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+              onDragEnd={(event) => reorderExercises(activeIndex, event)}
+            >
+              <SortableContext
+                items={workouts[activeIndex].exercises.map((e) => e.key)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-3">
+                  {workouts[activeIndex].exercises.map((exercise, ei) => (
+                    <SortableCard key={exercise.key} id={exercise.key}>
+                      <div className="flex flex-wrap items-end gap-3 p-4">
+                        <label className="flex-1 space-y-1 min-w-[160px]">
+                          <span className="text-xs uppercase text-text-secondary">
+                            Exercício
+                          </span>
+                          <ExercisePicker
+                            options={exerciseOptions}
+                            value={exercise.exerciseId}
+                            onChange={(exerciseId) => updateExercise(activeIndex, ei, { exerciseId })}
+                            required
+                          />
+                        </label>
 
-                  <label className="w-20 space-y-1">
-                    <span className="text-xs uppercase text-text-secondary">
-                      Séries
-                    </span>
-                    <input
-                      type="number"
-                      min={1}
-                      value={exercise.series}
-                      onChange={(e) =>
-                        updateExercise(activeIndex, ei, {
-                          series: Number(e.target.value),
-                        })
-                      }
-                      className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
-                      required
-                    />
-                  </label>
+                        <label className="w-20 space-y-1">
+                          <span className="text-xs uppercase text-text-secondary">
+                            Séries
+                          </span>
+                          <input
+                            type="number"
+                            min={1}
+                            value={exercise.series}
+                            onChange={(e) =>
+                              updateExercise(activeIndex, ei, {
+                                series: Number(e.target.value),
+                              })
+                            }
+                            className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
+                            required
+                          />
+                        </label>
 
-                  <label className="w-24 space-y-1">
-                    <span className="text-xs uppercase text-text-secondary">
-                      Repetições
-                    </span>
-                    <input
-                      type="number"
-                      min={1}
-                      value={exercise.reps}
-                      onChange={(e) =>
-                        updateExercise(activeIndex, ei, {
-                          reps: Number(e.target.value),
-                        })
-                      }
-                      className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
-                      required
-                    />
-                  </label>
+                        <label className="w-24 space-y-1">
+                          <span className="text-xs uppercase text-text-secondary">
+                            Repetições
+                          </span>
+                          <input
+                            type="number"
+                            min={1}
+                            value={exercise.reps}
+                            onChange={(e) =>
+                              updateExercise(activeIndex, ei, {
+                                reps: Number(e.target.value),
+                              })
+                            }
+                            className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
+                            required
+                          />
+                        </label>
 
-                  <label className="w-28 space-y-1">
-                    <span className="text-xs uppercase text-text-secondary">
-                      Descanso (s)
-                    </span>
-                    <input
-                      type="number"
-                      min={0}
-                      step={5}
-                      value={exercise.restTime}
-                      onChange={(e) =>
-                        updateExercise(activeIndex, ei, {
-                          restTime: Number(e.target.value),
-                        })
-                      }
-                      className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
-                      required
-                    />
-                  </label>
+                        <label className="w-28 space-y-1">
+                          <span className="text-xs uppercase text-text-secondary">
+                            Descanso (s)
+                          </span>
+                          <input
+                            type="number"
+                            min={0}
+                            step={5}
+                            value={exercise.restTime}
+                            onChange={(e) =>
+                              updateExercise(activeIndex, ei, {
+                                restTime: Number(e.target.value),
+                              })
+                            }
+                            className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
+                            required
+                          />
+                        </label>
 
-                  <button
-                    type="button"
-                    onClick={() => removeExercise(activeIndex, ei)}
-                    className="mb-0.5 flex items-center justify-center rounded-lg p-2.5 text-accent transition hover:bg-base min-h-[44px] min-w-[44px]"
-                    title="Remover exercício"
-                  >
-                    <Trash2 size={18} />
-                  </button>
 
-                  <label className="basis-full space-y-1">
-                    <span className="text-xs uppercase text-text-secondary">
-                      Instrução para o aluno (opcional)
-                    </span>
-                    <input
-                      value={exercise.instructions}
-                      onChange={(e) =>
-                        updateExercise(activeIndex, ei, { instructions: e.target.value })
-                      }
-                      maxLength={500}
-                      placeholder="Ex: Última série em drop-set"
-                      className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
-                    />
-                  </label>
+                        <button
+                          type="button"
+                          onClick={() => removeExercise(activeIndex, ei)}
+                          className="mb-0.5 flex items-center justify-center rounded-lg p-2.5 text-accent transition hover:bg-base min-h-[44px] min-w-[44px]"
+                          title="Remover exercício"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+
+                        <label className="basis-full space-y-1">
+                          <span className="text-xs uppercase text-text-secondary">
+                            Instrução para o aluno (opcional)
+                          </span>
+                          <input
+                            value={exercise.instructions}
+                            onChange={(e) =>
+                              updateExercise(activeIndex, ei, { instructions: e.target.value })
+                            }
+                            maxLength={500}
+                            placeholder="Ex: Última série em drop-set"
+                            className="w-full rounded-lg border border-border bg-base p-3 text-text-primary outline-none focus:border-accent"
+                          />
+                        </label>
+                      </div>
+                    </SortableCard>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </SortableContext>
+            </DndContext>
 
             <button
               type="button"

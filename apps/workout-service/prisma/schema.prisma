@@ -185,6 +185,8 @@ model RoutineExercise {
   restTime        Int
   // instrução do personal para este exercício nesta rotina (ex.: drop-set)
   instructions    String?
+  // ordem de execução dentro do treino (definida pelo personal no construtor)
+  position        Int          @default(0)
   workoutLogs     WorkoutLog[]
 }
 
