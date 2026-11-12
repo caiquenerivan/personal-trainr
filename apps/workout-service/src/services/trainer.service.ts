@@ -513,73 +513,56 @@ export const trainerService = {
     const now = new Date();
     const sevenDaysAgo = new Date(now);
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const thirtyDaysAgo = new Date(now);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    // a sequência olha mais para trás que a adesão, senão nunca passaria de ~4 semanas
+    const streakWindowStart = new Date(now);
+    streakWindowStart.setDate(streakWindowStart.getDate() - 182);
 
-    const [activeAssignments, workoutLogsLast7Days, workoutLogsMonth] =
-      await Promise.all([
-        prisma.routineAssignment.findMany({
-          where: { alunoId: { in: studentIds }, isActive: true },
-          select: { alunoId: true, weeklyGoal: true },
-        }),
-        prisma.workoutLog.findMany({
-          where: {
-            alunoId: { in: studentIds },
-            completedAt: { gte: sevenDaysAgo },
-          },
-          select: { alunoId: true, completedAt: true },
-        }),
-        prisma.workoutLog.findMany({
-          where: {
-            alunoId: { in: studentIds },
-            completedAt: { gte: startOfMonth },
-          },
-          select: { alunoId: true, completedAt: true },
-        }),
-      ]);
+    const [activeAssignments, workoutLogs] = await Promise.all([
+      prisma.routineAssignment.findMany({
+        where: { alunoId: { in: studentIds }, isActive: true },
+        select: { alunoId: true, weeklyGoal: true },
+      }),
+      prisma.workoutLog.findMany({
+        where: {
+          alunoId: { in: studentIds },
+          completedAt: { gte: streakWindowStart },
+        },
+        select: { alunoId: true, completedAt: true },
+      }),
+    ]);
 
     const assignmentMap = new Map(
       activeAssignments.map((a) => [a.alunoId, a.weeklyGoal]),
     );
 
-    const logsLast7ByStudent = new Map<string, number>();
-    for (const log of workoutLogsLast7Days) {
-      logsLast7ByStudent.set(
-        log.alunoId,
-        (logsLast7ByStudent.get(log.alunoId) || 0) + 1,
-      );
-    }
-
-    const logsMonthByStudent = new Map<string, number>();
-    for (const log of workoutLogsMonth) {
-      logsMonthByStudent.set(
-        log.alunoId,
-        (logsMonthByStudent.get(log.alunoId) || 0) + 1,
-      );
-    }
-
-    const weekCountsByStudent = new Map<string, Map<string, number>>();
-    for (const log of workoutLogsMonth) {
-      if (!weekCountsByStudent.has(log.alunoId)) {
-        weekCountsByStudent.set(log.alunoId, new Map());
+    // Cada log é um exercício concluído; um treino é um dia em que o aluno
+    // registrou pelo menos um exercício.
+    const workoutDaysByStudent = new Map<string, Map<string, Date>>();
+    for (const log of workoutLogs) {
+      if (!workoutDaysByStudent.has(log.alunoId)) {
+        workoutDaysByStudent.set(log.alunoId, new Map());
       }
-      const wc = weekCountsByStudent.get(log.alunoId)!;
-      const { year, week } = getISOWeek(new Date(log.completedAt));
-      const key = `${year}-W${String(week).padStart(2, "0")}`;
-      wc.set(key, (wc.get(key) || 0) + 1);
+      const completedAt = new Date(log.completedAt);
+      workoutDaysByStudent.get(log.alunoId)!.set(completedAt.toDateString(), completedAt);
     }
 
     const studentsProgress = connections.map((connection) => {
       const studentId = connection.studentId;
       const weeklyGoal = assignmentMap.get(studentId) ?? 3;
-      const workoutsLast7Days = logsLast7ByStudent.get(studentId) || 0;
-      const totalWorkoutsMonth = logsMonthByStudent.get(studentId) || 0;
-      const wc = weekCountsByStudent.get(studentId) || new Map();
-      const weeklyStreak = calculateWeeklyStreak(wc, weeklyGoal);
+      const workoutDays = [...(workoutDaysByStudent.get(studentId)?.values() ?? [])];
+      const workoutsLast7Days = workoutDays.filter((d) => d >= sevenDaysAgo).length;
+      const workoutsLast30Days = workoutDays.filter((d) => d >= thirtyDaysAgo).length;
+      const weeklyStreak = calculateWeeklyStreak(
+        groupLogsByWeek(workoutDays.map((completedAt) => ({ completedAt }))),
+        weeklyGoal,
+      );
 
       const monthlyTarget = weeklyGoal * 4;
       const adhesionRate =
         monthlyTarget > 0
-          ? Math.min(100, Math.round((totalWorkoutsMonth / monthlyTarget) * 100))
+          ? Math.min(100, Math.round((workoutsLast30Days / monthlyTarget) * 100))
           : 0;
 
       return {

@@ -53,7 +53,13 @@ export const dashboardService = {
       log.routineExerciseId !== null && routineExerciseIds.has(log.routineExerciseId),
     );
 
-    const weekCounts = groupLogsByWeek(relevantLogs);
+    // Cada log é um exercício concluído; a meta semanal conta treinos, então
+    // vale um por dia em que o aluno registrou pelo menos um exercício.
+    const workoutDays = new Map<string, { completedAt: Date }>();
+    for (const log of relevantLogs) {
+      workoutDays.set(new Date(log.completedAt).toDateString(), log);
+    }
+    const weekCounts = groupLogsByWeek([...workoutDays.values()]);
     const weeklyGoal = assignment.weeklyGoal;
 
     const now = new Date();
