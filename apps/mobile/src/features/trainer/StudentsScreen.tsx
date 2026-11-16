@@ -13,6 +13,7 @@ import { SearchInput } from '../../components/SearchInput';
 import { Text } from '../../components/Text';
 import { colors, fonts, radius } from '../../theme';
 import { AssignRoutineModal } from './AssignRoutineModal';
+import { InviteLinkCard } from './InviteLinkCard';
 
 const FILTERS = ['TODOS', 'ATIVOS', 'INATIVOS'] as const;
 type Filter = (typeof FILTERS)[number];
@@ -60,6 +61,7 @@ export function StudentsScreen() {
         }
       />
 
+      <InviteLinkCard />
       <SearchInput value={search} onChangeText={setSearch} placeholder="Buscar alunos..." />
       <Chips options={FILTERS} value={filter} onChange={setFilter} />
 

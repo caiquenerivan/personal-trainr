@@ -7,6 +7,15 @@ import { getSubscription, SubscriptionData } from '../api/billing';
 import { api } from '../api/client';
 import { calculateAge } from '../utils/age';
 import { Modal } from '../components/Modal';
+import { InviteLinkCard } from '../components/InviteLinkCard';
+
+function storedUsername(): string | null {
+  try {
+    return JSON.parse(window.localStorage.getItem('personaltrainr.user') ?? 'null')?.username ?? null;
+  } catch {
+    return null;
+  }
+}
 
 type StudentDTO = {
   id: string;
@@ -166,6 +175,10 @@ export function StudentsPage() {
             )}
           </span>
         )}
+      </div>
+
+      <div className="mt-6">
+        <InviteLinkCard username={storedUsername()} />
       </div>
 
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

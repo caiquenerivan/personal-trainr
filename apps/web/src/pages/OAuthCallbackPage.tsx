@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import type { UserData } from '../api/auth';
+import { completePendingInvite } from '../utils/pendingInvite';
 
 function routeForRole(role: UserData['role']): string {
   if (role === 'ALUNO') return '/aluno/painel';
@@ -35,10 +36,11 @@ export function OAuthCallbackPage() {
 
     api
       .get('/api/users/profile', { headers: { Authorization: `Bearer ${token}` } })
-      .then(({ data }) => {
+      .then(async ({ data }) => {
         const user = data.user as UserData;
         window.localStorage.setItem('personaltrainr.token', token);
         window.localStorage.setItem('personaltrainr.user', JSON.stringify(user));
+        if (user.role === 'ALUNO') await completePendingInvite();
         navigate(user.requiresTwoFactorSetup ? '/configurar-2fa' : routeForRole(user.role), {
           replace: true,
           state: user.requiresTwoFactorSetup ? { forced: true } : undefined,

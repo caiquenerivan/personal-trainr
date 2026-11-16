@@ -2,8 +2,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { login, resendVerification, verifyTwoFactor, type UserData } from '../api/auth';
-import { api } from '../api/client';
-import { createConnection } from '../api/connections';
+import { completePendingInvite } from '../utils/pendingInvite';
 
 function routeForRole(role: UserData['role']): string {
   if (role === 'ALUNO') return '/aluno/painel';
@@ -15,23 +14,6 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function handleGoogleLogin() {
   window.location.href = `${API_URL}/api/auth/google`;
-}
-
-// Completa a conexão trainer<->aluno de um convite pendente (armazenado no
-// cadastro) assim que o primeiro login pós-verificação de email acontece.
-// Falha silenciosamente: o aluno ainda pode se conectar manualmente depois.
-async function completePendingInvite() {
-  const storedInvite = localStorage.getItem('@ptrainr:invite');
-  if (!storedInvite) return;
-  try {
-    const inviteRes = await api.get(`/api/trainers/invite/${storedInvite}`);
-    const trainerId = inviteRes.data.trainer.id;
-    await createConnection(trainerId);
-  } catch {
-    // convite pode ter expirado ou já ter sido usado — ignora
-  } finally {
-    localStorage.removeItem('@ptrainr:invite');
-  }
 }
 
 export function LoginScreen() {

@@ -10,6 +10,7 @@ import { Text } from '../../components/Text';
 import { DeleteAccountModal } from '../../features/account/DeleteAccountModal';
 import { ReminderSettings } from '../../features/account/ReminderSettings';
 import { PlanCard } from '../../features/account/PlanCard';
+import { InviteLinkCard } from '../../features/trainer/InviteLinkCard';
 import { colors, radius } from '../../theme';
 
 export default function PerfilScreen() {
@@ -31,6 +32,7 @@ export default function PerfilScreen() {
           </Text>
         </View>
       </View>
+      <InviteLinkCard />
       <PlanCard />
       <ReminderSettings />
       <Button

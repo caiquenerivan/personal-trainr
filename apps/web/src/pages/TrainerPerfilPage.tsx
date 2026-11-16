@@ -27,6 +27,7 @@ import { updateProfile, changePassword, getTrainerProfile, updateTrainerProfile 
 import { getTrainerRating } from '../api/connections';
 import { getSubscription, checkout, SubscriptionData, PlanTier } from '../api/billing';
 import { StarRating } from '../components/StarRating';
+import { InviteLinkCard } from '../components/InviteLinkCard';
 import { formatPhone, unformatPhone } from '../utils/phone';
 import { formatDateUTC } from '../utils/date';
 
@@ -451,6 +452,8 @@ export function TrainerPerfilPage() {
           </div>
         </div>
       </div>
+
+      <InviteLinkCard username={profile.username} />
 
       <div className="flex gap-1 rounded-xl bg-black/20 border border-border/20 p-1 max-w-xl flex-wrap">
         <button
